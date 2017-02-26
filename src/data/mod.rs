@@ -14,18 +14,30 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)]
-extern crate bson;
-extern crate mongodb;
+// use mongodb::{Client, ThreadedClient};
 
-mod server;
-mod data;
+use mongodb::{Client, ClientOptions, ThreadedClient};
+use mongodb::common::{ReadMode, ReadPreference};
+use mongodb::cursor::Cursor;
+use mongodb::db::ThreadedDatabase;
 
-fn main() {
-  println!("Hello, World!");
+pub struct MongoClient {
+    client: Client
+}
 
-  let mut client = data::MongoClient::new().unwrap();
-  // client.test();
+impl MongoClient {
+    pub fn new<'a>() -> Result<Self, &'a str> {
+        let client_result = Client::with_uri("mongodb://localhost:27017");
 
-  server::start();
+        match client_result {
+            Ok(client) => Ok(MongoClient{client : client}),
+            Err(_) => Err("Unable to connect to mongo")
+        }
+    }
+
+    pub fn test(&mut self) {
+        let collection = self.client.db("test").collection("testc");
+
+        collection.insert_one(doc!{"test key" => "test value"}, None).unwrap();
+    }
 }

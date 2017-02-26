@@ -3,3 +3,7 @@
 name = "evelyn"
 version = "0.0.1"
 authors = ["Gregory Jensen <greatdjonfire@hotmail.co.uk>"]
+
+[dependencies]
+bson = "0.4.3"
+mongodb = "0.2.2"
