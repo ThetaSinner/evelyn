@@ -14,22 +14,30 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::io::{Read, Write, BufReader, BufWriter, BufRead};
+use std::io::{Write, BufReader, BufWriter, BufRead};
 use std::net::{TcpListener, TcpStream};
 use std::str;
+use std::thread;
 
 pub fn start() {
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
 
-    let stream = listener.accept().unwrap().0;
-
-    read_request(stream);
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                thread::spawn(|| {
+                    read_request(stream);
+                });
+            }
+            Err(e) => println!("Failed connection: {}", e)
+        }
+    }
 }
 
 fn read_request(stream: TcpStream) {
     let mut reader = BufReader::new(&stream);
 
-    let mut data = reader.fill_buf().unwrap();
+    let data = reader.fill_buf().unwrap();
     println!("{:?}", str::from_utf8(data).unwrap());
 
     let mut writer = BufWriter::new(&stream);
