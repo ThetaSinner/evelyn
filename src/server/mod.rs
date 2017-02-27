@@ -17,6 +17,7 @@
 use std::io::{Write, BufReader, BufWriter, BufRead};
 use std::net::{TcpListener, TcpStream};
 use std::str;
+use std::str::{Lines};
 use std::thread;
 
 pub fn start() {
@@ -38,7 +39,9 @@ fn read_request(stream: TcpStream) {
     let mut reader = BufReader::new(&stream);
 
     let data = reader.fill_buf().unwrap();
-    println!("{:?}", str::from_utf8(data).unwrap());
+    let str_data = str::from_utf8(data).unwrap();
+    println!("{:?}", str_data);
+    process_request(str_data);
 
     let mut writer = BufWriter::new(&stream);
     send_response(&mut writer);
@@ -48,4 +51,32 @@ fn send_response<W: Write>(writer: &mut BufWriter<W>) {
     // Write the header and the html body
     let response = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello, World!</body></html>";
     writer.write_all(response.as_bytes()).unwrap();
+}
+
+fn process_request(request: &str) {
+    let lines = request.lines();
+
+    let mut is_processing_header = true;
+    let mut header = Vec::new();
+    let mut body = "".to_string();
+    for line in lines {
+
+        if line == "" {
+            is_processing_header = false;
+        }
+        else {
+            if is_processing_header {
+                header.push(line);
+            }
+            else {
+                body = format!("{}\n{}", body, line);
+            }
+        }
+    }
+
+    for header_line in header {
+        println!("{}", header_line);
+    }
+
+    println!("\n\nbody: {}", body);
 }
