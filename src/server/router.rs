@@ -14,33 +14,11 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)]
-extern crate bson;
-extern crate mongodb;
+pub struct Router {
+}
 
-#[macro_use]
-extern crate serde_json;
-
-mod server;
-mod data;
-
-use serde_json::Value;
-
-use server::router;
-
-fn main() {
-  println!("Hello, World!");
-
-  let mut client = data::MongoClient::new().unwrap();
-  // client.test();
-
-  let router = router::Router{};
-  router.post("hello/world");
-
-  let data = r#"{"name":"John Doe", "age": 43}"#;
-  let v: Value = serde_json::from_str(data).unwrap();
-  // let () = v["name"].as_str().unwrap();
-  println!("Hello, I'm {}, and I'm {} years old {}", v["name"].as_str().unwrap(), v["age"], "some data");
-
-  server::start();
+impl Router {
+  pub fn post(self, route : &str) {
+      
+  }
 }
