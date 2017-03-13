@@ -28,14 +28,18 @@ use serde_json::Value;
 
 use server::router;
 
+fn test_processor() {
+
+}
+
 fn main() {
   println!("Hello, World!");
 
   let mut client = data::MongoClient::new().unwrap();
   // client.test();
 
-  let router = router::Router{};
-  router.post("hello/world");
+  let mut router = router::Router::new();
+  router.post("hello/world", test_processor);
 
   let data = r#"{"name":"John Doe", "age": 43}"#;
   let v: Value = serde_json::from_str(data).unwrap();

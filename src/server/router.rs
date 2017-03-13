@@ -14,11 +14,18 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::collections::HashMap;
+
 pub struct Router {
+  rules : HashMap<String, fn()>,
 }
 
 impl Router {
-  pub fn post(self, route : &str) {
-      
+  pub fn new() -> Self {
+    Router{rules: HashMap::new()}
+  }
+
+  pub fn post(&mut self, route : &str, processor : fn()) {
+    self.rules.insert(route.to_string(), processor);
   }
 }
