@@ -25,7 +25,15 @@ impl Router {
     Router{rules: HashMap::new()}
   }
 
-  pub fn post(&mut self, route : &str, processor : fn()) {
+  pub fn add_rule(&mut self, route : &str, processor : fn()) {
     self.rules.insert(route.to_string(), processor);
+  }
+
+  pub fn route(self, route : &str) {
+    let processor_opt = self.rules.get(route);
+    match processor_opt { // x: Option<T>
+      Some(processor) => { processor() },
+      None => {}
+    }
   }
 }

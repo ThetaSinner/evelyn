@@ -26,10 +26,10 @@ mod data;
 
 use serde_json::Value;
 
-use server::router;
+use server::routing::Router;
 
 fn test_processor() {
-
+  println!("Test processor running");
 }
 
 fn main() {
@@ -38,8 +38,10 @@ fn main() {
   let mut client = data::MongoClient::new().unwrap();
   // client.test();
 
-  let mut router = router::Router::new();
-  router.post("hello/world", test_processor);
+  let mut router = Router::new();
+  router.add_rule("hello/world", test_processor);
+
+  router.route("hello/world");
 
   let data = r#"{"name":"John Doe", "age": 43}"#;
   let v: Value = serde_json::from_str(data).unwrap();

@@ -14,7 +14,7 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod router;
+pub mod routing;
 
 use std::io::{Write, BufReader, BufWriter, BufRead};
 use std::net::{TcpListener, TcpStream};
