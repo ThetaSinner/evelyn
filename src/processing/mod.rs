@@ -21,6 +21,7 @@ use model;
 
 pub fn load_processors(router: &mut Router) {
   router.add_rule("/hello/world", test_processor);
+  router.add_rule("/user/create", create_user_processor);
 }
 
 fn test_processor(router_input: RouterInput) -> RouterOutput {
@@ -30,6 +31,21 @@ fn test_processor(router_input: RouterInput) -> RouterOutput {
   match request_model_de {
     Ok(request_model) => {
       println!("Test processor got : {}, {:?}", request_model.hello, request_model.name);
+    },
+    Err(e) => {
+      println!("Bad payload");
+    }
+  }
+
+  RouterOutput{response_body: "not implemented".to_string()}
+}
+
+fn create_user_processor(router_input: RouterInput) -> RouterOutput {
+  let request_model_de: Result<model::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
+  let result = "Processor error";
+  match request_model_de {
+    Ok(request_model) => {
+      println!("Create user processor got : {}, {}, {}", request_model.user_name, request_model.email_address, request_model.password);
     },
     Err(e) => {
       println!("Bad payload");

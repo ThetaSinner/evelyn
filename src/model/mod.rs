@@ -19,3 +19,15 @@ pub struct TestModel {
     pub name: Option<String>,
     pub hello: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CreateUserModel {
+    #[serde(rename="UserName")]
+    pub user_name: String,
+
+    #[serde(rename="EmailAddress")]
+    pub email_address: String,
+
+    #[serde(rename="Password")]
+    pub password: String,
+}
