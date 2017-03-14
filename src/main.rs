@@ -43,8 +43,6 @@ fn main() {
   println!("Starting...");
 
   let mut client = data::MongoClient::new().unwrap();
-  // the above doesn't handle errors, but the code below prevents a lot of warnings!! :)
-  // client.test();
 
   let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client))};
 
