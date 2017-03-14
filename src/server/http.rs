@@ -55,19 +55,19 @@ fn read_request(stream: TcpStream, router: Arc<Router>) {
   let data = reader.fill_buf().unwrap();
   let str_data = str::from_utf8(data).unwrap();
   println!("{:?}", str_data);
-  process_request(str_data, router);
+  let process_result = process_request(str_data, router);
 
   let mut writer = BufWriter::new(&stream);
-  send_response(&mut writer);
+  send_response(&mut writer, process_result);
 }
 
-fn send_response<W: Write>(writer: &mut BufWriter<W>) {
+fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: String) {
   // Write the header and the html body
-  let response = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello, World!</body></html>";
-  writer.write_all(response.as_bytes()).unwrap();
+  //let response = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello, World!</body></html>";
+  writer.write_all(process_result.as_bytes()).unwrap();
 }
 
-fn process_request(request: &str, router: Arc<Router>) {
+fn process_request(request: &str, router: Arc<Router>) -> String {
   let lines = request.lines();
 
   let mut is_processing_header = true;
@@ -91,5 +91,12 @@ fn process_request(request: &str, router: Arc<Router>) {
   let top_line = header[0];
   let top_line_values: Vec<_> = top_line.split(' ').collect();
 
-  router.route(top_line_values[1], RouterInput{request_body: body});
+  let router_output = router.route(top_line_values[1], RouterInput{request_body: body});
+
+  if router_output.is_some() {
+     router_output.unwrap().response_body
+  }
+  else {
+      String::from("Failed to get route request")
+  }
 }

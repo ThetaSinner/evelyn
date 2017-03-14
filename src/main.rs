@@ -35,15 +35,16 @@ use server::http::HttpServer;
 use server::routing::{Router, RouterInput, RouterOutput};
 
 fn main() {
-  println!("Hello, World!");
+  println!("Starting...");
 
   let mut client = data::MongoClient::new().unwrap();
   // the above doesn't handle errors, but the code below prevents a lot of warnings!! :)
   // client.test();
-  
+
   let mut router = Router::new();
   processing::load_processors(&mut router);
 
   let http_server = HttpServer::new(router);
+  println!("Ready");
   http_server.start();
 }
