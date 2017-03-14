@@ -15,7 +15,6 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::sync::Arc;
-use std::sync::Mutex;
 
 use model::{CreateUserModel, UserModel};
 use processing::ProcessorData;

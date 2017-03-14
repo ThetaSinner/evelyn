@@ -33,16 +33,14 @@ mod model;
 mod processing;
 mod core;
 
-use serde_json::Value;
-
 use processing::ProcessorData;
 use server::http::HttpServer;
-use server::routing::{Router, RouterInput, RouterOutput};
+use server::routing::Router;
 
 fn main() {
   println!("Starting...");
 
-  let mut client = data::MongoClient::new().unwrap();
+  let client = data::MongoClient::new().unwrap();
 
   let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client))};
 
