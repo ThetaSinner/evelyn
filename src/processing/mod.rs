@@ -14,36 +14,27 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)]
-extern crate bson;
-extern crate mongodb;
+use serde_json;
 
-#[macro_use]
-extern crate serde_json;
-
-#[macro_use]
-extern crate serde_derive;
-
-mod server;
-mod data;
-mod model;
-mod processing;
-
-use serde_json::Value;
-
-use server::http::HttpServer;
 use server::routing::{Router, RouterInput, RouterOutput};
+use model;
 
-fn main() {
-  println!("Hello, World!");
+pub fn load_processors(router: &mut Router) {
+  router.add_rule("/hello/world", test_processor);
+}
 
-  let mut client = data::MongoClient::new().unwrap();
-  // the above doesn't handle errors, but the code below prevents a lot of warnings!! :)
-  // client.test();
-  
-  let mut router = Router::new();
-  processing::load_processors(&mut router);
+fn test_processor(router_input: RouterInput) -> RouterOutput {
+  println!("Test processor running");
 
-  let http_server = HttpServer::new(router);
-  http_server.start();
+  let request_model_de: Result<model::TestModel,_> = serde_json::from_str(&router_input.request_body);
+  match request_model_de {
+    Ok(request_model) => {
+      println!("Test processor got : {}, {:?}", request_model.hello, request_model.name);
+    },
+    Err(e) => {
+      println!("Bad payload");
+    }
+  }
+
+  RouterOutput{response_body: "not implemented".to_string()}
 }
