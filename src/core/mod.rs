@@ -14,32 +14,4 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[derive(Serialize, Deserialize)]
-pub struct TestModel {
-    pub name: Option<String>,
-    pub hello: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct CreateUserModel {
-    #[serde(rename="UserName")]
-    pub user_name: String,
-
-    #[serde(rename="EmailAddress")]
-    pub email_address: String,
-
-    #[serde(rename="Password")]
-    pub password: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct UserModel {
-  #[serde(rename="userName")]
-  pub user_name: String,
-
-  #[serde(rename="emailAddress")]
-  pub email_address: String,
-
-  #[serde(rename="password")]
-  pub password: String,
-}
+pub mod user;

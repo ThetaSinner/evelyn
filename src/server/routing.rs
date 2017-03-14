@@ -15,6 +15,8 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::collections::HashMap;
+use processing::ProcessorData;
+use std::sync::Arc;
 
 pub struct RouterInput {
   pub request_body: String
@@ -25,7 +27,7 @@ pub struct RouterOutput {
 }
 
 pub struct Router {
-  rules : HashMap<String, fn(RouterInput)->RouterOutput>,
+  rules: HashMap<String, fn(RouterInput, Arc<ProcessorData>)->RouterOutput>,
 }
 
 impl Router {
@@ -33,14 +35,14 @@ impl Router {
     Router{rules: HashMap::new()}
   }
 
-  pub fn add_rule(&mut self, route : &str, processor : fn(RouterInput)->RouterOutput) {
+  pub fn add_rule(&mut self, route : &str, processor : fn(RouterInput, Arc<ProcessorData>)->RouterOutput) {
     self.rules.insert(route.to_string(), processor);
   }
 
-  pub fn route(&self, route : &str, router_input: RouterInput) -> Option<RouterOutput> {
+  pub fn route(&self, route : &str, router_input: RouterInput, processor_data: Arc<ProcessorData>) -> Option<RouterOutput> {
     let processor_opt = self.rules.get(route);
     match processor_opt {
-      Some(processor) => { Some(processor(router_input)) },
+      Some(processor) => { Some(processor(router_input, processor_data)) },
       None => {
           println!("Request for route which doesn't exist.");
           None

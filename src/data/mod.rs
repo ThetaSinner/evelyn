@@ -19,6 +19,10 @@
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
+use bson;
+
+use model::UserModel;
+
 pub struct MongoClient {
     client: Client
 }
@@ -33,9 +37,16 @@ impl MongoClient {
         }
     }
 
-    pub fn test(&mut self) {
-        let collection = self.client.db("test").collection("testc");
+    pub fn insert_user(&mut self, user_model: &UserModel) {
+        let collection = self.client.db("eveyln2").collection("user");
 
-        collection.insert_one(doc!{"test key" => "test value"}, None).unwrap();
+        let bson_user_model = bson::to_bson(&user_model).unwrap();
+
+        if let bson::Bson::Document(document) = bson_user_model {
+            println!("Insert some data into mongo {:?}", document);
+          collection.insert_one(document, None).unwrap();  // Insert into a MongoDB collection
+        } else {
+          println!("Error converting the BSON object into a MongoDB document");
+        }
     }
 }

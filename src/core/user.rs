@@ -14,44 +14,16 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)]
-extern crate bson;
-extern crate mongodb;
-
-#[macro_use]
-extern crate serde_json;
-
-#[macro_use]
-extern crate serde_derive;
-
 use std::sync::Arc;
 use std::sync::Mutex;
 
-mod server;
-mod data;
-mod model;
-mod processing;
-mod core;
-
-use serde_json::Value;
-
+use model::{CreateUserModel, UserModel};
 use processing::ProcessorData;
-use server::http::HttpServer;
-use server::routing::{Router, RouterInput, RouterOutput};
 
-fn main() {
-  println!("Starting...");
+pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) {
+  let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
 
-  let mut client = data::MongoClient::new().unwrap();
-  // the above doesn't handle errors, but the code below prevents a lot of warnings!! :)
-  // client.test();
-
-  let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client))};
-
-  let mut router = Router::new();
-  processing::load_processors(&mut router);
-
-  let http_server = HttpServer::new(router, processor_data);
-  println!("Ready");
-  http_server.start();
+  let ds = processor_data.data_store.clone();
+  let mut data_store = ds.lock().unwrap();
+  data_store.insert_user(&user_model);
 }
