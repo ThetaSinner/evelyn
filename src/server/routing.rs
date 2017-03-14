@@ -29,11 +29,11 @@ impl Router {
     self.rules.insert(route.to_string(), processor);
   }
 
-  pub fn route(self, route : &str) {
+  pub fn route(&self, route : &str) {
     let processor_opt = self.rules.get(route);
     match processor_opt { // x: Option<T>
       Some(processor) => { processor() },
-      None => {}
+      None => println!("Request for route which doesn't exist.")
     }
   }
 }

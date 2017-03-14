@@ -16,9 +16,7 @@
 
 // use mongodb::{Client, ThreadedClient};
 
-use mongodb::{Client, ClientOptions, ThreadedClient};
-use mongodb::common::{ReadMode, ReadPreference};
-use mongodb::cursor::Cursor;
+use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
 pub struct MongoClient {

@@ -26,6 +26,7 @@ mod data;
 
 use serde_json::Value;
 
+use server::http::HttpServer;
 use server::routing::Router;
 
 fn test_processor() {
@@ -36,17 +37,17 @@ fn main() {
   println!("Hello, World!");
 
   let mut client = data::MongoClient::new().unwrap();
+  // the above doesn't handle errors, but the code below prevents a lot of warnings!! :)
   // client.test();
-
-  let mut router = Router::new();
-  router.add_rule("hello/world", test_processor);
-
-  router.route("hello/world");
 
   let data = r#"{"name":"John Doe", "age": 43}"#;
   let v: Value = serde_json::from_str(data).unwrap();
   // let () = v["name"].as_str().unwrap();
   println!("Hello, I'm {}, and I'm {} years old {}", v["name"].as_str().unwrap(), v["age"], "some data");
 
-  server::start();
+  let mut router = Router::new();
+  router.add_rule("/hello/world", test_processor);
+
+  let http_server = HttpServer::new(router);
+  http_server.start();
 }
