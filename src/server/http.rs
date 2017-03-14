@@ -20,7 +20,7 @@ use std::str;
 use std::thread;
 use std::sync::Arc;
 
-use server::routing::Router;
+use server::routing::{Router, RouterInput};
 
 pub struct HttpServer {
   router: Arc<Router>,
@@ -91,11 +91,5 @@ fn process_request(request: &str, router: Arc<Router>) {
   let top_line = header[0];
   let top_line_values: Vec<_> = top_line.split(' ').collect();
 
-  router.route(top_line_values[1]);
-
-  for header_line in header {
-      println!("{}", header_line);
-  }
-
-  println!("\n\nbody: {}", body);
+  router.route(top_line_values[1], RouterInput{request_body: body});
 }

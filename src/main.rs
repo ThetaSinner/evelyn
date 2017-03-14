@@ -21,16 +21,37 @@ extern crate mongodb;
 #[macro_use]
 extern crate serde_json;
 
+#[macro_use]
+extern crate serde_derive;
+
 mod server;
 mod data;
 
 use serde_json::Value;
 
 use server::http::HttpServer;
-use server::routing::Router;
+use server::routing::{Router, RouterInput, RouterOutput};
 
-fn test_processor() {
+#[derive(Serialize, Deserialize)]
+struct TestModel {
+    name: Option<String>,
+    hello: String,
+}
+
+fn test_processor(router_input: RouterInput) -> RouterOutput {
   println!("Test processor running");
+
+  let request_model_de: Result<TestModel,_> = serde_json::from_str(&router_input.request_body);
+  match request_model_de {
+    Ok(request_model) => {
+      println!("Test processor got : {}, {:?}", request_model.hello, request_model.name);
+    },
+    Err(e) => {
+      println!("Bad payload");
+    }
+  }
+
+  RouterOutput{response_body: "not implemented".to_string()}
 }
 
 fn main() {

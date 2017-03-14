@@ -5,6 +5,9 @@ version = "0.0.1"
 authors = ["Gregory Jensen <greatdjonfire@hotmail.co.uk>"]
 
 [dependencies]
+serde = "0.9.11"
+serde_derive = "0.9.11"
 serde_json = "0.9.9"
+
 bson = "0.4.3"
 mongodb = "0.2.2"

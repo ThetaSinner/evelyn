@@ -16,8 +16,16 @@
 
 use std::collections::HashMap;
 
+pub struct RouterInput {
+  pub request_body: String
+}
+
+pub struct RouterOutput {
+  pub response_body: String
+}
+
 pub struct Router {
-  rules : HashMap<String, fn()>,
+  rules : HashMap<String, fn(RouterInput)->RouterOutput>,
 }
 
 impl Router {
@@ -25,15 +33,18 @@ impl Router {
     Router{rules: HashMap::new()}
   }
 
-  pub fn add_rule(&mut self, route : &str, processor : fn()) {
+  pub fn add_rule(&mut self, route : &str, processor : fn(RouterInput)->RouterOutput) {
     self.rules.insert(route.to_string(), processor);
   }
 
-  pub fn route(&self, route : &str) {
+  pub fn route(&self, route : &str, router_input: RouterInput) -> Option<RouterOutput> {
     let processor_opt = self.rules.get(route);
-    match processor_opt { // x: Option<T>
-      Some(processor) => { processor() },
-      None => println!("Request for route which doesn't exist.")
+    match processor_opt {
+      Some(processor) => { Some(processor(router_input)) },
+      None => {
+          println!("Request for route which doesn't exist.");
+          None
+      }
     }
   }
 }
