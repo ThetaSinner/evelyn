@@ -33,6 +33,15 @@ pub struct CreateUserModel {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct LogonUserModel {
+    #[serde(rename="EmailAddress")]
+    pub email_address: String,
+
+    #[serde(rename="Password")]
+    pub password: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct UserModel {
   #[serde(rename="userName")]
   pub user_name: String,

@@ -16,7 +16,7 @@
 
 use std::sync::Arc;
 
-use model::{CreateUserModel, UserModel};
+use model::{CreateUserModel, LogonUserModel, UserModel};
 use processing::ProcessorData;
 
 pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) {
@@ -25,4 +25,23 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) {
   let ds = processor_data.data_store.clone();
   let mut data_store = ds.lock().unwrap();
   data_store.insert_user(&user_model);
+}
+
+pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Option<String> {
+  let user: Option<UserModel>;
+  {
+      let ds = processor_data.data_store.clone();
+      let mut data_store = ds.lock().unwrap();
+      user = data_store.find_user(model.email_address);
+  }
+
+  let token = String::from("default token");
+  if user.is_some() {
+      let user = user.unwrap();
+      if user.password == model.password {
+          // token =
+      }
+  }
+
+  Some(token)
 }

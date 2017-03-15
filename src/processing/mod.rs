@@ -29,6 +29,7 @@ pub struct ProcessorData {
 
 pub fn load_processors(router: &mut Router) {
   router.add_rule("/user/create", create_user_processor);
+  router.add_rule("/user/logon", logon_user_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -42,5 +43,26 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
     }
   }
 
-  RouterOutput{response_body: "not implemented".to_string()}
+  RouterOutput{response_body: "".to_string()}
+}
+
+fn logon_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+    let request_model_de: Result<model::LogonUserModel,_> = serde_json::from_str(&router_input.request_body);
+    let mut token = None;
+    match request_model_de {
+      Ok(request_model) => {
+        token = user::logon_user(request_model, processor_data);
+      },
+      Err(e) => {
+        println!("Bad payload, {}", e);
+      }
+    }
+
+    if token.is_some() {
+        RouterOutput{response_body: token.unwrap()}
+    }
+    else {
+        // This should really output json
+        RouterOutput{response_body: String::from("could not authorise")}
+    }
 }

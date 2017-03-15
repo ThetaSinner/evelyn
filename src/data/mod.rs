@@ -46,4 +46,13 @@ impl MongoClient {
           println!("Error converting the BSON object into a MongoDB document");
         }
     }
+
+    pub fn find_user(&mut self, email_address: String) -> Option<UserModel> {
+        let collection = self.client.db("evelyn").collection("user");
+
+        let query = doc!{"emailAddress" => email_address};
+        let result = collection.find_one(Some(query), None).unwrap().unwrap();
+        
+        Some(bson::from_bson(bson::Bson::Document(result)).unwrap())
+    }
 }
