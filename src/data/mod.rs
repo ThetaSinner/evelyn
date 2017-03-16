@@ -41,7 +41,10 @@ impl MongoClient {
         let bson_user_model = bson::to_bson(&user_model).unwrap();
 
         if let bson::Bson::Document(document) = bson_user_model {
-          collection.insert_one(document, None).unwrap();
+          match collection.insert_one(document, None) {
+              Ok(_) => {},
+              Err(e) => println!("Database Error: Insert error {}", e)
+          }
         } else {
           println!("Error converting the BSON object into a MongoDB document");
         }
@@ -52,7 +55,7 @@ impl MongoClient {
 
         let query = doc!{"emailAddress" => email_address};
         let result = collection.find_one(Some(query), None).unwrap().unwrap();
-        
+
         Some(bson::from_bson(bson::Bson::Document(result)).unwrap())
     }
 }

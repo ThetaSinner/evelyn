@@ -1,0 +1,1 @@
+jQueryForFoundation(document).foundation()

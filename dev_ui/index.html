@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Evelyn Dev UI</title>
+
+    <link type="text/css" rel="stylesheet" href="foundation/css/foundation.css" />
+    <link type="text/css" rel="stylesheet" href="foundation/css/app.css" />
+
+    <script src="foundation/js/vendor/jquery.js" text="text/javascript"></script>
+    <script text="text/javascript">
+      var jQueryForFoundation = jQuery.noConflict();
+    </script>
+    <script src="foundation/js/vendor/what-input.js" text="text/javascript"></script>
+    <script src="foundation/js/vendor/foundation.js" text="text/javascript"></script>
+    <script src="foundation/js/app.js" text="text/javascript"></script>
+
+    <script src="./jquery-3.1.1.js" type="text/javascript"></script>
+
+    <script>
+      function add_submit_hook(form_id) {
+        $(form_id).on("submit", function (event) {
+          event.preventDefault();
+
+          var form_selector = $(this);
+
+          var url = "http://localhost:8080"+form_selector.attr("action");
+          var form_data = form_selector.serializeArray();
+
+          var form_submit_data = {};
+          for (var i = 0; i < form_data.length; i++) {
+            form_submit_data[form_data[i].name] = form_data[i].value;
+          }
+
+          $.post(url, JSON.stringify(form_submit_data), function (response) {
+            alert(response);
+          }, "json");
+        });
+      }
+
+      $(document).ready(function () {
+          add_submit_hook("#form_create_user");
+      });
+    </script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-6 columns">
+        <div class=tile-container>
+          <h5>Create user</h5>
+          <form id="form_create_user" action="/user/create" method="post">
+            <label class="tile-label">User Name
+              <input name="UserName" type="text" placeholder="User Name">
+            </label>
+            <label class="tile-label">E-Mail Address
+              <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+            </label>
+            <label class="tile-label">Password
+              <input name="Password" type="text" placeholder="E-Mail Address">
+            </label>
+
+            <input type="submit" class="button" />
+          </form>
+        </div>
+      </div>
+      <div class="large-6 columns">
+        <div class="tile-container">
+          <h5>Logon user</h5>
+          <form id="form_logon_user">
+            <label class="tile-label">E-Mail Address
+              <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+            </label>
+            <label class="tile-label">Password
+              <input name="Password" type="text" placeholder="E-Mail Address">
+            </label>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
