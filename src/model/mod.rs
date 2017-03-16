@@ -52,3 +52,8 @@ pub struct UserModel {
   #[serde(rename="password")]
   pub password: String,
 }
+
+#[derive(Debug, RustcEncodable, RustcDecodable)]
+pub struct SessionTokenModel {
+    pub user_id: String,
+}

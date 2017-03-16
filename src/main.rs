@@ -24,6 +24,9 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
+extern crate jsonwebtoken as jwt;
+extern crate rustc_serialize;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -42,7 +45,9 @@ fn main() {
 
   let client = data::MongoClient::new().unwrap();
 
-  let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client))};
+  let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
+
+  let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client)), token_service: token_service};
 
   let mut router = Router::new();
   processing::load_processors(&mut router);

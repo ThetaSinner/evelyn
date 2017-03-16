@@ -35,11 +35,11 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
       user = data_store.find_user(model.email_address);
   }
 
-  let token = String::from("default token");
+  let mut token = String::from("default token");
   if user.is_some() {
       let user = user.unwrap();
       if user.password == model.password {
-          // token =
+          token = processor_data.token_service.create_session_token(&user);
       }
   }
 

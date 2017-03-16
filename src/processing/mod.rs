@@ -22,9 +22,11 @@ use server::routing::{Router, RouterInput, RouterOutput};
 use model;
 use data::MongoClient;
 use core::user;
+use core::token_service::TokenService;
 
 pub struct ProcessorData {
   pub data_store: Arc<Mutex<MongoClient>>,
+  pub token_service: TokenService,
 }
 
 pub fn load_processors(router: &mut Router) {
