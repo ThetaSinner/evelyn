@@ -65,9 +65,12 @@ fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<Proc
 }
 
 fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: String) {
-  // Write the header and the html body
-  //let response = "HTTP/1.1 200 OK\r\n\r\n<html><body>Hello, World!</body></html>";
-  writer.write_all(process_result.as_bytes()).unwrap();
+  let response = format!("{}{}{}\r\n\r\n{}",
+    "HTTP/1.1 200 OK",
+    "\r\nContent-Type: application/json",
+    "\r\nAccess-Control-Allow-Origin: *",
+    process_result);
+  writer.write_all(response.as_bytes()).unwrap();
 }
 
 fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<ProcessorData>) -> String {

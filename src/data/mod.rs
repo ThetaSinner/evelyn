@@ -50,7 +50,7 @@ impl MongoClient {
         }
     }
 
-    pub fn find_user(&mut self, email_address: String) -> Option<UserModel> {
+    pub fn find_user(&mut self, email_address: &String) -> Option<UserModel> {
         let collection = self.client.db("evelyn").collection("user");
 
         let query = doc!{"emailAddress" => email_address};

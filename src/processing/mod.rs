@@ -36,16 +36,22 @@ pub fn load_processors(router: &mut Router) {
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
   let request_model_de: Result<model::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
+  let mut result: model::CreateUserResponseModel = model::CreateUserResponseModel{
+      error: Some(model::ErrorModel{
+          error_code: "_".to_owned(),
+          error_message: "Create user processor failed".to_owned()
+      })
+  };
   match request_model_de {
     Ok(request_model) => {
-      user::create_user(request_model, processor_data);
+      result = user::create_user(request_model, processor_data);
     },
     Err(e) => {
       println!("Bad payload, {}", e);
     }
   }
 
-  RouterOutput{response_body: "".to_string()}
+  RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
 }
 
 fn logon_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {

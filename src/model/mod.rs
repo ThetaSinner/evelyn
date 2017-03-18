@@ -21,6 +21,15 @@ pub struct TestModel {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct ErrorModel {
+    #[serde(rename="ErrorCode")]
+    pub error_code: String,
+
+    #[serde(rename="ErrorMessage")]
+    pub error_message: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct CreateUserModel {
     #[serde(rename="UserName")]
     pub user_name: String,
@@ -30,6 +39,12 @@ pub struct CreateUserModel {
 
     #[serde(rename="Password")]
     pub password: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CreateUserResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]

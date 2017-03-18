@@ -18,13 +18,27 @@ use std::sync::Arc;
 
 use model::{CreateUserModel, LogonUserModel, UserModel};
 use processing::ProcessorData;
+use model;
 
-pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) {
+pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> model::CreateUserResponseModel {
   let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
 
   let ds = processor_data.data_store.clone();
   let mut data_store = ds.lock().unwrap();
-  data_store.insert_user(&user_model);
+
+  let user = data_store.find_user(&user_model.email_address);
+  if user.is_some() {
+    model::CreateUserResponseModel{
+        error: Some(model::ErrorModel{
+            error_code: "100001".to_owned(),
+            error_message: "User already exists".to_owned()
+        })
+    }
+  }
+  else {
+    data_store.insert_user(&user_model);
+    model::CreateUserResponseModel{error:None}
+  }
 }
 
 pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Option<String> {
@@ -32,7 +46,7 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
   {
       let ds = processor_data.data_store.clone();
       let mut data_store = ds.lock().unwrap();
-      user = data_store.find_user(model.email_address);
+      user = data_store.find_user(&model.email_address);
   }
 
   let mut token = String::from("default token");
