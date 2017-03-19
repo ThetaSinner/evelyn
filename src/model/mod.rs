@@ -57,6 +57,15 @@ pub struct LogonUserModel {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct LogonUserResponseModel {
+    #[serde(rename="Token")]
+    pub token: Option<String>,
+
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct UserModel {
   #[serde(rename="userName")]
   pub user_name: String,

@@ -54,8 +54,21 @@ impl MongoClient {
         let collection = self.client.db("evelyn").collection("user");
 
         let query = doc!{"emailAddress" => email_address};
-        let result = collection.find_one(Some(query), None).unwrap().unwrap();
+        let result = collection.find_one(Some(query), None);
 
-        Some(bson::from_bson(bson::Bson::Document(result)).unwrap())
+        match result {
+            Ok(r) => {
+                if r.is_some() {
+                    Some(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
+                }
+                else {
+                    None
+                }
+            },
+            Err(e) => {
+                println!("Failed to find user {}", e);
+                None
+            }
+        }
     }
 }

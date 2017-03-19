@@ -41,7 +41,7 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
   }
 }
 
-pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Option<String> {
+pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> model::LogonUserResponseModel {
   let user: Option<UserModel>;
   {
       let ds = processor_data.data_store.clone();
@@ -49,13 +49,26 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
       user = data_store.find_user(&model.email_address);
   }
 
-  let mut token = String::from("default token");
+  let mut response = None;
   if user.is_some() {
       let user = user.unwrap();
       if user.password == model.password {
-          token = processor_data.token_service.create_session_token(&user);
+          response = Some(model::LogonUserResponseModel {
+              token: Some(processor_data.token_service.create_session_token(&user)),
+              error: None
+          });
       }
   }
 
-  Some(token)
+  if !response.is_some() {
+      response = Some(model::LogonUserResponseModel {
+          token: None,
+          error: Some(model::ErrorModel {
+              error_code: "101001".to_owned(),
+              error_message: "Invalid logon".to_owned()
+          })
+      });
+  }
+
+  response.unwrap()
 }

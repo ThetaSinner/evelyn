@@ -56,21 +56,24 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
 
 fn logon_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
     let request_model_de: Result<model::LogonUserModel,_> = serde_json::from_str(&router_input.request_body);
-    let mut token = None;
+
     match request_model_de {
       Ok(request_model) => {
-        token = user::logon_user(request_model, processor_data);
+        let response = user::logon_user(request_model, processor_data);
+        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
       },
       Err(e) => {
         println!("Bad payload, {}", e);
-      }
-    }
 
-    if token.is_some() {
-        RouterOutput{response_body: token.unwrap()}
-    }
-    else {
-        // This should really output json
-        RouterOutput{response_body: String::from("could not authorise")}
+        let response = model::LogonUserResponseModel {
+            token: None,
+            error: Some(model::ErrorModel {
+                error_code: "101002".to_owned(),
+                error_message: "Failed to process user logon".to_owned()
+            })
+        };
+
+        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+      }
     }
 }
