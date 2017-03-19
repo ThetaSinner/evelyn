@@ -77,6 +77,42 @@ pub struct UserModel {
   pub password: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct CreateSimpleTaskModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="Title")]
+    pub title: String,
+
+    #[serde(rename="Description")]
+    pub description: String,
+
+    #[serde(rename="DueDate")]
+    pub due_date: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CreateSimpleTaskResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SimpleTaskModel {
+    #[serde(rename="UserId")]
+    pub user_id: String,
+
+    #[serde(rename="Title")]
+    pub title: String,
+
+    #[serde(rename="Description")]
+    pub description: String,
+
+    #[serde(rename="DueDate")]
+    pub due_date: String,
+}
+
 #[derive(Debug, RustcEncodable, RustcDecodable)]
 pub struct SessionTokenModel {
     pub user_id: String,

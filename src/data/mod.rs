@@ -20,6 +20,7 @@ use mongodb::db::ThreadedDatabase;
 use bson;
 
 use model::UserModel;
+use model;
 
 pub struct MongoClient {
     client: Client
@@ -69,6 +70,25 @@ impl MongoClient {
                 println!("Failed to find user {}", e);
                 None
             }
+        }
+    }
+
+    pub fn insert_simple_task(&mut self, simple_task_model: &model::SimpleTaskModel) -> Option<String> {
+        let collection = self.client.db("evelyn").collection("simpletask");
+
+        let bson_simple_task_model = bson::to_bson(&simple_task_model).unwrap();
+
+        if let bson::Bson::Document(document) = bson_simple_task_model {
+          match collection.insert_one(document, None) {
+              Ok(_) => {None},
+              Err(e) => {
+                  println!("Database Error: Insert error {}", e);
+                  Some(String::from("Failed to insert simple task"))
+              }
+          }
+        } else {
+          println!("Error converting the BSON object into a MongoDB document");
+          Some(String::from("Error converting the BSON object into a MongoDB document"))
         }
     }
 }

@@ -16,3 +16,4 @@
 
 pub mod user;
 pub mod token_service;
+pub mod simple_task;

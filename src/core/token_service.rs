@@ -39,7 +39,7 @@ impl TokenService {
         }
     }
 
-    pub fn extract_session_token(&self, token: String) -> SessionTokenModel {
+    pub fn extract_session_token(&self, token: &String) -> SessionTokenModel {
         let token_data = match decode::<SessionTokenModel>(&token, self.private_key.as_ref(), Algorithm::HS256) {
             Ok(c) => c,
             Err(err) => match err {
