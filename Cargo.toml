@@ -14,3 +14,6 @@ mongodb = "0.2.2"
 
 jsonwebtoken = "1"
 rustc-serialize = "0.3"
+
+[dev-dependencies]
+hyper = "0.10.5"
