@@ -19,6 +19,8 @@ use mongodb::db::ThreadedDatabase;
 
 use bson;
 
+use std::collections::LinkedList;
+
 use model::UserModel;
 use model;
 
@@ -89,6 +91,35 @@ impl MongoClient {
         } else {
           println!("Error converting the BSON object into a MongoDB document");
           Some(String::from("Error converting the BSON object into a MongoDB document"))
+        }
+    }
+
+    pub fn lookup_simple_tasks(&mut self, simple_task_lookup_model: &model::SimpleTaskLookupModel) -> Option<Vec<model::SimpleTaskModel>> {
+        let collection = self.client.db("evelyn").collection("simpletask");
+
+        let ref user_id = simple_task_lookup_model.user_id;
+        let query = doc!{"emailAddress" => user_id};
+        let cursor = collection.find(Some(query), None);
+
+        match cursor {
+            Ok(c) => {
+                let docs: Vec<model::SimpleTaskModel> = c
+                    .map(|x| {
+                        match x {
+                            Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                            Err(e) => {
+                                println!("Database error in lookup simple tasks {}", e);
+                                panic!()
+                            }
+                        }
+                    })
+                    .collect();
+                Some(docs)
+            },
+            Err(e) => {
+                println!("Failed to lookup simple tasks {}", e);
+                None
+            }
         }
     }
 }

@@ -47,3 +47,31 @@ pub fn create_simple_task(model: model::CreateSimpleTaskModel, processor_data: A
     }
   }
 }
+
+pub fn lookup_simple_tasks(model: model::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> model::LookupSimpleTaskResponseModel {
+  let session_token_model = processor_data.token_service.extract_session_token(&model.token);
+
+  let simple_task_lookup_model = model::SimpleTaskLookupModel {
+    user_id: session_token_model.user_id,
+  };
+
+  let ds = processor_data.data_store.clone();
+  let mut data_store = ds.lock().unwrap();
+
+  let tasks = data_store.lookup_simple_tasks(&simple_task_lookup_model);
+  if tasks.is_some() {
+      model::LookupSimpleTaskResponseModel {
+          tasks: tasks.unwrap(),
+          error: None,
+      }
+  }
+  else {
+      model::LookupSimpleTaskResponseModel {
+          error: Some(model::ErrorModel{
+              error_code: "103001".to_owned(),
+              error_message: "Failed to lookup simple tasks".to_owned()
+          }),
+          tasks: Vec::new()
+      }
+  }
+}

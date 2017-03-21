@@ -113,6 +113,27 @@ pub struct SimpleTaskModel {
     pub due_date: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct LookupSimpleTaskRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupSimpleTaskResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+
+    #[serde(rename="Tasks")]
+    pub tasks: Vec<SimpleTaskModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SimpleTaskLookupModel {
+    #[serde(rename="UserId")]
+    pub user_id: String,
+}
+
 #[derive(Debug, RustcEncodable, RustcDecodable)]
 pub struct SessionTokenModel {
     pub user_id: String,

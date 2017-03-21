@@ -34,6 +34,7 @@ pub fn load_processors(router: &mut Router) {
   router.add_rule("/user/logon", logon_user_processor);
 
   router.add_rule("/simpletask/create", create_simple_task_processor);
+  router.add_rule("/simpletask/lookup", lookup_simple_task_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -86,6 +87,29 @@ fn create_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
     match request_model_de {
       Ok(request_model) => {
         let response = simple_task::create_simple_task(request_model, processor_data);
+        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+      },
+      Err(e) => {
+        println!("Bad payload, {}", e);
+
+        let response = model::CreateSimpleTaskResponseModel {
+            error: Some(model::ErrorModel {
+                error_code: "102001".to_owned(),
+                error_message: "Failed to process create simple task".to_owned()
+            })
+        };
+
+        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+      }
+    }
+}
+
+fn lookup_simple_task_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+    let request_model_de: Result<model::LookupSimpleTaskRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+    match request_model_de {
+      Ok(request_model) => {
+        let response = simple_task::lookup_simple_tasks(request_model, processor_data);
         RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
       },
       Err(e) => {
