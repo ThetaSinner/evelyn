@@ -17,12 +17,41 @@
     <script src="foundation/js/vendor/foundation.js" text="text/javascript"></script>
     <script src="foundation/js/app.js" text="text/javascript"></script>
 
+    <script src="./underscore.js" type="text/javascript"></script>
+
     <script src="./jquery-3.1.1.js" type="text/javascript"></script>
 
+    <script id="simple_task_template_definition" type="text/template">
+      <div class="callout">
+        <h5><%= data.title %></h5>
+        <p><%= data.description %></p>
+        <p><%= data.dueDate %></p>
+      </div>
+    </script>
+
     <script>
+      var templates = {};
+
+      function render_simple_task(data) {
+        if (!templates.simple_task_template) {
+          templates.simple_task_template = _.template($("#simple_task_template_definition").text(), {variable:"data"});
+        }
+
+        return templates.simple_task_template(data);
+      }
+
       function process_response(response) {
         if (response.hasOwnProperty("Token") && response.Token !== null) {
           localStorage.token = response.Token;
+        }
+
+        if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
+          var target = $("#target_for_simple_tasks");
+          target.empty();
+          var tasks = response.SimpleTasks;
+          for (var i = 0; i < tasks.length; i++) {
+            target.append(render_simple_task(tasks[i]));
+          }
         }
       }
 
@@ -81,6 +110,7 @@
           add_submit_hook("#form_create_user");
           add_submit_hook("#form_logon_user");
           add_submit_hook("#form_create_simple_task");
+          add_submit_hook("#form_lookup_simple_tasks");
       });
     </script>
   </head>
@@ -143,6 +173,19 @@
 
             <input type="submit" class="button" value="Create" />
           </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="tile-container">
+          <h5>Lookup simple tasks</h5>
+          <form id="form_lookup_simple_tasks" action="/simpletask/lookup", method="post">
+            <input type="submit" class="button" value="Lookup" />
+          </form>
+
+          <div id="target_for_simple_tasks"></div>
         </div>
       </div>
     </div>

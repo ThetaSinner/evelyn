@@ -124,7 +124,7 @@ pub struct LookupSimpleTaskResponseModel {
     #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 
-    #[serde(rename="Tasks")]
+    #[serde(rename="SimpleTasks")]
     pub tasks: Vec<SimpleTaskModel>,
 }
 
