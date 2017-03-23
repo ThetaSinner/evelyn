@@ -100,16 +100,16 @@ pub struct CreateSimpleTaskResponseModel {
 
 #[derive(Serialize, Deserialize)]
 pub struct SimpleTaskModel {
-    #[serde(rename="UserId")]
+    #[serde(rename="userId")]
     pub user_id: String,
 
-    #[serde(rename="Title")]
+    #[serde(rename="title")]
     pub title: String,
 
-    #[serde(rename="Description")]
+    #[serde(rename="description")]
     pub description: String,
 
-    #[serde(rename="DueDate")]
+    #[serde(rename="dueDate")]
     pub due_date: String,
 }
 
