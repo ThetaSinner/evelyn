@@ -1,2 +1,4 @@
 *.lock
 target
+node_modules
+.sass-cache

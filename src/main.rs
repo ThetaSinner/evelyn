@@ -18,6 +18,30 @@ extern crate evelyn;
 
 use evelyn::hello_evelyn;
 
+extern crate chrono;
+
+use chrono::prelude::*;
+
+// temp
+// use std::{thread, time};
+
 fn main() {
   hello_evelyn();
+
+  // let utc_time = UTC::now();
+  //
+  // let two_seconds = time::Duration::from_millis(2000);
+  // thread::sleep(two_seconds);
+  //
+  // let utc_time_now = UTC::now();
+  //
+  // if (utc_time_now > utc_time) {
+  //     println!("can compare!");
+  // }
+  //
+  // if (utc_time > utc_time_now) {
+  //     println!("but it's not a good idea");
+  // }
+  //
+  // println!("{:?}, {:?}", utc_time, utc_time_now);
 }

@@ -383,7 +383,366 @@
   function hyphenate(str) {
     return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
   }
-}(jQueryForFoundation);
+}(jQuery);
+'use strict';
+
+!function ($) {
+
+  Foundation.Box = {
+    ImNotTouchingYou: ImNotTouchingYou,
+    GetDimensions: GetDimensions,
+    GetOffsets: GetOffsets
+  };
+
+  /**
+   * Compares the dimensions of an element to a container and determines collision events with container.
+   * @function
+   * @param {jQuery} element - jQuery object to test for collisions.
+   * @param {jQuery} parent - jQuery object to use as bounding container.
+   * @param {Boolean} lrOnly - set to true to check left and right values only.
+   * @param {Boolean} tbOnly - set to true to check top and bottom values only.
+   * @default if no parent object passed, detects collisions with `window`.
+   * @returns {Boolean} - true if collision free, false if a collision in any direction.
+   */
+  function ImNotTouchingYou(element, parent, lrOnly, tbOnly) {
+    var eleDims = GetDimensions(element),
+        top,
+        bottom,
+        left,
+        right;
+
+    if (parent) {
+      var parDims = GetDimensions(parent);
+
+      bottom = eleDims.offset.top + eleDims.height <= parDims.height + parDims.offset.top;
+      top = eleDims.offset.top >= parDims.offset.top;
+      left = eleDims.offset.left >= parDims.offset.left;
+      right = eleDims.offset.left + eleDims.width <= parDims.width + parDims.offset.left;
+    } else {
+      bottom = eleDims.offset.top + eleDims.height <= eleDims.windowDims.height + eleDims.windowDims.offset.top;
+      top = eleDims.offset.top >= eleDims.windowDims.offset.top;
+      left = eleDims.offset.left >= eleDims.windowDims.offset.left;
+      right = eleDims.offset.left + eleDims.width <= eleDims.windowDims.width;
+    }
+
+    var allDirs = [bottom, top, left, right];
+
+    if (lrOnly) {
+      return left === right === true;
+    }
+
+    if (tbOnly) {
+      return top === bottom === true;
+    }
+
+    return allDirs.indexOf(false) === -1;
+  };
+
+  /**
+   * Uses native methods to return an object of dimension values.
+   * @function
+   * @param {jQuery || HTML} element - jQuery object or DOM element for which to get the dimensions. Can be any element other that document or window.
+   * @returns {Object} - nested object of integer pixel values
+   * TODO - if element is window, return only those values.
+   */
+  function GetDimensions(elem, test) {
+    elem = elem.length ? elem[0] : elem;
+
+    if (elem === window || elem === document) {
+      throw new Error("I'm sorry, Dave. I'm afraid I can't do that.");
+    }
+
+    var rect = elem.getBoundingClientRect(),
+        parRect = elem.parentNode.getBoundingClientRect(),
+        winRect = document.body.getBoundingClientRect(),
+        winY = window.pageYOffset,
+        winX = window.pageXOffset;
+
+    return {
+      width: rect.width,
+      height: rect.height,
+      offset: {
+        top: rect.top + winY,
+        left: rect.left + winX
+      },
+      parentDims: {
+        width: parRect.width,
+        height: parRect.height,
+        offset: {
+          top: parRect.top + winY,
+          left: parRect.left + winX
+        }
+      },
+      windowDims: {
+        width: winRect.width,
+        height: winRect.height,
+        offset: {
+          top: winY,
+          left: winX
+        }
+      }
+    };
+  }
+
+  /**
+   * Returns an object of top and left integer pixel values for dynamically rendered elements,
+   * such as: Tooltip, Reveal, and Dropdown
+   * @function
+   * @param {jQuery} element - jQuery object for the element being positioned.
+   * @param {jQuery} anchor - jQuery object for the element's anchor point.
+   * @param {String} position - a string relating to the desired position of the element, relative to it's anchor
+   * @param {Number} vOffset - integer pixel value of desired vertical separation between anchor and element.
+   * @param {Number} hOffset - integer pixel value of desired horizontal separation between anchor and element.
+   * @param {Boolean} isOverflow - if a collision event is detected, sets to true to default the element to full width - any desired offset.
+   * TODO alter/rewrite to work with `em` values as well/instead of pixels
+   */
+  function GetOffsets(element, anchor, position, vOffset, hOffset, isOverflow) {
+    var $eleDims = GetDimensions(element),
+        $anchorDims = anchor ? GetDimensions(anchor) : null;
+
+    switch (position) {
+      case 'top':
+        return {
+          left: Foundation.rtl() ? $anchorDims.offset.left - $eleDims.width + $anchorDims.width : $anchorDims.offset.left,
+          top: $anchorDims.offset.top - ($eleDims.height + vOffset)
+        };
+        break;
+      case 'left':
+        return {
+          left: $anchorDims.offset.left - ($eleDims.width + hOffset),
+          top: $anchorDims.offset.top
+        };
+        break;
+      case 'right':
+        return {
+          left: $anchorDims.offset.left + $anchorDims.width + hOffset,
+          top: $anchorDims.offset.top
+        };
+        break;
+      case 'center top':
+        return {
+          left: $anchorDims.offset.left + $anchorDims.width / 2 - $eleDims.width / 2,
+          top: $anchorDims.offset.top - ($eleDims.height + vOffset)
+        };
+        break;
+      case 'center bottom':
+        return {
+          left: isOverflow ? hOffset : $anchorDims.offset.left + $anchorDims.width / 2 - $eleDims.width / 2,
+          top: $anchorDims.offset.top + $anchorDims.height + vOffset
+        };
+        break;
+      case 'center left':
+        return {
+          left: $anchorDims.offset.left - ($eleDims.width + hOffset),
+          top: $anchorDims.offset.top + $anchorDims.height / 2 - $eleDims.height / 2
+        };
+        break;
+      case 'center right':
+        return {
+          left: $anchorDims.offset.left + $anchorDims.width + hOffset + 1,
+          top: $anchorDims.offset.top + $anchorDims.height / 2 - $eleDims.height / 2
+        };
+        break;
+      case 'center':
+        return {
+          left: $eleDims.windowDims.offset.left + $eleDims.windowDims.width / 2 - $eleDims.width / 2,
+          top: $eleDims.windowDims.offset.top + $eleDims.windowDims.height / 2 - $eleDims.height / 2
+        };
+        break;
+      case 'reveal':
+        return {
+          left: ($eleDims.windowDims.width - $eleDims.width) / 2,
+          top: $eleDims.windowDims.offset.top + vOffset
+        };
+      case 'reveal full':
+        return {
+          left: $eleDims.windowDims.offset.left,
+          top: $eleDims.windowDims.offset.top
+        };
+        break;
+      case 'left bottom':
+        return {
+          left: $anchorDims.offset.left,
+          top: $anchorDims.offset.top + $anchorDims.height + vOffset
+        };
+        break;
+      case 'right bottom':
+        return {
+          left: $anchorDims.offset.left + $anchorDims.width + hOffset - $eleDims.width,
+          top: $anchorDims.offset.top + $anchorDims.height + vOffset
+        };
+        break;
+      default:
+        return {
+          left: Foundation.rtl() ? $anchorDims.offset.left - $eleDims.width + $anchorDims.width : $anchorDims.offset.left + hOffset,
+          top: $anchorDims.offset.top + $anchorDims.height + vOffset
+        };
+    }
+  }
+}(jQuery);
+/*******************************************
+ *                                         *
+ * This util was created by Marius Olbertz *
+ * Please thank Marius on GitHub /owlbertz *
+ * or the web http://www.mariusolbertz.de/ *
+ *                                         *
+ ******************************************/
+
+'use strict';
+
+!function ($) {
+
+  var keyCodes = {
+    9: 'TAB',
+    13: 'ENTER',
+    27: 'ESCAPE',
+    32: 'SPACE',
+    37: 'ARROW_LEFT',
+    38: 'ARROW_UP',
+    39: 'ARROW_RIGHT',
+    40: 'ARROW_DOWN'
+  };
+
+  var commands = {};
+
+  var Keyboard = {
+    keys: getKeyCodes(keyCodes),
+
+    /**
+     * Parses the (keyboard) event and returns a String that represents its key
+     * Can be used like Foundation.parseKey(event) === Foundation.keys.SPACE
+     * @param {Event} event - the event generated by the event handler
+     * @return String key - String that represents the key pressed
+     */
+    parseKey: function (event) {
+      var key = keyCodes[event.which || event.keyCode] || String.fromCharCode(event.which).toUpperCase();
+
+      // Remove un-printable characters, e.g. for `fromCharCode` calls for CTRL only events
+      key = key.replace(/\W+/, '');
+
+      if (event.shiftKey) key = 'SHIFT_' + key;
+      if (event.ctrlKey) key = 'CTRL_' + key;
+      if (event.altKey) key = 'ALT_' + key;
+
+      // Remove trailing underscore, in case only modifiers were used (e.g. only `CTRL_ALT`)
+      key = key.replace(/_$/, '');
+
+      return key;
+    },
+
+
+    /**
+     * Handles the given (keyboard) event
+     * @param {Event} event - the event generated by the event handler
+     * @param {String} component - Foundation component's name, e.g. Slider or Reveal
+     * @param {Objects} functions - collection of functions that are to be executed
+     */
+    handleKey: function (event, component, functions) {
+      var commandList = commands[component],
+          keyCode = this.parseKey(event),
+          cmds,
+          command,
+          fn;
+
+      if (!commandList) return console.warn('Component not defined!');
+
+      if (typeof commandList.ltr === 'undefined') {
+        // this component does not differentiate between ltr and rtl
+        cmds = commandList; // use plain list
+      } else {
+        // merge ltr and rtl: if document is rtl, rtl overwrites ltr and vice versa
+        if (Foundation.rtl()) cmds = $.extend({}, commandList.ltr, commandList.rtl);else cmds = $.extend({}, commandList.rtl, commandList.ltr);
+      }
+      command = cmds[keyCode];
+
+      fn = functions[command];
+      if (fn && typeof fn === 'function') {
+        // execute function  if exists
+        var returnValue = fn.apply();
+        if (functions.handled || typeof functions.handled === 'function') {
+          // execute function when event was handled
+          functions.handled(returnValue);
+        }
+      } else {
+        if (functions.unhandled || typeof functions.unhandled === 'function') {
+          // execute function when event was not handled
+          functions.unhandled();
+        }
+      }
+    },
+
+
+    /**
+     * Finds all focusable elements within the given `$element`
+     * @param {jQuery} $element - jQuery object to search within
+     * @return {jQuery} $focusable - all focusable elements within `$element`
+     */
+    findFocusable: function ($element) {
+      if (!$element) {
+        return false;
+      }
+      return $element.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
+        if (!$(this).is(':visible') || $(this).attr('tabindex') < 0) {
+          return false;
+        } //only have visible elements and those that have a tabindex greater or equal 0
+        return true;
+      });
+    },
+
+
+    /**
+     * Returns the component name name
+     * @param {Object} component - Foundation component, e.g. Slider or Reveal
+     * @return String componentName
+     */
+
+    register: function (componentName, cmds) {
+      commands[componentName] = cmds;
+    },
+
+
+    /**
+     * Traps the focus in the given element.
+     * @param  {jQuery} $element  jQuery object to trap the foucs into.
+     */
+    trapFocus: function ($element) {
+      var $focusable = Foundation.Keyboard.findFocusable($element),
+          $firstFocusable = $focusable.eq(0),
+          $lastFocusable = $focusable.eq(-1);
+
+      $element.on('keydown.zf.trapfocus', function (event) {
+        if (event.target === $lastFocusable[0] && Foundation.Keyboard.parseKey(event) === 'TAB') {
+          event.preventDefault();
+          $firstFocusable.focus();
+        } else if (event.target === $firstFocusable[0] && Foundation.Keyboard.parseKey(event) === 'SHIFT_TAB') {
+          event.preventDefault();
+          $lastFocusable.focus();
+        }
+      });
+    },
+
+    /**
+     * Releases the trapped focus from the given element.
+     * @param  {jQuery} $element  jQuery object to release the focus for.
+     */
+    releaseFocus: function ($element) {
+      $element.off('keydown.zf.trapfocus');
+    }
+  };
+
+  /*
+   * Constants for easier comparing.
+   * Can be used like Foundation.parseKey(event) === Foundation.keys.SPACE
+   */
+  function getKeyCodes(kcs) {
+    var k = {};
+    for (var kc in kcs) {
+      k[kcs[kc]] = kcs[kc];
+    }return k;
+  }
+
+  Foundation.Keyboard = Keyboard;
+}(jQuery);
 'use strict';
 
 !function ($) {
@@ -616,170 +975,7 @@
   }
 
   Foundation.MediaQuery = MediaQuery;
-}(jQueryForFoundation);
-/*******************************************
- *                                         *
- * This util was created by Marius Olbertz *
- * Please thank Marius on GitHub /owlbertz *
- * or the web http://www.mariusolbertz.de/ *
- *                                         *
- ******************************************/
-
-'use strict';
-
-!function ($) {
-
-  var keyCodes = {
-    9: 'TAB',
-    13: 'ENTER',
-    27: 'ESCAPE',
-    32: 'SPACE',
-    37: 'ARROW_LEFT',
-    38: 'ARROW_UP',
-    39: 'ARROW_RIGHT',
-    40: 'ARROW_DOWN'
-  };
-
-  var commands = {};
-
-  var Keyboard = {
-    keys: getKeyCodes(keyCodes),
-
-    /**
-     * Parses the (keyboard) event and returns a String that represents its key
-     * Can be used like Foundation.parseKey(event) === Foundation.keys.SPACE
-     * @param {Event} event - the event generated by the event handler
-     * @return String key - String that represents the key pressed
-     */
-    parseKey: function (event) {
-      var key = keyCodes[event.which || event.keyCode] || String.fromCharCode(event.which).toUpperCase();
-
-      // Remove un-printable characters, e.g. for `fromCharCode` calls for CTRL only events
-      key = key.replace(/\W+/, '');
-
-      if (event.shiftKey) key = 'SHIFT_' + key;
-      if (event.ctrlKey) key = 'CTRL_' + key;
-      if (event.altKey) key = 'ALT_' + key;
-
-      // Remove trailing underscore, in case only modifiers were used (e.g. only `CTRL_ALT`)
-      key = key.replace(/_$/, '');
-
-      return key;
-    },
-
-
-    /**
-     * Handles the given (keyboard) event
-     * @param {Event} event - the event generated by the event handler
-     * @param {String} component - Foundation component's name, e.g. Slider or Reveal
-     * @param {Objects} functions - collection of functions that are to be executed
-     */
-    handleKey: function (event, component, functions) {
-      var commandList = commands[component],
-          keyCode = this.parseKey(event),
-          cmds,
-          command,
-          fn;
-
-      if (!commandList) return console.warn('Component not defined!');
-
-      if (typeof commandList.ltr === 'undefined') {
-        // this component does not differentiate between ltr and rtl
-        cmds = commandList; // use plain list
-      } else {
-        // merge ltr and rtl: if document is rtl, rtl overwrites ltr and vice versa
-        if (Foundation.rtl()) cmds = $.extend({}, commandList.ltr, commandList.rtl);else cmds = $.extend({}, commandList.rtl, commandList.ltr);
-      }
-      command = cmds[keyCode];
-
-      fn = functions[command];
-      if (fn && typeof fn === 'function') {
-        // execute function  if exists
-        var returnValue = fn.apply();
-        if (functions.handled || typeof functions.handled === 'function') {
-          // execute function when event was handled
-          functions.handled(returnValue);
-        }
-      } else {
-        if (functions.unhandled || typeof functions.unhandled === 'function') {
-          // execute function when event was not handled
-          functions.unhandled();
-        }
-      }
-    },
-
-
-    /**
-     * Finds all focusable elements within the given `$element`
-     * @param {jQuery} $element - jQuery object to search within
-     * @return {jQuery} $focusable - all focusable elements within `$element`
-     */
-    findFocusable: function ($element) {
-      if (!$element) {
-        return false;
-      }
-      return $element.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]').filter(function () {
-        if (!$(this).is(':visible') || $(this).attr('tabindex') < 0) {
-          return false;
-        } //only have visible elements and those that have a tabindex greater or equal 0
-        return true;
-      });
-    },
-
-
-    /**
-     * Returns the component name name
-     * @param {Object} component - Foundation component, e.g. Slider or Reveal
-     * @return String componentName
-     */
-
-    register: function (componentName, cmds) {
-      commands[componentName] = cmds;
-    },
-
-
-    /**
-     * Traps the focus in the given element.
-     * @param  {jQuery} $element  jQuery object to trap the foucs into.
-     */
-    trapFocus: function ($element) {
-      var $focusable = Foundation.Keyboard.findFocusable($element),
-          $firstFocusable = $focusable.eq(0),
-          $lastFocusable = $focusable.eq(-1);
-
-      $element.on('keydown.zf.trapfocus', function (event) {
-        if (event.target === $lastFocusable[0] && Foundation.Keyboard.parseKey(event) === 'TAB') {
-          event.preventDefault();
-          $firstFocusable.focus();
-        } else if (event.target === $firstFocusable[0] && Foundation.Keyboard.parseKey(event) === 'SHIFT_TAB') {
-          event.preventDefault();
-          $lastFocusable.focus();
-        }
-      });
-    },
-
-    /**
-     * Releases the trapped focus from the given element.
-     * @param  {jQuery} $element  jQuery object to release the focus for.
-     */
-    releaseFocus: function ($element) {
-      $element.off('keydown.zf.trapfocus');
-    }
-  };
-
-  /*
-   * Constants for easier comparing.
-   * Can be used like Foundation.parseKey(event) === Foundation.keys.SPACE
-   */
-  function getKeyCodes(kcs) {
-    var k = {};
-    for (var kc in kcs) {
-      k[kcs[kc]] = kcs[kc];
-    }return k;
-  }
-
-  Foundation.Keyboard = Keyboard;
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 !function ($) {
@@ -882,7 +1078,7 @@
 
   Foundation.Move = Move;
   Foundation.Motion = Motion;
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 !function ($) {
@@ -956,464 +1152,7 @@
   };
 
   Foundation.Nest = Nest;
-}(jQueryForFoundation);
-'use strict';
-
-!function ($) {
-
-  Foundation.Box = {
-    ImNotTouchingYou: ImNotTouchingYou,
-    GetDimensions: GetDimensions,
-    GetOffsets: GetOffsets
-  };
-
-  /**
-   * Compares the dimensions of an element to a container and determines collision events with container.
-   * @function
-   * @param {jQuery} element - jQuery object to test for collisions.
-   * @param {jQuery} parent - jQuery object to use as bounding container.
-   * @param {Boolean} lrOnly - set to true to check left and right values only.
-   * @param {Boolean} tbOnly - set to true to check top and bottom values only.
-   * @default if no parent object passed, detects collisions with `window`.
-   * @returns {Boolean} - true if collision free, false if a collision in any direction.
-   */
-  function ImNotTouchingYou(element, parent, lrOnly, tbOnly) {
-    var eleDims = GetDimensions(element),
-        top,
-        bottom,
-        left,
-        right;
-
-    if (parent) {
-      var parDims = GetDimensions(parent);
-
-      bottom = eleDims.offset.top + eleDims.height <= parDims.height + parDims.offset.top;
-      top = eleDims.offset.top >= parDims.offset.top;
-      left = eleDims.offset.left >= parDims.offset.left;
-      right = eleDims.offset.left + eleDims.width <= parDims.width + parDims.offset.left;
-    } else {
-      bottom = eleDims.offset.top + eleDims.height <= eleDims.windowDims.height + eleDims.windowDims.offset.top;
-      top = eleDims.offset.top >= eleDims.windowDims.offset.top;
-      left = eleDims.offset.left >= eleDims.windowDims.offset.left;
-      right = eleDims.offset.left + eleDims.width <= eleDims.windowDims.width;
-    }
-
-    var allDirs = [bottom, top, left, right];
-
-    if (lrOnly) {
-      return left === right === true;
-    }
-
-    if (tbOnly) {
-      return top === bottom === true;
-    }
-
-    return allDirs.indexOf(false) === -1;
-  };
-
-  /**
-   * Uses native methods to return an object of dimension values.
-   * @function
-   * @param {jQuery || HTML} element - jQuery object or DOM element for which to get the dimensions. Can be any element other that document or window.
-   * @returns {Object} - nested object of integer pixel values
-   * TODO - if element is window, return only those values.
-   */
-  function GetDimensions(elem, test) {
-    elem = elem.length ? elem[0] : elem;
-
-    if (elem === window || elem === document) {
-      throw new Error("I'm sorry, Dave. I'm afraid I can't do that.");
-    }
-
-    var rect = elem.getBoundingClientRect(),
-        parRect = elem.parentNode.getBoundingClientRect(),
-        winRect = document.body.getBoundingClientRect(),
-        winY = window.pageYOffset,
-        winX = window.pageXOffset;
-
-    return {
-      width: rect.width,
-      height: rect.height,
-      offset: {
-        top: rect.top + winY,
-        left: rect.left + winX
-      },
-      parentDims: {
-        width: parRect.width,
-        height: parRect.height,
-        offset: {
-          top: parRect.top + winY,
-          left: parRect.left + winX
-        }
-      },
-      windowDims: {
-        width: winRect.width,
-        height: winRect.height,
-        offset: {
-          top: winY,
-          left: winX
-        }
-      }
-    };
-  }
-
-  /**
-   * Returns an object of top and left integer pixel values for dynamically rendered elements,
-   * such as: Tooltip, Reveal, and Dropdown
-   * @function
-   * @param {jQuery} element - jQuery object for the element being positioned.
-   * @param {jQuery} anchor - jQuery object for the element's anchor point.
-   * @param {String} position - a string relating to the desired position of the element, relative to it's anchor
-   * @param {Number} vOffset - integer pixel value of desired vertical separation between anchor and element.
-   * @param {Number} hOffset - integer pixel value of desired horizontal separation between anchor and element.
-   * @param {Boolean} isOverflow - if a collision event is detected, sets to true to default the element to full width - any desired offset.
-   * TODO alter/rewrite to work with `em` values as well/instead of pixels
-   */
-  function GetOffsets(element, anchor, position, vOffset, hOffset, isOverflow) {
-    var $eleDims = GetDimensions(element),
-        $anchorDims = anchor ? GetDimensions(anchor) : null;
-
-    switch (position) {
-      case 'top':
-        return {
-          left: Foundation.rtl() ? $anchorDims.offset.left - $eleDims.width + $anchorDims.width : $anchorDims.offset.left,
-          top: $anchorDims.offset.top - ($eleDims.height + vOffset)
-        };
-        break;
-      case 'left':
-        return {
-          left: $anchorDims.offset.left - ($eleDims.width + hOffset),
-          top: $anchorDims.offset.top
-        };
-        break;
-      case 'right':
-        return {
-          left: $anchorDims.offset.left + $anchorDims.width + hOffset,
-          top: $anchorDims.offset.top
-        };
-        break;
-      case 'center top':
-        return {
-          left: $anchorDims.offset.left + $anchorDims.width / 2 - $eleDims.width / 2,
-          top: $anchorDims.offset.top - ($eleDims.height + vOffset)
-        };
-        break;
-      case 'center bottom':
-        return {
-          left: isOverflow ? hOffset : $anchorDims.offset.left + $anchorDims.width / 2 - $eleDims.width / 2,
-          top: $anchorDims.offset.top + $anchorDims.height + vOffset
-        };
-        break;
-      case 'center left':
-        return {
-          left: $anchorDims.offset.left - ($eleDims.width + hOffset),
-          top: $anchorDims.offset.top + $anchorDims.height / 2 - $eleDims.height / 2
-        };
-        break;
-      case 'center right':
-        return {
-          left: $anchorDims.offset.left + $anchorDims.width + hOffset + 1,
-          top: $anchorDims.offset.top + $anchorDims.height / 2 - $eleDims.height / 2
-        };
-        break;
-      case 'center':
-        return {
-          left: $eleDims.windowDims.offset.left + $eleDims.windowDims.width / 2 - $eleDims.width / 2,
-          top: $eleDims.windowDims.offset.top + $eleDims.windowDims.height / 2 - $eleDims.height / 2
-        };
-        break;
-      case 'reveal':
-        return {
-          left: ($eleDims.windowDims.width - $eleDims.width) / 2,
-          top: $eleDims.windowDims.offset.top + vOffset
-        };
-      case 'reveal full':
-        return {
-          left: $eleDims.windowDims.offset.left,
-          top: $eleDims.windowDims.offset.top
-        };
-        break;
-      case 'left bottom':
-        return {
-          left: $anchorDims.offset.left,
-          top: $anchorDims.offset.top + $anchorDims.height + vOffset
-        };
-        break;
-      case 'right bottom':
-        return {
-          left: $anchorDims.offset.left + $anchorDims.width + hOffset - $eleDims.width,
-          top: $anchorDims.offset.top + $anchorDims.height + vOffset
-        };
-        break;
-      default:
-        return {
-          left: Foundation.rtl() ? $anchorDims.offset.left - $eleDims.width + $anchorDims.width : $anchorDims.offset.left + hOffset,
-          top: $anchorDims.offset.top + $anchorDims.height + vOffset
-        };
-    }
-  }
-}(jQueryForFoundation);
-'use strict';
-
-!function ($) {
-
-  var MutationObserver = function () {
-    var prefixes = ['WebKit', 'Moz', 'O', 'Ms', ''];
-    for (var i = 0; i < prefixes.length; i++) {
-      if (prefixes[i] + 'MutationObserver' in window) {
-        return window[prefixes[i] + 'MutationObserver'];
-      }
-    }
-    return false;
-  }();
-
-  var triggers = function (el, type) {
-    el.data(type).split(' ').forEach(function (id) {
-      $('#' + id)[type === 'close' ? 'trigger' : 'triggerHandler'](type + '.zf.trigger', [el]);
-    });
-  };
-  // Elements with [data-open] will reveal a plugin that supports it when clicked.
-  $(document).on('click.zf.trigger', '[data-open]', function () {
-    triggers($(this), 'open');
-  });
-
-  // Elements with [data-close] will close a plugin that supports it when clicked.
-  // If used without a value on [data-close], the event will bubble, allowing it to close a parent component.
-  $(document).on('click.zf.trigger', '[data-close]', function () {
-    var id = $(this).data('close');
-    if (id) {
-      triggers($(this), 'close');
-    } else {
-      $(this).trigger('close.zf.trigger');
-    }
-  });
-
-  // Elements with [data-toggle] will toggle a plugin that supports it when clicked.
-  $(document).on('click.zf.trigger', '[data-toggle]', function () {
-    var id = $(this).data('toggle');
-    if (id) {
-      triggers($(this), 'toggle');
-    } else {
-      $(this).trigger('toggle.zf.trigger');
-    }
-  });
-
-  // Elements with [data-closable] will respond to close.zf.trigger events.
-  $(document).on('close.zf.trigger', '[data-closable]', function (e) {
-    e.stopPropagation();
-    var animation = $(this).data('closable');
-
-    if (animation !== '') {
-      Foundation.Motion.animateOut($(this), animation, function () {
-        $(this).trigger('closed.zf');
-      });
-    } else {
-      $(this).fadeOut().trigger('closed.zf');
-    }
-  });
-
-  $(document).on('focus.zf.trigger blur.zf.trigger', '[data-toggle-focus]', function () {
-    var id = $(this).data('toggle-focus');
-    $('#' + id).triggerHandler('toggle.zf.trigger', [$(this)]);
-  });
-
-  /**
-  * Fires once after all other scripts have loaded
-  * @function
-  * @private
-  */
-  $(window).on('load', function () {
-    checkListeners();
-  });
-
-  function checkListeners() {
-    eventsListener();
-    resizeListener();
-    scrollListener();
-    mutateListener();
-    closemeListener();
-  }
-
-  //******** only fires this function once on load, if there's something to watch ********
-  function closemeListener(pluginName) {
-    var yetiBoxes = $('[data-yeti-box]'),
-        plugNames = ['dropdown', 'tooltip', 'reveal'];
-
-    if (pluginName) {
-      if (typeof pluginName === 'string') {
-        plugNames.push(pluginName);
-      } else if (typeof pluginName === 'object' && typeof pluginName[0] === 'string') {
-        plugNames.concat(pluginName);
-      } else {
-        console.error('Plugin names must be strings');
-      }
-    }
-    if (yetiBoxes.length) {
-      var listeners = plugNames.map(function (name) {
-        return 'closeme.zf.' + name;
-      }).join(' ');
-
-      $(window).off(listeners).on(listeners, function (e, pluginId) {
-        var plugin = e.namespace.split('.')[0];
-        var plugins = $('[data-' + plugin + ']').not('[data-yeti-box="' + pluginId + '"]');
-
-        plugins.each(function () {
-          var _this = $(this);
-
-          _this.triggerHandler('close.zf.trigger', [_this]);
-        });
-      });
-    }
-  }
-
-  function resizeListener(debounce) {
-    var timer = void 0,
-        $nodes = $('[data-resize]');
-    if ($nodes.length) {
-      $(window).off('resize.zf.trigger').on('resize.zf.trigger', function (e) {
-        if (timer) {
-          clearTimeout(timer);
-        }
-
-        timer = setTimeout(function () {
-
-          if (!MutationObserver) {
-            //fallback for IE 9
-            $nodes.each(function () {
-              $(this).triggerHandler('resizeme.zf.trigger');
-            });
-          }
-          //trigger all listening elements and signal a resize event
-          $nodes.attr('data-events', "resize");
-        }, debounce || 10); //default time to emit resize event
-      });
-    }
-  }
-
-  function scrollListener(debounce) {
-    var timer = void 0,
-        $nodes = $('[data-scroll]');
-    if ($nodes.length) {
-      $(window).off('scroll.zf.trigger').on('scroll.zf.trigger', function (e) {
-        if (timer) {
-          clearTimeout(timer);
-        }
-
-        timer = setTimeout(function () {
-
-          if (!MutationObserver) {
-            //fallback for IE 9
-            $nodes.each(function () {
-              $(this).triggerHandler('scrollme.zf.trigger');
-            });
-          }
-          //trigger all listening elements and signal a scroll event
-          $nodes.attr('data-events', "scroll");
-        }, debounce || 10); //default time to emit scroll event
-      });
-    }
-  }
-
-  function mutateListener(debounce) {
-    var $nodes = $('[data-mutate]');
-    if ($nodes.length && MutationObserver) {
-      //trigger all listening elements and signal a mutate event
-      //no IE 9 or 10
-      $nodes.each(function () {
-        $(this).triggerHandler('mutateme.zf.trigger');
-      });
-    }
-  }
-
-  function eventsListener() {
-    if (!MutationObserver) {
-      return false;
-    }
-    var nodes = document.querySelectorAll('[data-resize], [data-scroll], [data-mutate]');
-
-    //element callback
-    var listeningElementsMutation = function (mutationRecordsList) {
-      var $target = $(mutationRecordsList[0].target);
-
-      //trigger the event handler for the element depending on type
-      switch (mutationRecordsList[0].type) {
-
-        case "attributes":
-          if ($target.attr("data-events") === "scroll" && mutationRecordsList[0].attributeName === "data-events") {
-            $target.triggerHandler('scrollme.zf.trigger', [$target, window.pageYOffset]);
-          }
-          if ($target.attr("data-events") === "resize" && mutationRecordsList[0].attributeName === "data-events") {
-            $target.triggerHandler('resizeme.zf.trigger', [$target]);
-          }
-          if (mutationRecordsList[0].attributeName === "style") {
-            $target.closest("[data-mutate]").attr("data-events", "mutate");
-            $target.closest("[data-mutate]").triggerHandler('mutateme.zf.trigger', [$target.closest("[data-mutate]")]);
-          }
-          break;
-
-        case "childList":
-          $target.closest("[data-mutate]").attr("data-events", "mutate");
-          $target.closest("[data-mutate]").triggerHandler('mutateme.zf.trigger', [$target.closest("[data-mutate]")]);
-          break;
-
-        default:
-          return false;
-        //nothing
-      }
-    };
-
-    if (nodes.length) {
-      //for each element that needs to listen for resizing, scrolling, or mutation add a single observer
-      for (var i = 0; i <= nodes.length - 1; i++) {
-        var elementObserver = new MutationObserver(listeningElementsMutation);
-        elementObserver.observe(nodes[i], { attributes: true, childList: true, characterData: false, subtree: true, attributeFilter: ["data-events", "style"] });
-      }
-    }
-  }
-
-  // ------------------------------------
-
-  // [PH]
-  // Foundation.CheckWatchers = checkWatchers;
-  Foundation.IHearYou = checkListeners;
-  // Foundation.ISeeYou = scrollListener;
-  // Foundation.IFeelYou = closemeListener;
-}(jQueryForFoundation);
-
-// function domMutationObserver(debounce) {
-//   // !!! This is coming soon and needs more work; not active  !!! //
-//   var timer,
-//   nodes = document.querySelectorAll('[data-mutate]');
-//   //
-//   if (nodes.length) {
-//     // var MutationObserver = (function () {
-//     //   var prefixes = ['WebKit', 'Moz', 'O', 'Ms', ''];
-//     //   for (var i=0; i < prefixes.length; i++) {
-//     //     if (prefixes[i] + 'MutationObserver' in window) {
-//     //       return window[prefixes[i] + 'MutationObserver'];
-//     //     }
-//     //   }
-//     //   return false;
-//     // }());
-//
-//
-//     //for the body, we need to listen for all changes effecting the style and class attributes
-//     var bodyObserver = new MutationObserver(bodyMutation);
-//     bodyObserver.observe(document.body, { attributes: true, childList: true, characterData: false, subtree:true, attributeFilter:["style", "class"]});
-//
-//
-//     //body callback
-//     function bodyMutation(mutate) {
-//       //trigger all listening elements and signal a mutation event
-//       if (timer) { clearTimeout(timer); }
-//
-//       timer = setTimeout(function() {
-//         bodyObserver.disconnect();
-//         $('[data-mutate]').attr('data-events',"mutate");
-//       }, debounce || 150);
-//     }
-//   }
-// }
+}(jQuery);
 'use strict';
 
 !function ($) {
@@ -1503,7 +1242,7 @@
 
   Foundation.Timer = Timer;
   Foundation.onImagesLoaded = onImagesLoaded;
-}(jQueryForFoundation);
+}(jQuery);
 //**************************************************
 //**Work inspired by multiple jquery swipe plugins**
 //**Done by Yohai Ararat ***************************
@@ -1582,7 +1321,7 @@
 				$(this).on('swipe', $.noop);
 			} };
 	});
-})(jQueryForFoundation);
+})(jQuery);
 /****************************************************
  * Method for adding psuedo drag events to elements *
  ***************************************************/
@@ -1623,7 +1362,7 @@
 			first.target.dispatchEvent(simulatedEvent);
 		};
 	};
-}(jQueryForFoundation);
+}(jQuery);
 
 //**********************************
 //**From the jQuery Mobile Library**
@@ -1856,6 +1595,267 @@
 	});
 })( jQuery, this );
 */
+'use strict';
+
+!function ($) {
+
+  var MutationObserver = function () {
+    var prefixes = ['WebKit', 'Moz', 'O', 'Ms', ''];
+    for (var i = 0; i < prefixes.length; i++) {
+      if (prefixes[i] + 'MutationObserver' in window) {
+        return window[prefixes[i] + 'MutationObserver'];
+      }
+    }
+    return false;
+  }();
+
+  var triggers = function (el, type) {
+    el.data(type).split(' ').forEach(function (id) {
+      $('#' + id)[type === 'close' ? 'trigger' : 'triggerHandler'](type + '.zf.trigger', [el]);
+    });
+  };
+  // Elements with [data-open] will reveal a plugin that supports it when clicked.
+  $(document).on('click.zf.trigger', '[data-open]', function () {
+    triggers($(this), 'open');
+  });
+
+  // Elements with [data-close] will close a plugin that supports it when clicked.
+  // If used without a value on [data-close], the event will bubble, allowing it to close a parent component.
+  $(document).on('click.zf.trigger', '[data-close]', function () {
+    var id = $(this).data('close');
+    if (id) {
+      triggers($(this), 'close');
+    } else {
+      $(this).trigger('close.zf.trigger');
+    }
+  });
+
+  // Elements with [data-toggle] will toggle a plugin that supports it when clicked.
+  $(document).on('click.zf.trigger', '[data-toggle]', function () {
+    var id = $(this).data('toggle');
+    if (id) {
+      triggers($(this), 'toggle');
+    } else {
+      $(this).trigger('toggle.zf.trigger');
+    }
+  });
+
+  // Elements with [data-closable] will respond to close.zf.trigger events.
+  $(document).on('close.zf.trigger', '[data-closable]', function (e) {
+    e.stopPropagation();
+    var animation = $(this).data('closable');
+
+    if (animation !== '') {
+      Foundation.Motion.animateOut($(this), animation, function () {
+        $(this).trigger('closed.zf');
+      });
+    } else {
+      $(this).fadeOut().trigger('closed.zf');
+    }
+  });
+
+  $(document).on('focus.zf.trigger blur.zf.trigger', '[data-toggle-focus]', function () {
+    var id = $(this).data('toggle-focus');
+    $('#' + id).triggerHandler('toggle.zf.trigger', [$(this)]);
+  });
+
+  /**
+  * Fires once after all other scripts have loaded
+  * @function
+  * @private
+  */
+  $(window).on('load', function () {
+    checkListeners();
+  });
+
+  function checkListeners() {
+    eventsListener();
+    resizeListener();
+    scrollListener();
+    mutateListener();
+    closemeListener();
+  }
+
+  //******** only fires this function once on load, if there's something to watch ********
+  function closemeListener(pluginName) {
+    var yetiBoxes = $('[data-yeti-box]'),
+        plugNames = ['dropdown', 'tooltip', 'reveal'];
+
+    if (pluginName) {
+      if (typeof pluginName === 'string') {
+        plugNames.push(pluginName);
+      } else if (typeof pluginName === 'object' && typeof pluginName[0] === 'string') {
+        plugNames.concat(pluginName);
+      } else {
+        console.error('Plugin names must be strings');
+      }
+    }
+    if (yetiBoxes.length) {
+      var listeners = plugNames.map(function (name) {
+        return 'closeme.zf.' + name;
+      }).join(' ');
+
+      $(window).off(listeners).on(listeners, function (e, pluginId) {
+        var plugin = e.namespace.split('.')[0];
+        var plugins = $('[data-' + plugin + ']').not('[data-yeti-box="' + pluginId + '"]');
+
+        plugins.each(function () {
+          var _this = $(this);
+
+          _this.triggerHandler('close.zf.trigger', [_this]);
+        });
+      });
+    }
+  }
+
+  function resizeListener(debounce) {
+    var timer = void 0,
+        $nodes = $('[data-resize]');
+    if ($nodes.length) {
+      $(window).off('resize.zf.trigger').on('resize.zf.trigger', function (e) {
+        if (timer) {
+          clearTimeout(timer);
+        }
+
+        timer = setTimeout(function () {
+
+          if (!MutationObserver) {
+            //fallback for IE 9
+            $nodes.each(function () {
+              $(this).triggerHandler('resizeme.zf.trigger');
+            });
+          }
+          //trigger all listening elements and signal a resize event
+          $nodes.attr('data-events', "resize");
+        }, debounce || 10); //default time to emit resize event
+      });
+    }
+  }
+
+  function scrollListener(debounce) {
+    var timer = void 0,
+        $nodes = $('[data-scroll]');
+    if ($nodes.length) {
+      $(window).off('scroll.zf.trigger').on('scroll.zf.trigger', function (e) {
+        if (timer) {
+          clearTimeout(timer);
+        }
+
+        timer = setTimeout(function () {
+
+          if (!MutationObserver) {
+            //fallback for IE 9
+            $nodes.each(function () {
+              $(this).triggerHandler('scrollme.zf.trigger');
+            });
+          }
+          //trigger all listening elements and signal a scroll event
+          $nodes.attr('data-events', "scroll");
+        }, debounce || 10); //default time to emit scroll event
+      });
+    }
+  }
+
+  function mutateListener(debounce) {
+    var $nodes = $('[data-mutate]');
+    if ($nodes.length && MutationObserver) {
+      //trigger all listening elements and signal a mutate event
+      //no IE 9 or 10
+      $nodes.each(function () {
+        $(this).triggerHandler('mutateme.zf.trigger');
+      });
+    }
+  }
+
+  function eventsListener() {
+    if (!MutationObserver) {
+      return false;
+    }
+    var nodes = document.querySelectorAll('[data-resize], [data-scroll], [data-mutate]');
+
+    //element callback
+    var listeningElementsMutation = function (mutationRecordsList) {
+      var $target = $(mutationRecordsList[0].target);
+
+      //trigger the event handler for the element depending on type
+      switch (mutationRecordsList[0].type) {
+
+        case "attributes":
+          if ($target.attr("data-events") === "scroll" && mutationRecordsList[0].attributeName === "data-events") {
+            $target.triggerHandler('scrollme.zf.trigger', [$target, window.pageYOffset]);
+          }
+          if ($target.attr("data-events") === "resize" && mutationRecordsList[0].attributeName === "data-events") {
+            $target.triggerHandler('resizeme.zf.trigger', [$target]);
+          }
+          if (mutationRecordsList[0].attributeName === "style") {
+            $target.closest("[data-mutate]").attr("data-events", "mutate");
+            $target.closest("[data-mutate]").triggerHandler('mutateme.zf.trigger', [$target.closest("[data-mutate]")]);
+          }
+          break;
+
+        case "childList":
+          $target.closest("[data-mutate]").attr("data-events", "mutate");
+          $target.closest("[data-mutate]").triggerHandler('mutateme.zf.trigger', [$target.closest("[data-mutate]")]);
+          break;
+
+        default:
+          return false;
+        //nothing
+      }
+    };
+
+    if (nodes.length) {
+      //for each element that needs to listen for resizing, scrolling, or mutation add a single observer
+      for (var i = 0; i <= nodes.length - 1; i++) {
+        var elementObserver = new MutationObserver(listeningElementsMutation);
+        elementObserver.observe(nodes[i], { attributes: true, childList: true, characterData: false, subtree: true, attributeFilter: ["data-events", "style"] });
+      }
+    }
+  }
+
+  // ------------------------------------
+
+  // [PH]
+  // Foundation.CheckWatchers = checkWatchers;
+  Foundation.IHearYou = checkListeners;
+  // Foundation.ISeeYou = scrollListener;
+  // Foundation.IFeelYou = closemeListener;
+}(jQuery);
+
+// function domMutationObserver(debounce) {
+//   // !!! This is coming soon and needs more work; not active  !!! //
+//   var timer,
+//   nodes = document.querySelectorAll('[data-mutate]');
+//   //
+//   if (nodes.length) {
+//     // var MutationObserver = (function () {
+//     //   var prefixes = ['WebKit', 'Moz', 'O', 'Ms', ''];
+//     //   for (var i=0; i < prefixes.length; i++) {
+//     //     if (prefixes[i] + 'MutationObserver' in window) {
+//     //       return window[prefixes[i] + 'MutationObserver'];
+//     //     }
+//     //   }
+//     //   return false;
+//     // }());
+//
+//
+//     //for the body, we need to listen for all changes effecting the style and class attributes
+//     var bodyObserver = new MutationObserver(bodyMutation);
+//     bodyObserver.observe(document.body, { attributes: true, childList: true, characterData: false, subtree:true, attributeFilter:["style", "class"]});
+//
+//
+//     //body callback
+//     function bodyMutation(mutate) {
+//       //trigger all listening elements and signal a mutation event
+//       if (timer) { clearTimeout(timer); }
+//
+//       timer = setTimeout(function() {
+//         bodyObserver.disconnect();
+//         $('[data-mutate]').attr('data-events',"mutate");
+//       }, debounce || 150);
+//     }
+//   }
+// }
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2128,7 +2128,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       /**
-       * Goes through a form to find inputs and proceeds to validate them in ways specific to their type.
+       * Goes through a form to find inputs and proceeds to validate them in ways specific to their type. 
        * Ignores inputs with data-abide-ignore, type="hidden" or disabled attributes set
        * @fires Abide#invalid
        * @fires Abide#valid
@@ -2492,7 +2492,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Abide, 'Abide');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2744,7 +2744,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Accordion, 'Accordion');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3062,7 +3062,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(AccordionMenu, 'AccordionMenu');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -3627,7 +3627,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Drilldown, 'Drilldown');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4092,7 +4092,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Dropdown, 'Dropdown');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4578,7 +4578,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(DropdownMenu, 'DropdownMenu');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4952,7 +4952,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Equalizer, 'Equalizer');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5185,7 +5185,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Interchange, 'Interchange');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5470,7 +5470,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Magellan, 'Magellan');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -5944,7 +5944,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(OffCanvas, 'OffCanvas');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6510,7 +6510,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Orbit, 'Orbit');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6679,7 +6679,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(ResponsiveMenu, 'ResponsiveMenu');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6856,7 +6856,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(ResponsiveToggle, 'ResponsiveToggle');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -7489,7 +7489,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   function mobileSniff() {
     return iPhoneSniff() || androidSniff();
   }
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8251,7 +8251,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Slider, 'Slider');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -8769,7 +8769,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Sticky, 'Sticky');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9281,7 +9281,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Tabs, 'Tabs');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9450,7 +9450,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Toggler, 'Toggler');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -9942,7 +9942,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(Tooltip, 'Tooltip');
-}(jQueryForFoundation);
+}(jQuery);
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10204,4 +10204,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   // Window exports
   Foundation.plugin(ResponsiveAccordionTabs, 'ResponsiveAccordionTabs');
-}(jQueryForFoundation);
+}(jQuery);
