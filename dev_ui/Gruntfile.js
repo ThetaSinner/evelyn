@@ -11,7 +11,7 @@ module.exports = function(grunt) {
           sourcemap: 'none',
         },
         files: {
-          'public/css/main.css': 'scss/main.scss',
+          'public/css/foundation.css': 'scss/custom-foundation.scss',
         }
       }
     },
