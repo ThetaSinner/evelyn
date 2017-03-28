@@ -44,6 +44,7 @@ impl MongoClient {
         if let bson::Bson::Document(document) = bson_user_model {
           match collection.insert_one(document, None) {
               Ok(_) => {},
+              // TODO this needs to return an error! a status code other than 200 neds to be returned if this happens
               Err(e) => println!("Database Error: Insert error {}", e)
           }
         } else {
