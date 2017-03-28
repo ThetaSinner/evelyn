@@ -34,7 +34,7 @@ mod server;
 mod data;
 pub mod model;
 mod processing;
-mod core;
+pub mod core;
 
 use processing::ProcessorData;
 use server::http::HttpServer;
