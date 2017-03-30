@@ -15,6 +15,9 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::sync::Arc;
+use std::cmp::Ordering;
+
+use chrono::prelude::*;
 
 use processing::ProcessorData;
 use model;
@@ -60,8 +63,22 @@ pub fn lookup_simple_tasks(model: model::LookupSimpleTaskRequestModel, processor
 
   let tasks = data_store.lookup_simple_tasks(&simple_task_lookup_model);
   if tasks.is_some() {
+      let mut tasks = tasks.unwrap();
+      tasks.sort_by(|a, b| {
+          let a_date = a.due_date.parse::<DateTime<UTC>>();
+          let b_date = b.due_date.parse::<DateTime<UTC>>();
+
+          // TODO unsafe
+          if a_date.unwrap().lt(&b_date.unwrap()) {
+              Ordering::Less
+          }
+          else {
+              Ordering::Greater
+          }
+      });
+
       model::LookupSimpleTaskResponseModel {
-          tasks: tasks.unwrap(),
+          tasks: tasks,
           error: None,
       }
   }

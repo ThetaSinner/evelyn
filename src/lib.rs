@@ -27,6 +27,8 @@ extern crate serde_derive;
 extern crate jsonwebtoken as jwt;
 extern crate rustc_serialize;
 
+extern crate chrono;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 
