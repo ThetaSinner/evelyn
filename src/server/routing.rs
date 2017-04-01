@@ -18,6 +18,11 @@ use std::collections::HashMap;
 use processing::ProcessorData;
 use std::sync::Arc;
 
+use serde_json;
+
+use core::error_messages;
+use model;
+
 pub struct RouterInput {
   pub request_body: String
 }
@@ -44,9 +49,10 @@ impl Router {
     match processor_opt {
       Some(processor) => { Some(processor(router_input, processor_data)) },
       None => {
-          // ReqestForActionWhichEvelynDoesNotKnowHowToDo
-          println!("Request for route which doesn't exist.");
-          None
+          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo);
+          Some(RouterOutput {
+              response_body: serde_json::to_string(&model).unwrap()
+          })
       }
     }
   }

@@ -14,6 +14,10 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::error::Error;
+
+use core::error_messages;
+
 #[derive(Serialize, Deserialize)]
 pub struct TestModel {
     pub name: Option<String>,
@@ -27,6 +31,15 @@ pub struct ErrorModel {
 
     #[serde(rename="ErrorMessage")]
     pub error_message: String,
+}
+
+impl From<error_messages::EvelynServiceError> for ErrorModel {
+    fn from(error: error_messages::EvelynServiceError) -> Self {
+        ErrorModel {
+            error_code: format!("{}", error),
+            error_message: String::from(error.description()),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize)]

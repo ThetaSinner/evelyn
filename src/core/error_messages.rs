@@ -14,10 +14,11 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+use std::error;
 use std::fmt;
 
 #[derive(Debug)]
-enum EvelynServiceError {
+pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo,
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse,
 }
@@ -25,12 +26,30 @@ enum EvelynServiceError {
 impl fmt::Display for EvelynServiceError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo(ref err) => {
-                write!(f, "Request for an action which Evelyn does now know how to do")
+            EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => {
+                write!(f, "100001")
             },
-            EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse(ref err) => {
-                write!(f, "Evelyn tried to handle the request but hasn't managed to give anything back")
+            EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => {
+                write!(f, "100002")
             },
+        }
+    }
+}
+
+impl error::Error for EvelynServiceError {
+    fn description(&self) -> &str {
+        match *self {
+            EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo =>
+                "Request for an action which Evelyn does now know how to do",
+            EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse =>
+                "Evelyn tried to handle the request but hasn't managed to give anything back",
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => None,
+            EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
         }
     }
 }

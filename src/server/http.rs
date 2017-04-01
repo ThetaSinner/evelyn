@@ -20,8 +20,12 @@ use std::str;
 use std::thread;
 use std::sync::Arc;
 
+use serde_json;
+
 use server::routing::{Router, RouterInput};
 use processing::ProcessorData;
+use core::error_messages;
+use model;
 
 pub struct HttpServer {
   router: Arc<Router>,
@@ -103,7 +107,7 @@ fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<Proce
      router_output.unwrap().response_body
   }
   else {
-      // EvelynTriedToHandleTheRequestButDidNotYieldAResponse
-      String::from("Failed to get route request")
+      let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse);
+      serde_json::to_string(&model).unwrap()
   }
 }
