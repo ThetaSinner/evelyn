@@ -23,6 +23,7 @@ use model;
 use data::MongoClient;
 use core::{user, simple_task};
 use core::token_service::TokenService;
+use core::error_messages;
 
 pub struct ProcessorData {
   pub data_store: Arc<Mutex<MongoClient>>,
@@ -38,23 +39,22 @@ pub fn load_processors(router: &mut Router) {
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
-  let request_model_de: Result<model::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
-  let mut result: model::CreateUserResponseModel = model::CreateUserResponseModel{
-      error: Some(model::ErrorModel{
-          error_code: "_".to_owned(),
-          error_message: "Create user processor failed".to_owned()
-      })
-  };
-  match request_model_de {
+  let request_model_decoded: Result<model::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
     Ok(request_model) => {
-      result = user::create_user(request_model, processor_data);
+        let result = user::create_user(request_model, processor_data);
+        RouterOutput{
+            response_body: serde_json::to_string(&result).unwrap()
+        }
     },
     Err(e) => {
-      println!("Bad payload, {}", e);
+        let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model).unwrap()
+        }
     }
   }
-
-  RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
 }
 
 fn logon_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {

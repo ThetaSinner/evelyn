@@ -17,20 +17,29 @@
 use std::error;
 use std::fmt;
 
+use serde_json;
+
 #[derive(Debug)]
 pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo,
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse,
+    CouldNotDecodeTheRequestPayload(serde_json::Error),
 }
 
 impl fmt::Display for EvelynServiceError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            // Server layer.
             EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => {
                 write!(f, "100001")
             },
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => {
                 write!(f, "100002")
+            },
+
+            // Processing layer.
+            EvelynServiceError::CouldNotDecodeTheRequestPayload(_) => {
+                write!(f, "100103")
             },
         }
     }
@@ -43,6 +52,8 @@ impl error::Error for EvelynServiceError {
                 "Request for an action which Evelyn does now know how to do",
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse =>
                 "Evelyn tried to handle the request but hasn't managed to give anything back",
+            EvelynServiceError::CouldNotDecodeTheRequestPayload(_) =>
+                "Could not decode the JSON request payload",
         }
     }
 
@@ -50,6 +61,7 @@ impl error::Error for EvelynServiceError {
         match *self {
             EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => None,
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
+            EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
         }
     }
 }
