@@ -1,4 +1,6 @@
 language: rust
-script: ./backend/scripts/run_tests.sh
 services:
   - mongodb
+before_install:
+  - cd ./backend
+script: ./scripts/run_tests.sh
