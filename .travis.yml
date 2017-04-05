@@ -1,4 +1,4 @@
 language: rust
-script: ./backend/scripts/run_tests.sh
+script: ./build.sh
 services:
   - mongodb

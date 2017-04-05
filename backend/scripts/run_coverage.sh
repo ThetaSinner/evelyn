@@ -9,3 +9,5 @@ for file in target/debug/*test*; do mkdir -p "target/cov/$(basename $file)"; kco
 
 echo "Killing server"
 kill -15 $server_pid
+
+pause
