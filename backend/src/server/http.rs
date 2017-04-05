@@ -38,7 +38,7 @@ impl HttpServer {
   }
 
   pub fn start(&self) {
-      let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
+      let listener = TcpListener::bind("backend:8080").unwrap();
 
       for stream in listener.incoming() {
           let router = self.router.clone();
@@ -46,6 +46,7 @@ impl HttpServer {
 
           match stream {
               Ok(stream) => {
+                  println!("Listening");
                   thread::spawn(|| {
                       read_request(stream, router, processor_data);
                   });

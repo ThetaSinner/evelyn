@@ -1,8 +1,0 @@
-version : "3"
-services:
-  dev_ui:
-    image: httpd:2.4
-    ports:
-      - "8080:80"
-    volumes:
-      - ./public/:/usr/local/apache2/htdocs/

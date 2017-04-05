@@ -1,0 +1,34 @@
+version : "3"
+services:
+  website:
+    image: httpd:2.4
+    ports:
+      - "8081:80"
+    volumes:
+      - ./dev_ui/public:/usr/local/apache2/htdocs
+    depends_on:
+      - mongodb
+      - backend
+  mongodb:
+    image: mongo:3.0
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - mongo_vol:/data/db
+  backend:
+    image: jimmycuadra/rust
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    volumes: 
+      - ./backend:/source
+      - ./backend/registry-cache:/root/.cargo
+    depends_on:
+      - mongodb
+    command: bash -c "cargo run"
+
+volumes:
+  mongo_vol:

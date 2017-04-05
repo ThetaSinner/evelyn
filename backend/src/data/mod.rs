@@ -28,7 +28,7 @@ pub struct MongoClient {
 
 impl MongoClient {
     pub fn new<'a>() -> Result<Self, &'a str> {
-        let client_result = Client::with_uri("mongodb://localhost:27017");
+        let client_result = Client::with_uri("mongodb://mongodb:27017");
 
         match client_result {
             Ok(client) => Ok(MongoClient{client : client}),
