@@ -14,6 +14,8 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+pub mod conf;
+
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
@@ -27,8 +29,9 @@ pub struct MongoClient {
 }
 
 impl MongoClient {
-    pub fn new<'a>() -> Result<Self, &'a str> {
-        let client_result = Client::with_uri("mongodb://localhost:27017");
+    pub fn new<'a>(conf: &conf::Conf) -> Result<Self, &'a str> {
+        let uri = conf.get_db_connnection_string();
+        let client_result = Client::with_uri(uri.as_str());
 
         match client_result {
             Ok(client) => Ok(MongoClient{client : client}),
