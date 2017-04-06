@@ -54,7 +54,6 @@ impl HttpServer {
 
           match stream {
               Ok(stream) => {
-                  println!("Listening");
                   thread::spawn(|| {
                       read_request(stream, router, processor_data);
                   });

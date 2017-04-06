@@ -1,9 +1,7 @@
-sudo: required
 language: rust
 services:
   - mongodb
 before_install:
   - cd ./backend
-  - pwd
 script: ./scripts/run_tests.sh
 
