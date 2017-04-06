@@ -29,16 +29,24 @@ use model;
 
 pub struct HttpServer {
   router: Arc<Router>,
-  processor_data: Arc<ProcessorData>
+  processor_data: Arc<ProcessorData>,
+  port: i64,
+  hostname: String,
 }
 
 impl HttpServer {
   pub fn new(router: Router, processor_data: ProcessorData) -> Self {
-    HttpServer{router: Arc::new(router), processor_data: Arc::new(processor_data)}
+    HttpServer{
+        router: Arc::new(router),
+        port: processor_data.conf.get_port(),
+        hostname: processor_data.conf.get_hostname(),
+        processor_data: Arc::new(processor_data),
+    }
   }
 
   pub fn start(&self) {
-      let listener = TcpListener::bind("backend:8080").unwrap();
+      let addr = format!("{}:{}", self.hostname, self.port);
+      let listener = TcpListener::bind(addr.as_str()).unwrap();
 
       for stream in listener.incoming() {
           let router = self.router.clone();

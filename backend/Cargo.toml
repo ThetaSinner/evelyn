@@ -17,5 +17,10 @@ rustc-serialize = "0.3"
 
 chrono = { version = "0.3", features = ["serde", "rustc-serialize"] }
 
+[dependencies.config]
+version = "0.4"
+default-features = false
+features = ["yaml", "yaml-rust"]
+
 [dev-dependencies]
 hyper = "0.10.5"

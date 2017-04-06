@@ -29,6 +29,8 @@ extern crate rustc_serialize;
 
 extern crate chrono;
 
+extern crate config;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -45,11 +47,18 @@ use server::routing::Router;
 pub fn hello_evelyn() {
   println!("Starting...");
 
-  let client = data::MongoClient::new().unwrap();
+  let conf = data::conf::Conf::new();
+
+  // this already returns a connection error on failure, just need to do something with it.
+  let client = data::MongoClient::new(&conf).unwrap();
 
   let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
 
-  let processor_data = ProcessorData{data_store: Arc::new(Mutex::new(client)), token_service: token_service};
+  let processor_data = ProcessorData{
+      data_store: Arc::new(Mutex::new(client)),
+      token_service: token_service,
+      conf: conf,
+  };
 
   let mut router = Router::new();
   processing::load_processors(&mut router);
