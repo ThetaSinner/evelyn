@@ -26,6 +26,9 @@ pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo,
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse,
     CouldNotDecodeTheRequestPayload(serde_json::Error),
+
+    // user
+    CreateUser(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -41,7 +44,11 @@ impl fmt::Display for EvelynServiceError {
 
             // Processing layer.
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) => {
-                write!(f, "100103")
+                write!(f, "100101")
+            },
+
+            EvelynServiceError::CreateUser(_) => {
+                write!(f, "100201")
             },
         }
     }
@@ -56,6 +63,8 @@ impl error::Error for EvelynServiceError {
                 "Evelyn tried to handle the request but hasn't managed to give anything back",
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) =>
                 "Could not decode the JSON request payload",
+            EvelynServiceError::CreateUser(_) =>
+                "Failed to create user",
         }
     }
 
@@ -64,6 +73,43 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => None,
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
+            EvelynServiceError::CreateUser(ref err) => Some(err),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum EvelynCoreError {
+    // user
+    WillNotCreateUserBecauseUserAlreadyExists,
+    FailedToCreateUser(EvelynDatabaseError),
+}
+
+impl fmt::Display for EvelynCoreError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
+                write!(f, "Will not create the requested user because that user already exists."),
+            EvelynCoreError::FailedToCreateUser(ref err) =>
+                write!(f, "Failed to create user: {}", err),
+        }
+    }
+}
+
+impl error::Error for EvelynCoreError {
+    fn description(&self) -> &str {
+        match *self {
+            EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
+                "Will not create the requested user because that user already exists.",
+            EvelynCoreError::FailedToCreateUser(_) =>
+                "Failed to create user",
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => None,
+            EvelynCoreError::FailedToCreateUser(ref err) => Some(err),
         }
     }
 }

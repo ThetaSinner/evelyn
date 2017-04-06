@@ -16,11 +16,13 @@
 
 use std::sync::Arc;
 
+use core::error_messages::EvelynCoreError;
+
 use model::{CreateUserModel, LogonUserModel, UserModel};
 use processing::ProcessorData;
 use model;
 
-pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> model::CreateUserResponseModel {
+pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
   let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
 
   let ds = processor_data.data_store.clone();
@@ -28,21 +30,16 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
 
   let user = data_store.find_user(&user_model.email_address);
   if user.is_some() {
-    model::CreateUserResponseModel{
-        error: Some(model::ErrorModel{
-            error_code: "100001".to_owned(),
-            error_message: "User already exists".to_owned()
-        })
-    }
+      Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
   }
   else {
     let error = data_store.insert_user(&user_model);
     if error.is_some() {
-        println!("Failed to insert user {}", error.unwrap());
-        model::CreateUserResponseModel{error:None} // TODO temp
+        Some(EvelynCoreError::FailedToCreateUser(error.unwrap()))
     }
     else {
-        model::CreateUserResponseModel{error:None}
+        // There were no errors.
+        None
     }
   }
 }
