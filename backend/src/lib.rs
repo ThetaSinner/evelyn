@@ -49,8 +49,11 @@ pub fn hello_evelyn() {
 
   let conf = data::conf::Conf::new();
 
-  // this already returns a connection error on failure, just need to do something with it.
-  let client = data::MongoClient::new(&conf).unwrap();
+  // Note this will not fail if MongoDB is not available.
+  let client = match data::MongoClient::new(&conf) {
+      Ok(client) => client,
+      Err(e) => panic!("Connection to the database failed {}", e)
+  };
 
   let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
 

@@ -36,8 +36,14 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
     }
   }
   else {
-    data_store.insert_user(&user_model);
-    model::CreateUserResponseModel{error:None}
+    let error = data_store.insert_user(&user_model);
+    if error.is_some() {
+        println!("Failed to insert user {}", error.unwrap());
+        model::CreateUserResponseModel{error:None} // TODO temp
+    }
+    else {
+        model::CreateUserResponseModel{error:None}
+    }
   }
 }
 

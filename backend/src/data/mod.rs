@@ -24,6 +24,8 @@ use bson;
 use model::UserModel;
 use model;
 
+use core::error_messages::EvelynDatabaseError;
+
 pub struct MongoClient {
     client: Client
 }
@@ -33,25 +35,28 @@ impl MongoClient {
         let uri = conf.get_db_connnection_string();
         let client_result = Client::with_uri(uri.as_str());
 
+        // Note that this will not fail if MongoDB is not available. There will only be an error
+        // if the client cannot be initialised properly. Expect failure when sending commands to
+        // the database.
         match client_result {
             Ok(client) => Ok(MongoClient{client : client}),
-            Err(_) => Err("Unable to connect to mongo")
+            Err(_) => Err("MongoDB driver failure")
         }
     }
 
-    pub fn insert_user(&mut self, user_model: &UserModel) {
+    pub fn insert_user(&mut self, user_model: &UserModel) -> Option<EvelynDatabaseError> {
         let collection = self.client.db("evelyn").collection("user");
 
         let bson_user_model = bson::to_bson(&user_model).unwrap();
 
         if let bson::Bson::Document(document) = bson_user_model {
           match collection.insert_one(document, None) {
-              Ok(_) => {},
-              // TODO this needs to return an error! a status code other than 200 neds to be returned if this happens
-              Err(e) => println!("Database Error: Insert error {}", e)
+              Ok(_) => None,
+              Err(e) => Some(EvelynDatabaseError::InsertUser(e))
           }
-        } else {
-          println!("Error converting the BSON object into a MongoDB document");
+        }
+        else {
+          Some(EvelynDatabaseError::SerialisationFailed)
         }
     }
 

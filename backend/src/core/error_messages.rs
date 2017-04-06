@@ -19,6 +19,8 @@ use std::fmt;
 
 use serde_json;
 
+use mongodb::error::Error as MongoDbError;
+
 #[derive(Debug)]
 pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo,
@@ -62,6 +64,41 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => None,
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum EvelynDatabaseError {
+    SerialisationFailed,
+    InsertUser(MongoDbError),
+}
+
+impl fmt::Display for EvelynDatabaseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            EvelynDatabaseError::SerialisationFailed =>
+                write!(f, "Failed to serialise data for storage."),
+            EvelynDatabaseError::InsertUser(ref e) =>
+                write!(f, "Failed to create record for new user\n {}", e),
+        }
+    }
+}
+
+impl error::Error for EvelynDatabaseError {
+    fn description(&self) -> &str {
+        match *self {
+            EvelynDatabaseError::SerialisationFailed =>
+                "Failed to serialise data for storage.",
+            EvelynDatabaseError::InsertUser(_) =>
+                "Failed to create record for new user",
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            EvelynDatabaseError::SerialisationFailed => None,
+            EvelynDatabaseError::InsertUser(ref err) => Some(err),
         }
     }
 }
