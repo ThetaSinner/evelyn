@@ -7,3 +7,4 @@ server_pid=$!
 cargo test
 
 kill -15 $server_pid
+
