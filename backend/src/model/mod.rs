@@ -19,12 +19,6 @@ use std::error::Error;
 use core::error_messages;
 
 #[derive(Serialize, Deserialize)]
-pub struct TestModel {
-    pub name: Option<String>,
-    pub hello: String,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct ErrorModel {
     #[serde(rename="ErrorCode")]
     pub error_code: String,
