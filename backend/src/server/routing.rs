@@ -15,12 +15,12 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::collections::HashMap;
-use processing::ProcessorData;
 use std::sync::Arc;
 
 use serde_json;
 
 use core::error_messages;
+use processing::ProcessorData;
 use model;
 
 pub struct RouterInput {

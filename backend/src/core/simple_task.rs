@@ -16,7 +16,6 @@
 
 use std::sync::Arc;
 use std::cmp::Ordering;
-
 use chrono::prelude::*;
 
 use processing::ProcessorData;

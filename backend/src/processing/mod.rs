@@ -14,9 +14,10 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use serde_json;
 use std::sync::Arc;
 use std::sync::Mutex;
+
+use serde_json;
 
 use server::routing::{Router, RouterInput, RouterOutput};
 use model;

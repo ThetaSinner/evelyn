@@ -14,25 +14,14 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)]
-extern crate bson;
+#[macro_use(bson, doc)] extern crate bson;
+#[macro_use] extern crate serde_derive;
 extern crate mongodb;
-
-#[macro_use]
 extern crate serde_json;
-
-#[macro_use]
-extern crate serde_derive;
-
 extern crate jsonwebtoken as jwt;
 extern crate rustc_serialize;
-
 extern crate chrono;
-
 extern crate config;
-
-use std::sync::Arc;
-use std::sync::Mutex;
 
 mod server;
 mod data;
@@ -40,6 +29,8 @@ mod processing;
 pub mod model;
 pub mod core;
 
+use std::sync::Arc;
+use std::sync::Mutex;
 use processing::ProcessorData;
 use server::http::HttpServer;
 use server::routing::Router;

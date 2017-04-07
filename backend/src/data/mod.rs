@@ -16,14 +16,12 @@
 
 pub mod conf;
 
+use bson;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
-use bson;
-
 use model;
 use model::user::{UserModel};
-
 use core::error_messages::EvelynDatabaseError;
 
 pub struct MongoClient {

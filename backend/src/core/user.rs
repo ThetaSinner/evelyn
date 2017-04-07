@@ -17,7 +17,6 @@
 use std::sync::Arc;
 
 use core::error_messages::EvelynCoreError;
-
 use model::user::{CreateUserModel, LogonUserModel, UserModel, LogonUserResponseModel};
 use processing::ProcessorData;
 
