@@ -23,7 +23,7 @@ extern crate hyper;
 
 #[test]
 pub fn create_user() {
-    let model = evelyn::model::CreateUserModel{
+    let model = evelyn::model::user::CreateUserModel{
         user_name: "The User Name".to_owned(),
         email_address: "The Email Address".to_owned(),
         password: "The Password".to_owned()

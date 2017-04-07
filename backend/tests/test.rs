@@ -22,7 +22,7 @@ use evelyn::core::token_service::TokenService;
 pub fn create_and_decode_session_token_using_the_token_service() {
     let token_service = TokenService::new(String::from("my secret token"));
 
-    let user = evelyn::model::UserModel{
+    let user = evelyn::model::user::UserModel{
         user_name: String::from("the username"),
         email_address: String::from("the email address"),
         password: String::from("the password"),
