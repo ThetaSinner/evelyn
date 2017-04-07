@@ -29,6 +29,8 @@ pub enum EvelynServiceError {
 
     // user
     CreateUser(EvelynCoreError),
+    LogonUser(EvelynCoreError),
+    FailedToLogonUser(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -50,6 +52,12 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::CreateUser(_) => {
                 write!(f, "100201")
             },
+            EvelynServiceError::LogonUser(_) => {
+                write!(f, "100202")
+            }
+            EvelynServiceError::FailedToLogonUser(_) => {
+                write!(f, "100203")
+            }
         }
     }
 }
@@ -65,6 +73,10 @@ impl error::Error for EvelynServiceError {
                 "Could not decode the JSON request payload",
             EvelynServiceError::CreateUser(_) =>
                 "Failed to create user",
+            EvelynServiceError::LogonUser(_) =>
+                "Invalid logon",
+            EvelynServiceError::FailedToLogonUser(_) =>
+                "Failed to logon user",
         }
     }
 
@@ -74,6 +86,8 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
             EvelynServiceError::CreateUser(ref err) => Some(err),
+            EvelynServiceError::LogonUser(ref err) => Some(err),
+            EvelynServiceError::FailedToLogonUser(ref err) => Some(err),
         }
     }
 }
@@ -82,7 +96,10 @@ impl error::Error for EvelynServiceError {
 pub enum EvelynCoreError {
     // user
     WillNotCreateUserBecauseUserAlreadyExists,
+    CannotCheckIfUserExistsSoWillNotCreateNewUser(EvelynDatabaseError),
     FailedToCreateUser(EvelynDatabaseError),
+    InvalidLogon,
+    FailedToLogonUser(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -90,8 +107,14 @@ impl fmt::Display for EvelynCoreError {
         match *self {
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
                 write!(f, "Will not create the requested user because that user already exists."),
+            EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(ref err) =>
+                write!(f, "Cannot check if the user exists so a new user will not be ceated: {}", err),
             EvelynCoreError::FailedToCreateUser(ref err) =>
                 write!(f, "Failed to create user: {}", err),
+            EvelynCoreError::InvalidLogon =>
+                write!(f, "Invalid logon"),
+            EvelynCoreError::FailedToLogonUser(ref err) =>
+                write!(f, "Failed to logon user: {}", err)
         }
     }
 }
@@ -101,15 +124,24 @@ impl error::Error for EvelynCoreError {
         match *self {
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
                 "Will not create the requested user because that user already exists.",
+            EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(_) =>
+                "Cannot check if the user exists so a new user will not be ceated.",
             EvelynCoreError::FailedToCreateUser(_) =>
                 "Failed to create user",
+            EvelynCoreError::InvalidLogon =>
+                "Invalid Logon",
+            EvelynCoreError::FailedToLogonUser(_) =>
+                "Failed to logon user",
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => None,
+            EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(ref err) => Some(err),
             EvelynCoreError::FailedToCreateUser(ref err) => Some(err),
+            EvelynCoreError::InvalidLogon => None,
+            EvelynCoreError::FailedToLogonUser(ref err) => Some(err),
         }
     }
 }
@@ -118,6 +150,7 @@ impl error::Error for EvelynCoreError {
 pub enum EvelynDatabaseError {
     SerialisationFailed,
     InsertUser(MongoDbError),
+    LookupUser(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -127,6 +160,8 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Failed to serialise data for storage."),
             EvelynDatabaseError::InsertUser(ref e) =>
                 write!(f, "Failed to create record for new user\n {}", e),
+            EvelynDatabaseError::LookupUser(ref e) =>
+                write!(f, "Failed to lookup user: {}", e),
         }
     }
 }
@@ -138,6 +173,8 @@ impl error::Error for EvelynDatabaseError {
                 "Failed to serialise data for storage.",
             EvelynDatabaseError::InsertUser(_) =>
                 "Failed to create record for new user",
+            EvelynDatabaseError::LookupUser(_) =>
+                "Failed to lookup user",
         }
     }
 
@@ -145,6 +182,7 @@ impl error::Error for EvelynDatabaseError {
         match *self {
             EvelynDatabaseError::SerialisationFailed => None,
             EvelynDatabaseError::InsertUser(ref err) => Some(err),
+            EvelynDatabaseError::LookupUser(ref err) => Some(err),
         }
     }
 }

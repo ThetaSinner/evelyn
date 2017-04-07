@@ -60,7 +60,7 @@ impl MongoClient {
         }
     }
 
-    pub fn find_user(&mut self, email_address: &String) -> Option<UserModel> {
+    pub fn find_user(&mut self, email_address: &String) -> Result<Option<UserModel>, EvelynDatabaseError> {
         let collection = self.client.db("evelyn").collection("user");
 
         let query = doc!{"emailAddress" => email_address};
@@ -69,15 +69,14 @@ impl MongoClient {
         match result {
             Ok(r) => {
                 if r.is_some() {
-                    Some(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
+                    Ok(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
                 }
                 else {
-                    None
+                    Ok(None)
                 }
             },
             Err(e) => {
-                println!("Failed to find user {}", e);
-                None
+                Err(EvelynDatabaseError::LookupUser(e))
             }
         }
     }

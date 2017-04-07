@@ -28,50 +28,52 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
   let ds = processor_data.data_store.clone();
   let mut data_store = ds.lock().unwrap();
 
-  let user = data_store.find_user(&user_model.email_address);
-  if user.is_some() {
-      Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
+  match data_store.find_user(&user_model.email_address) {
+      Ok(user) => {
+          if user.is_some() {
+              Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
+          }
+          else {
+            let error = data_store.insert_user(&user_model);
+            if error.is_some() {
+                Some(EvelynCoreError::FailedToCreateUser(error.unwrap()))
+            }
+            else {
+                // There were no errors.
+                None
+            }
+          }
+      },
+      Err(e) => {
+          Some(EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(e))
+      },
   }
-  else {
-    let error = data_store.insert_user(&user_model);
-    if error.is_some() {
-        Some(EvelynCoreError::FailedToCreateUser(error.unwrap()))
-    }
-    else {
-        // There were no errors.
-        None
-    }
-  }
-}
-
-pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> model::LogonUserResponseModel {
-  let user: Option<UserModel>;
-  {
-      let ds = processor_data.data_store.clone();
-      let mut data_store = ds.lock().unwrap();
-      user = data_store.find_user(&model.email_address);
   }
 
-  let mut response = None;
-  if user.is_some() {
-      let user = user.unwrap();
-      if user.password == model.password {
-          response = Some(model::LogonUserResponseModel {
-              token: Some(processor_data.token_service.create_session_token(&user)),
-              error: None
-          });
-      }
-  }
+pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<model::LogonUserResponseModel, EvelynCoreError> {
+  let ds = processor_data.data_store.clone();
+  let mut data_store = ds.lock().unwrap();
 
-  if !response.is_some() {
-      response = Some(model::LogonUserResponseModel {
-          token: None,
-          error: Some(model::ErrorModel {
-              error_code: "101001".to_owned(),
-              error_message: "Invalid logon".to_owned()
-          })
-      });
+  match data_store.find_user(&model.email_address) {
+      Ok(user) => {
+          if user.is_some() {
+              let user = user.unwrap();
+              if user.password == model.password {
+                  Ok(model::LogonUserResponseModel {
+                      token: Some(processor_data.token_service.create_session_token(&user)),
+                      error: None
+                  })
+              }
+              else {
+                  Err(EvelynCoreError::InvalidLogon)
+              }
+          }
+          else {
+              Err(EvelynCoreError::InvalidLogon)
+          }
+      },
+      Err(e) => {
+          Err(EvelynCoreError::FailedToLogonUser(e))
+      },
   }
-
-  response.unwrap()
 }

@@ -24,7 +24,7 @@ use data::MongoClient;
 use data::conf;
 use core::{user, simple_task};
 use core::token_service::TokenService;
-use core::error_messages::EvelynServiceError;
+use core::error_messages::{EvelynServiceError, EvelynCoreError};
 
 pub struct ProcessorData {
   pub data_store: Arc<Mutex<MongoClient>>,
@@ -47,6 +47,7 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
     Ok(request_model) => {
         let error = user::create_user(request_model, processor_data);
         if error.is_some() {
+            // TODO should return different error if user already exists rather than system failure.
             let model: model::ErrorModel = From::from(EvelynServiceError::CreateUser(error.unwrap()));
             RouterOutput {
                 response_body: serde_json::to_string(&model::CreateUserResponseModel {
@@ -78,21 +79,33 @@ fn logon_user_processor(router_input: RouterInput, processor_data: Arc<Processor
 
     match request_model_de {
       Ok(request_model) => {
-        let response = user::logon_user(request_model, processor_data);
-        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+        match user::logon_user(request_model, processor_data) {
+            Ok(response) => {
+                RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+            },
+            Err(e) => {
+                match e {
+                    EvelynCoreError::InvalidLogon => {
+                        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
+                            token: None,
+                            error: Some(From::from(EvelynServiceError::LogonUser(e)))
+                        }).unwrap()}
+                    },
+                    _ => {
+                        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
+                            token: None,
+                            error: Some(From::from(EvelynServiceError::FailedToLogonUser(e)))
+                        }).unwrap()}
+                    },
+                }
+            },
+        }
       },
       Err(e) => {
-        println!("Bad payload, {}", e);
-
-        let response = model::LogonUserResponseModel {
+        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
             token: None,
-            error: Some(model::ErrorModel {
-                error_code: "101002".to_owned(),
-                error_message: "Failed to process user logon".to_owned()
-            })
-        };
-
-        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+            error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
+        }).unwrap()}
       }
     }
 }
