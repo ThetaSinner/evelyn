@@ -21,8 +21,8 @@ use mongodb::db::ThreadedDatabase;
 
 use bson;
 
-use model::UserModel;
 use model;
+use model::user::{UserModel};
 
 use core::error_messages::EvelynDatabaseError;
 
@@ -81,7 +81,7 @@ impl MongoClient {
         }
     }
 
-    pub fn insert_simple_task(&mut self, simple_task_model: &model::SimpleTaskModel) -> Option<String> {
+    pub fn insert_simple_task(&mut self, simple_task_model: &model::simple_task::SimpleTaskModel) -> Option<String> {
         let collection = self.client.db("evelyn").collection("simpletask");
 
         let bson_simple_task_model = bson::to_bson(&simple_task_model).unwrap();
@@ -100,7 +100,7 @@ impl MongoClient {
         }
     }
 
-    pub fn lookup_simple_tasks(&mut self, simple_task_lookup_model: &model::SimpleTaskLookupModel) -> Option<Vec<model::SimpleTaskModel>> {
+    pub fn lookup_simple_tasks(&mut self, simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel) -> Option<Vec<model::simple_task::SimpleTaskModel>> {
         let collection = self.client.db("evelyn").collection("simpletask");
 
         let ref user_id = simple_task_lookup_model.user_id;
@@ -109,7 +109,7 @@ impl MongoClient {
 
         match cursor {
             Ok(c) => {
-                let docs: Vec<model::SimpleTaskModel> = c
+                let docs: Vec<model::simple_task::SimpleTaskModel> = c
                     .map(|x| {
                         match x {
                             Ok(x) => {

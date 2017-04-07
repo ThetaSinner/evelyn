@@ -41,23 +41,23 @@ pub fn load_processors(router: &mut Router) {
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
-  let request_model_decoded: Result<model::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
+  let request_model_decoded: Result<model::user::CreateUserModel,_> = serde_json::from_str(&router_input.request_body);
 
   match request_model_decoded {
     Ok(request_model) => {
         match user::create_user(request_model, processor_data) {
             None => {
-                RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {error: None}).unwrap()}
+                RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {error: None}).unwrap()}
             },
             Some(e) => {
                 match e {
                     EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => {
-                        RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {
+                        RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                             error: Some(From::from(EvelynServiceError::UserAlreadyExists(e)))
                         }).unwrap()}
                     },
                     _ => {
-                        RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {
+                        RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                             error: Some(From::from(EvelynServiceError::CreateUser(e)))
                         }).unwrap()}
                     },
@@ -68,7 +68,7 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
     Err(e) => {
         let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
         RouterOutput {
-            response_body: serde_json::to_string(&model::CreateUserResponseModel {
+            response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                 error: Some(model),
             }).unwrap()
         }
@@ -77,7 +77,7 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
 }
 
 fn logon_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
-    let request_model_de: Result<model::LogonUserModel,_> = serde_json::from_str(&router_input.request_body);
+    let request_model_de: Result<model::user::LogonUserModel,_> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
       Ok(request_model) => {
@@ -88,13 +88,13 @@ fn logon_user_processor(router_input: RouterInput, processor_data: Arc<Processor
             Err(e) => {
                 match e {
                     EvelynCoreError::InvalidLogon => {
-                        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
+                        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
                             token: None,
                             error: Some(From::from(EvelynServiceError::LogonUser(e)))
                         }).unwrap()}
                     },
                     _ => {
-                        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
+                        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
                             token: None,
                             error: Some(From::from(EvelynServiceError::FailedToLogonUser(e)))
                         }).unwrap()}
@@ -104,7 +104,7 @@ fn logon_user_processor(router_input: RouterInput, processor_data: Arc<Processor
         }
       },
       Err(e) => {
-        RouterOutput{response_body: serde_json::to_string(&model::LogonUserResponseModel {
+        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
             token: None,
             error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
         }).unwrap()}
@@ -113,7 +113,7 @@ fn logon_user_processor(router_input: RouterInput, processor_data: Arc<Processor
 }
 
 fn create_simple_task_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
-    let request_model_de: Result<model::CreateSimpleTaskModel,_> = serde_json::from_str(&router_input.request_body);
+    let request_model_de: Result<model::simple_task::CreateSimpleTaskModel,_> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
       Ok(request_model) => {
@@ -123,7 +123,7 @@ fn create_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
       Err(e) => {
         println!("Bad payload, {}", e);
 
-        let response = model::CreateSimpleTaskResponseModel {
+        let response = model::simple_task::CreateSimpleTaskResponseModel {
             error: Some(model::ErrorModel {
                 error_code: "102001".to_owned(),
                 error_message: "Failed to process create simple task".to_owned()
@@ -136,7 +136,7 @@ fn create_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
 }
 
 fn lookup_simple_task_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
-    let request_model_de: Result<model::LookupSimpleTaskRequestModel,_> = serde_json::from_str(&router_input.request_body);
+    let request_model_de: Result<model::simple_task::LookupSimpleTaskRequestModel,_> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
       Ok(request_model) => {
@@ -146,7 +146,7 @@ fn lookup_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
       Err(e) => {
         println!("Bad payload, {}", e);
 
-        let response = model::CreateSimpleTaskResponseModel {
+        let response = model::simple_task::CreateSimpleTaskResponseModel {
             error: Some(model::ErrorModel {
                 error_code: "102001".to_owned(),
                 error_message: "Failed to process create simple task".to_owned()

@@ -17,7 +17,8 @@
 use jwt::{encode, decode, Header, Algorithm};
 use jwt::errors::{Error};
 
-use model::{SessionTokenModel, UserModel};
+use model::{SessionTokenModel};
+use model::user::{UserModel};
 
 pub struct TokenService {
     private_key: String,

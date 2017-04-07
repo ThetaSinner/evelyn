@@ -36,8 +36,8 @@ use std::sync::Mutex;
 
 mod server;
 mod data;
-pub mod model;
 mod processing;
+pub mod model;
 pub mod core;
 
 use processing::ProcessorData;

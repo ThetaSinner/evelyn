@@ -18,9 +18,8 @@ use std::sync::Arc;
 
 use core::error_messages::EvelynCoreError;
 
-use model::{CreateUserModel, LogonUserModel, UserModel};
+use model::user::{CreateUserModel, LogonUserModel, UserModel, LogonUserResponseModel};
 use processing::ProcessorData;
-use model;
 
 pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
   let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
@@ -50,7 +49,7 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
   }
   }
 
-pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<model::LogonUserResponseModel, EvelynCoreError> {
+pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<LogonUserResponseModel, EvelynCoreError> {
   let ds = processor_data.data_store.clone();
   let mut data_store = ds.lock().unwrap();
 
@@ -59,7 +58,7 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
           if user.is_some() {
               let user = user.unwrap();
               if user.password == model.password {
-                  Ok(model::LogonUserResponseModel {
+                  Ok(LogonUserResponseModel {
                       token: Some(processor_data.token_service.create_session_token(&user)),
                       error: None
                   })

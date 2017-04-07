@@ -22,10 +22,10 @@ use chrono::prelude::*;
 use processing::ProcessorData;
 use model;
 
-pub fn create_simple_task(model: model::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> model::CreateSimpleTaskResponseModel {
+pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> model::simple_task::CreateSimpleTaskResponseModel {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
-  let simple_task_model = model::SimpleTaskModel{
+  let simple_task_model = model::simple_task::SimpleTaskModel{
     user_id: session_token_model.user_id,
     title: model.title,
     description: model.description,
@@ -37,7 +37,7 @@ pub fn create_simple_task(model: model::CreateSimpleTaskModel, processor_data: A
 
   let error = data_store.insert_simple_task(&simple_task_model);
   if error.is_some() {
-    model::CreateSimpleTaskResponseModel {
+    model::simple_task::CreateSimpleTaskResponseModel {
         error: Some(model::ErrorModel{
             error_code: "102002".to_owned(),
             error_message: "Failed to insert simple task".to_owned()
@@ -45,16 +45,16 @@ pub fn create_simple_task(model: model::CreateSimpleTaskModel, processor_data: A
     }
   }
   else {
-    model::CreateSimpleTaskResponseModel {
+    model::simple_task::CreateSimpleTaskResponseModel {
         error: None,
     }
   }
 }
 
-pub fn lookup_simple_tasks(model: model::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> model::LookupSimpleTaskResponseModel {
+pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> model::simple_task::LookupSimpleTaskResponseModel {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
-  let simple_task_lookup_model = model::SimpleTaskLookupModel {
+  let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
     user_id: session_token_model.user_id,
   };
 
@@ -77,13 +77,13 @@ pub fn lookup_simple_tasks(model: model::LookupSimpleTaskRequestModel, processor
           }
       });
 
-      model::LookupSimpleTaskResponseModel {
+      model::simple_task::LookupSimpleTaskResponseModel {
           tasks: tasks,
           error: None,
       }
   }
   else {
-      model::LookupSimpleTaskResponseModel {
+      model::simple_task::LookupSimpleTaskResponseModel {
           error: Some(model::ErrorModel{
               error_code: "103001".to_owned(),
               error_message: "Failed to lookup simple tasks".to_owned()
