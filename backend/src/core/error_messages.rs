@@ -29,6 +29,7 @@ pub enum EvelynServiceError {
 
     // user
     CreateUser(EvelynCoreError),
+    UserAlreadyExists(EvelynCoreError),
     LogonUser(EvelynCoreError),
     FailedToLogonUser(EvelynCoreError),
 }
@@ -52,11 +53,17 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::CreateUser(_) => {
                 write!(f, "100201")
             },
-            EvelynServiceError::LogonUser(_) => {
+
+            EvelynServiceError::UserAlreadyExists(_) => {
                 write!(f, "100202")
-            }
-            EvelynServiceError::FailedToLogonUser(_) => {
+            },
+
+            EvelynServiceError::LogonUser(_) => {
                 write!(f, "100203")
+            }, 
+
+            EvelynServiceError::FailedToLogonUser(_) => {
+                write!(f, "100204")
             }
         }
     }
@@ -73,6 +80,8 @@ impl error::Error for EvelynServiceError {
                 "Could not decode the JSON request payload",
             EvelynServiceError::CreateUser(_) =>
                 "Failed to create user",
+            EvelynServiceError::UserAlreadyExists(_) =>
+                "Failed to create user, a user with that name already exists",
             EvelynServiceError::LogonUser(_) =>
                 "Invalid logon",
             EvelynServiceError::FailedToLogonUser(_) =>
@@ -86,6 +95,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
             EvelynServiceError::CreateUser(ref err) => Some(err),
+            EvelynServiceError::UserAlreadyExists(ref err) => Some(err),
             EvelynServiceError::LogonUser(ref err) => Some(err),
             EvelynServiceError::FailedToLogonUser(ref err) => Some(err),
         }

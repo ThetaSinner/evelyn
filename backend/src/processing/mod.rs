@@ -45,22 +45,24 @@ fn create_user_processor(router_input: RouterInput, processor_data: Arc<Processo
 
   match request_model_decoded {
     Ok(request_model) => {
-        let error = user::create_user(request_model, processor_data);
-        if error.is_some() {
-            // TODO should return different error if user already exists rather than system failure.
-            let model: model::ErrorModel = From::from(EvelynServiceError::CreateUser(error.unwrap()));
-            RouterOutput {
-                response_body: serde_json::to_string(&model::CreateUserResponseModel {
-                    error: Some(model),
-                }).unwrap()
-            }
-        }
-        else {
-            RouterOutput{
-                response_body: serde_json::to_string(&model::CreateUserResponseModel {
-                    error: None,
-                }).unwrap()
-            }
+        match user::create_user(request_model, processor_data) {
+            None => {
+                RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {error: None}).unwrap()}
+            },
+            Some(e) => {
+                match e {
+                    EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => {
+                        RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {
+                            error: Some(From::from(EvelynServiceError::UserAlreadyExists(e)))
+                        }).unwrap()}
+                    },
+                    _ => {
+                        RouterOutput{response_body: serde_json::to_string(&model::CreateUserResponseModel {
+                            error: Some(From::from(EvelynServiceError::CreateUser(e)))
+                        }).unwrap()}
+                    },
+                }
+            },
         }
     },
     Err(e) => {
