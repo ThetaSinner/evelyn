@@ -62,7 +62,6 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
   let mut data_store = ds.lock().unwrap();
 
   let tasks = data_store.lookup_simple_tasks(&simple_task_lookup_model);
-  let limit = simple_task_lookup_model.limit;
   if tasks.is_some() {
     let mut tasks = tasks.unwrap();
     tasks.sort_by(|a, b| {
@@ -77,10 +76,6 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
             Ordering::Greater
         }
     });
-
-    if limit > 0 {
-        tasks.truncate(limit as usize);
-    }
 
     model::simple_task::LookupSimpleTaskResponseModel {
     tasks: tasks,

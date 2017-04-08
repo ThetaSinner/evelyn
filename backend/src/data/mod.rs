@@ -17,6 +17,7 @@
 pub mod conf;
 
 use bson;
+use mongodb;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
@@ -103,7 +104,13 @@ impl MongoClient {
 
         let ref user_id = simple_task_lookup_model.user_id;
         let query = doc!{"userId" => user_id};
-        let cursor = collection.find(Some(query), None);
+        let mut options = mongodb::coll::options::FindOptions::new();
+
+        if simple_task_lookup_model.limit > 0 {
+            options.limit = Some(simple_task_lookup_model.limit as i64);
+        }
+
+        let cursor = collection.find(Some(query), Some(options));
 
         match cursor {
             Ok(c) => {
