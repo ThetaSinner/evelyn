@@ -18,6 +18,7 @@ pub mod conf;
 
 use bson;
 use mongodb;
+use bson::{Bson, Document};
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
@@ -132,6 +133,37 @@ impl MongoClient {
             Err(e) => {
                 println!("Failed to lookup simple tasks {}", e);
                 None
+            }
+        }
+    }
+
+    pub fn update_simple_task(&mut self, simple_task_update_model: model::simple_task::SimpleTaskUpdateModel) -> Option<EvelynDatabaseError> {
+        let collection = self.client.db("evelyn").collection("simpletask");
+
+        let ref user_id = simple_task_update_model.user_id;
+        let ref task_id = simple_task_update_model.task_id;
+        let filter = doc!("userId" => user_id, "taskId" => task_id);
+
+        let mut update_query = Document::new();
+
+        if simple_task_update_model.title.is_some() {
+            update_query.insert("title", Bson::String(simple_task_update_model.title.unwrap()));
+        }
+        if simple_task_update_model.description.is_some() {
+            update_query.insert("description", Bson::String(simple_task_update_model.description.unwrap()));
+        }
+        if simple_task_update_model.due_date.is_some() {
+            update_query.insert("due_date", Bson::String(simple_task_update_model.due_date.unwrap()));
+        }
+
+        let mut set_update_query = Document::new();
+        set_update_query.insert("$set", update_query);
+
+        match collection.update_one(filter, set_update_query, None) {
+            Ok(_) => {None},
+            Err(e) => {
+                println!("{}", e);
+                Some(EvelynDatabaseError::UpdateSimpleTask(e))
             }
         }
     }

@@ -32,6 +32,9 @@ pub enum EvelynServiceError {
     UserAlreadyExists(EvelynCoreError),
     LogonUser(EvelynCoreError),
     FailedToLogonUser(EvelynCoreError),
+
+    // simple task
+    FailedToUpdateSimpleTask(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -60,11 +63,15 @@ impl fmt::Display for EvelynServiceError {
 
             EvelynServiceError::LogonUser(_) => {
                 write!(f, "100203")
-            }, 
+            },
 
             EvelynServiceError::FailedToLogonUser(_) => {
                 write!(f, "100204")
-            }
+            },
+
+            EvelynServiceError::FailedToUpdateSimpleTask(_) => {
+                write!(f, "100301")
+            },
         }
     }
 }
@@ -86,6 +93,8 @@ impl error::Error for EvelynServiceError {
                 "Invalid logon",
             EvelynServiceError::FailedToLogonUser(_) =>
                 "Failed to logon user",
+            EvelynServiceError::FailedToUpdateSimpleTask(_) =>
+                "Failed to update simple task",
         }
     }
 
@@ -98,6 +107,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::UserAlreadyExists(ref err) => Some(err),
             EvelynServiceError::LogonUser(ref err) => Some(err),
             EvelynServiceError::FailedToLogonUser(ref err) => Some(err),
+            EvelynServiceError::FailedToUpdateSimpleTask(ref err) => Some(err),
         }
     }
 }
@@ -110,6 +120,7 @@ pub enum EvelynCoreError {
     FailedToCreateUser(EvelynDatabaseError),
     InvalidLogon,
     FailedToLogonUser(EvelynDatabaseError),
+    FailedToUpdateSimpleTask(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -124,7 +135,9 @@ impl fmt::Display for EvelynCoreError {
             EvelynCoreError::InvalidLogon =>
                 write!(f, "Invalid logon"),
             EvelynCoreError::FailedToLogonUser(ref err) =>
-                write!(f, "Failed to logon user: {}", err)
+                write!(f, "Failed to logon user: {}", err),
+            EvelynCoreError::FailedToUpdateSimpleTask(ref err) =>
+                write!(f, "Failed to update task: {}", err),
         }
     }
 }
@@ -142,6 +155,8 @@ impl error::Error for EvelynCoreError {
                 "Invalid Logon",
             EvelynCoreError::FailedToLogonUser(_) =>
                 "Failed to logon user",
+            EvelynCoreError::FailedToUpdateSimpleTask(_) =>
+                "Failed to update task",
         }
     }
 
@@ -152,6 +167,7 @@ impl error::Error for EvelynCoreError {
             EvelynCoreError::FailedToCreateUser(ref err) => Some(err),
             EvelynCoreError::InvalidLogon => None,
             EvelynCoreError::FailedToLogonUser(ref err) => Some(err),
+            EvelynCoreError::FailedToUpdateSimpleTask(ref err) => Some(err),
         }
     }
 }
@@ -161,6 +177,7 @@ pub enum EvelynDatabaseError {
     SerialisationFailed,
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
+    UpdateSimpleTask(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -172,6 +189,8 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Failed to create record for new user\n {}", e),
             EvelynDatabaseError::LookupUser(ref e) =>
                 write!(f, "Failed to lookup user: {}", e),
+            EvelynDatabaseError::UpdateSimpleTask(ref e) =>
+                write!(f, "Failed to update simple task: {}", e),
         }
     }
 }
@@ -185,6 +204,8 @@ impl error::Error for EvelynDatabaseError {
                 "Failed to create record for new user",
             EvelynDatabaseError::LookupUser(_) =>
                 "Failed to lookup user",
+            EvelynDatabaseError::UpdateSimpleTask(_) =>
+                "Failed to update simple task",
         }
     }
 
@@ -193,6 +214,7 @@ impl error::Error for EvelynDatabaseError {
             EvelynDatabaseError::SerialisationFailed => None,
             EvelynDatabaseError::InsertUser(ref err) => Some(err),
             EvelynDatabaseError::LookupUser(ref err) => Some(err),
+            EvelynDatabaseError::UpdateSimpleTask(ref err) => Some(err),
         }
     }
 }

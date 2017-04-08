@@ -39,6 +39,7 @@ pub fn load_processors(router: &mut Router) {
 
   router.add_rule("/simpletask/create", create_simple_task_processor);
   router.add_rule("/simpletask/lookup", lookup_simple_task_processor);
+  router.add_rule("/simpletask/update", update_simple_task_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -155,6 +156,38 @@ fn lookup_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
         };
 
         RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+      }
+    }
+}
+
+fn update_simple_task_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+    let request_model_de: Result<model::simple_task::UpdateSimpleTaskRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+    match request_model_de {
+      Ok(request_model) => {
+        match simple_task::update_simple_task(request_model, processor_data) {
+            None => {
+                RouterOutput{response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
+                    error: None,
+                }).unwrap()}
+            },
+            Some(e) => {
+                let model: model::ErrorModel = From::from(EvelynServiceError::FailedToUpdateSimpleTask(e));
+                RouterOutput {
+                    response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
+                        error: Some(model),
+                    }).unwrap()
+                }
+            }
+        }
+      },
+      Err(e) => {
+          let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+          RouterOutput {
+              response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+                  error: Some(model),
+              }).unwrap()
+          }
       }
     }
 }

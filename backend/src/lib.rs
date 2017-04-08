@@ -22,6 +22,7 @@ extern crate jsonwebtoken as jwt;
 extern crate rustc_serialize;
 extern crate chrono;
 extern crate config;
+extern crate uuid;
 
 mod server;
 mod data;
