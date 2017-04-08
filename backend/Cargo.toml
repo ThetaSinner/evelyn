@@ -9,7 +9,7 @@ serde = "0.9.11"
 serde_derive = "0.9.11"
 serde_json = "0.9.9"
 
-bson = "0.4.3"
+bson = "0.6"
 mongodb = "0.2.2"
 
 jsonwebtoken = "1"
