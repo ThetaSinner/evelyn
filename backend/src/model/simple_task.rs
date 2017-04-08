@@ -56,6 +56,9 @@ pub struct SimpleTaskModel {
 pub struct LookupSimpleTaskRequestModel {
     #[serde(rename="Token")]
     pub token: String,
+
+    #[serde(rename="Limit")]
+    pub limit: u32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -71,4 +74,7 @@ pub struct LookupSimpleTaskResponseModel {
 pub struct SimpleTaskLookupModel {
     #[serde(rename="UserId")]
     pub user_id: String,
+
+    #[serde(rename="Limit")]
+    pub limit: u32,
 }

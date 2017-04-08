@@ -55,31 +55,37 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
 
   let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
     user_id: session_token_model.user_id,
+    limit: model.limit
   };
 
   let ds = processor_data.data_store.clone();
   let mut data_store = ds.lock().unwrap();
 
   let tasks = data_store.lookup_simple_tasks(&simple_task_lookup_model);
+  let limit = simple_task_lookup_model.limit;
   if tasks.is_some() {
-      let mut tasks = tasks.unwrap();
-      tasks.sort_by(|a, b| {
-          let a_date = a.due_date.parse::<DateTime<UTC>>();
-          let b_date = b.due_date.parse::<DateTime<UTC>>();
+    let mut tasks = tasks.unwrap();
+    tasks.sort_by(|a, b| {
+        let a_date = a.due_date.parse::<DateTime<UTC>>();
+        let b_date = b.due_date.parse::<DateTime<UTC>>();
 
-          // TODO unsafe
-          if a_date.unwrap().lt(&b_date.unwrap()) {
-              Ordering::Less
-          }
-          else {
-              Ordering::Greater
-          }
-      });
+        // TODO unsafe
+        if a_date.unwrap().lt(&b_date.unwrap()) {
+            Ordering::Less
+        }
+        else {
+            Ordering::Greater
+        }
+    });
 
-      model::simple_task::LookupSimpleTaskResponseModel {
-          tasks: tasks,
-          error: None,
-      }
+    if limit > 0 {
+        tasks.truncate(limit as usize);
+    }
+
+    model::simple_task::LookupSimpleTaskResponseModel {
+    tasks: tasks,
+    error: None,
+    }
   }
   else {
       model::simple_task::LookupSimpleTaskResponseModel {

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
+<head>
     <title>Evelyn Dev UI</title>
 
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
 
-    <link type="text/css" rel="stylesheet" href="css/foundation.css" />
-    <link type="text/css" rel="stylesheet" href="css/foundation-datepicker.css" />
+    <link type="text/css" rel="stylesheet" href="css/foundation.css"/>
+    <link type="text/css" rel="stylesheet" href="css/foundation-datepicker.css"/>
 
     <script src="js/jquery-3.1.1.js" type="text/javascript"></script>
     <script src="js/underscore.js" type="text/javascript"></script>
@@ -20,203 +20,206 @@
     <script src="js/moment-with-locales.js" type="text/javascript"></script>
 
     <script id="simple_task_template_definition" type="text/template">
-      <div class="callout">
-        <h5><%= data.title %></h5>
-        <p><%= data.description %></p>
-        <p><%= data.dueDate %></p>
-      </div>
+        <div class="callout">
+            <h5><%= data.title %></h5>
+            <p><%= data.description %></p>
+            <p><%= data.dueDate %></p>
+        </div>
     </script>
 
     <script>
-      // TODO this needs to be a user setting, ideally collected at create user and
-      // with some option to update later.
-      var date_format = "dd/mm/yyyy hh:ii";
-      // TODO derive this from the above.
-      var moment_date_format = "DD/MM/YYYY HH:mm";
+        // TODO this needs to be a user setting, ideally collected at create user and
+        // with some option to update later.
+        var date_format = "dd/mm/yyyy hh:ii";
+        // TODO derive this from the above.
+        var moment_date_format = "DD/MM/YYYY HH:mm";
 
+        var templates = {};
 
-      var templates = {};
-
-      function render_simple_task(data) {
-        if (!templates.simple_task_template) {
-          templates.simple_task_template = _.template($("#simple_task_template_definition").text(), {variable:"data"});
-        }
-
-        return templates.simple_task_template(data);
-      }
-
-      function process_response(response) {
-        if (response.hasOwnProperty("Token") && response.Token !== null) {
-          localStorage.token = response.Token;
-        }
-
-        if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
-          var target = $("#target_for_simple_tasks");
-          target.empty();
-          var tasks = response.SimpleTasks;
-          for (var i = 0; i < tasks.length; i++) {
-            tasks[i]['dueDate'] = moment(tasks[i]['dueDate']).format(moment_date_format);
-
-            target.append(render_simple_task(tasks[i]));
-          }
-        }
-      }
-
-      function process_request(request) {
-        if (localStorage.token) {
-          request.Token = localStorage.token;
-        }
-
-        for (var attr in request) {
-          if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-            request[attr] = moment(request[attr], moment_date_format).toISOString();
-          }
-        }
-
-        return request;
-      }
-
-      function add_submit_hook(form_id) {
-        $(form_id).on("submit", function (event) {
-          event.preventDefault();
-
-          var form_selector = $(this);
-
-          var url = "http://localhost:8080"+form_selector.attr("action");
-          var form_data = form_selector.serializeArray();
-
-          var form_submit_data = {};
-          for (var i = 0; i < form_data.length; i++) {
-            form_submit_data[form_data[i].name] = form_data[i].value;
-          }
-
-          form_submit_data = process_request(form_submit_data);
-          $.post(url, JSON.stringify(form_submit_data), function (response) {
-            console.log(response);
-
-            process_response(response);
-
-            $("#json-response").val(JSON.stringify(response, null, 4));
-
-            if (response.hasOwnProperty("Error") && response.Error != null) {
-              var status_label = $("#status-label");
-              status_label.removeClass("success");
-              status_label.addClass("alert");
-              status_label.text(response.Error.ErrorCode);
-            }
-            else {
-              var status_label = $("#status-label");
-              status_label.removeClass("alert");
-              status_label.addClass("success");
-              status_label.text("Success");
+        function render_simple_task(data) {
+            if (!templates.simple_task_template) {
+                templates.simple_task_template = _.template($("#simple_task_template_definition").text(), {variable: "data"});
             }
 
-          }, "json");
+            return templates.simple_task_template(data);
+        }
+
+        function process_response(response) {
+            if (response.hasOwnProperty("Token") && response.Token !== null) {
+                localStorage.token = response.Token;
+            }
+
+            if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
+                var target = $("#target_for_simple_tasks");
+                target.empty();
+                var tasks = response.SimpleTasks;
+                for (var i = 0; i < tasks.length; i++) {
+                    tasks[i]['dueDate'] = moment(tasks[i]['dueDate']).format(moment_date_format);
+
+                    target.append(render_simple_task(tasks[i]));
+                }
+            }
+        }
+
+        function process_request(request) {
+            if (localStorage.token) {
+                request.Token = localStorage.token;
+            }
+
+            for (var attr in request) {
+                if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
+                    request[attr] = moment(request[attr], moment_date_format).toISOString();
+                }
+            }
+
+            return request;
+        }
+
+        function add_submit_hook(form_id) {
+            $(form_id).on("submit", function (event) {
+                event.preventDefault();
+
+                var form_selector = $(this);
+
+                var url = "http://localhost:8080" + form_selector.attr("action");
+                var form_data = form_selector.serializeArray();
+
+                var form_submit_data = {};
+                for (var i = 0; i < form_data.length; i++) {
+                    form_submit_data[form_data[i].name] = form_data[i].value;
+                }
+
+                form_submit_data = process_request(form_submit_data);
+                $.post(url, JSON.stringify(form_submit_data), function (response) {
+                    console.log(response);
+
+                    process_response(response);
+
+                    $("#json-response").val(JSON.stringify(response, null, 4));
+
+                    if (response.hasOwnProperty("Error") && response.Error != null) {
+                        var status_label = $("#status-label");
+                        status_label.removeClass("success");
+                        status_label.addClass("alert");
+                        status_label.text(response.Error.ErrorCode);
+                    }
+                    else {
+                        var status_label = $("#status-label");
+                        status_label.removeClass("alert");
+                        status_label.addClass("success");
+                        status_label.text("Success");
+                    }
+
+                }, "json");
+            });
+        }
+
+        $(document).ready(function () {
+            if (typeof(Storage) === "undefined") {
+                $("body").text("Local storage not available in this environment, cannot function correctly.");
+                return;
+            }
+
+            $(document).foundation();
+
+            $(".date-input").fdatepicker({
+                initialDate: moment().hour(12).minute(0).add(1, 'days').format(moment_date_format),
+                format: date_format,
+                disableDblClickSelection: true,
+                leftArrow: '<<',
+                rightArrow: '>>',
+                closeIcon: 'X',
+                closeButton: true,
+                pickTime: true,
+            });
+
+            add_submit_hook("#form_create_user");
+            add_submit_hook("#form_logon_user");
+            add_submit_hook("#form_create_simple_task");
+            add_submit_hook("#form_lookup_simple_tasks");
         });
-      }
-
-      $(document).ready(function () {
-          if (typeof(Storage) === "undefined") {
-            $("body").text("Local storage not available in this environment, cannot function correctly.");
-            return;
-          }
-
-          $(document).foundation();
-
-          $(".date-input").fdatepicker({
-            initialDate: moment().hour(12).minute(0).add(1, 'days').format(moment_date_format),
-            format: date_format,
-            disableDblClickSelection: true,
-            leftArrow:'<<',
-          	rightArrow:'>>',
-          	closeIcon:'X',
-          	closeButton: true,
-            pickTime: true,
-          });
-
-          add_submit_hook("#form_create_user");
-          add_submit_hook("#form_logon_user");
-          add_submit_hook("#form_create_simple_task");
-          add_submit_hook("#form_lookup_simple_tasks");
-      });
     </script>
-  </head>
-  <body>
-    <div class="row" id="notification-area">
-      <textarea id="json-response" rows="5"></textarea>
-      <div class="column">
+</head>
+<body>
+<div id="notification-area">
+    <textarea id="json-response" rows="5"></textarea>
+    <div class=" row column">
         <span>Last request status: <span id="status-label" class="label">None</span></span>
-      </div>
     </div>
-    <br>
-    <div class="row" data-equalizer>
-      <div class="large-6 columns callout"  data-equalizer-watch>
+</div>
+<br>
+<div class="row" data-equalizer>
+    <div class="large-6 columns callout" data-equalizer-watch>
         <div class=tile-container>
-          <h5>Create user</h5>
-          <form id="form_create_user" action="/user/create" method="post">
-            <label class="tile-label">User Name
-              <input name="UserName" type="text" placeholder="User Name">
-            </label>
-            <label class="tile-label">E-Mail Address
-              <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-            </label>
-            <label class="tile-label">Password
-              <input name="Password" type="text" placeholder="Password">
-            </label>
+            <h5>Create user</h5>
+            <form id="form_create_user" action="/user/create" method="post">
+                <label class="tile-label">User Name
+                    <input name="UserName" type="text" placeholder="User Name">
+                </label>
+                <label class="tile-label">E-Mail Address
+                    <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                </label>
+                <label class="tile-label">Password
+                    <input name="Password" type="text" placeholder="Password">
+                </label>
 
-            <input type="submit" class="button" value="Create" />
-          </form>
+                <input type="submit" class="button" value="Create"/>
+            </form>
         </div>
-      </div>
-      <div class="large-6 columns callout" data-equalizer-watch>
-        <div class="tile-container">
-          <h5>Logon user</h5>
-          <form id="form_logon_user" action="/user/logon", method="post">
-            <label class="tile-label">E-Mail Address
-              <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-            </label>
-            <label class="tile-label">Password
-              <input name="Password" type="text" placeholder="Password">
-            </label>
-
-            <input type="submit" class="button" value="Logon" />
-          </form>
-        </div>
-      </div>
     </div>
-
-    <div class="row">
-      <div class="large-12 columns callout">
+    <div class="large-6 columns callout" data-equalizer-watch>
         <div class="tile-container">
-          <h5>Create Simple task</h5>
-          <form id="form_create_simple_task" action="/simpletask/create", method="post">
-            <label class="tile-label">Title
-              <input name="Title" type="text" placeholder="Title">
-            </label>
-            <label class="tile-label">Description
-              <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
-            </label>
-            <label class="tile-label">Due Date
-              <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
-            </label>
+            <h5>Logon user</h5>
+            <form id="form_logon_user" action="/user/logon" method="post">
+                <label class="tile-label">E-Mail Address
+                    <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                </label>
+                <label class="tile-label">Password
+                    <input name="Password" type="text" placeholder="Password">
+                </label>
 
-            <input type="submit" class="button" value="Create" />
-          </form>
+                <input type="submit" class="button" value="Logon"/>
+            </form>
         </div>
-      </div>
     </div>
+</div>
 
-    <div class="row">
-      <div class="large-12 columns callout">
+<div class="row">
+    <div class="large-12 columns callout">
         <div class="tile-container">
-          <h5>Lookup simple tasks</h5>
-          <form id="form_lookup_simple_tasks" action="/simpletask/lookup", method="post">
-            <input type="submit" class="button" value="Lookup" />
-          </form>
+            <h5>Create Simple task</h5>
+            <form id="form_create_simple_task" action="/simpletask/create" method="post">
+                <label class="tile-label">Title
+                    <input name="Title" type="text" placeholder="Title">
+                </label>
+                <label class="tile-label">Description
+                    <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
+                </label>
+                <label class="tile-label">Due Date
+                    <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
+                </label>
 
-          <div id="target_for_simple_tasks"></div>
+                <input type="submit" class="button" value="Create"/>
+            </form>
         </div>
-      </div>
     </div>
-  </body>
+</div>
+
+<div class="row">
+    <div class="large-12 columns callout">
+        <div class="tile-container">
+            <h5>Lookup simple tasks</h5>
+            <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
+                <input type="submit" class="button" value="Lookup"/>
+                <label>
+                    Limit
+                    <input type="number" min="0" name="Limit"/>
+                </label>
+            </form>
+
+            <div id="target_for_simple_tasks"></div>
+        </div>
+    </div>
+</div>
+</body>
 </html>
