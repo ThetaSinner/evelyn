@@ -2,25 +2,28 @@
 
 name = "evelyn"
 version = "0.0.1"
-authors = ["Gregory Jensen <greatdjonfire@hotmail.co.uk>"]
+authors = [
+  "Gregory Jensen <greatdjonfire@hotmail.co.uk>",
+  "Dylan Clarke <dylcla@me.com>"
+  ]
 
 [dependencies]
-serde = "0.9.11"
-serde_derive = "0.9.11"
-serde_json = "0.9.9"
+serde = "0.*"
+serde_derive = "0.*"
+serde_json = "0.*"
 
-bson = "0.6"
-mongodb = "0.2.2"
+bson = "0.*"
+mongodb = "0.*"
 
-jsonwebtoken = "1"
-rustc-serialize = "0.3"
+jsonwebtoken = "1.*"
+rustc-serialize = "0.*"
 
-chrono = { version = "0.3", features = ["serde", "rustc-serialize"] }
+chrono = { version = "0.*", features = ["serde", "rustc-serialize"] }
 
 [dependencies.config]
-version = "0.4"
+version = "0.*"
 default-features = false
 features = ["yaml", "yaml-rust"]
 
 [dev-dependencies]
-hyper = "0.10.5"
+hyper = "0.*"
