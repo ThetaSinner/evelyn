@@ -142,13 +142,15 @@
     </script>
   </head>
   <body>
-    <div id="notification-area">
+    <div class="row" id="notification-area">
       <textarea id="json-response" rows="5"></textarea>
-      <span>Last request status: <span id="status-label" class="label">None</span></span>
+      <div class="column">
+        <span>Last request status: <span id="status-label" class="label">None</span></span>
+      </div>
     </div>
-
-    <div class="row">
-      <div class="large-6 columns">
+    <br>
+    <div class="row" data-equalizer>
+      <div class="large-6 columns callout"  data-equalizer-watch>
         <div class=tile-container>
           <h5>Create user</h5>
           <form id="form_create_user" action="/user/create" method="post">
@@ -166,7 +168,7 @@
           </form>
         </div>
       </div>
-      <div class="large-6 columns">
+      <div class="large-6 columns callout" data-equalizer-watch>
         <div class="tile-container">
           <h5>Logon user</h5>
           <form id="form_logon_user" action="/user/logon", method="post">
@@ -184,7 +186,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns">
+      <div class="large-12 columns callout">
         <div class="tile-container">
           <h5>Create Simple task</h5>
           <form id="form_create_simple_task" action="/simpletask/create", method="post">
@@ -205,7 +207,7 @@
     </div>
 
     <div class="row">
-      <div class="large-12 columns">
+      <div class="large-12 columns callout">
         <div class="tile-container">
           <h5>Lookup simple tasks</h5>
           <form id="form_lookup_simple_tasks" action="/simpletask/lookup", method="post">
