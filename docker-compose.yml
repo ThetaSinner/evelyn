@@ -28,7 +28,7 @@ services:
       - ./backend/registry-cache:/root/.cargo
     depends_on:
       - mongodb
-    command: bash -c "cargo run"
+    command: bash -c "cargo run -j 8"
 
 volumes:
   mongo_vol:
