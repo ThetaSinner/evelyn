@@ -19,20 +19,20 @@ use std::sync::Arc;
 use core::error_messages::EvelynCoreError;
 use model::user::{CreateUserModel, LogonUserModel, UserModel, LogonUserResponseModel};
 use processing::ProcessorData;
+use data;
 
 pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
   let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
 
   let ds = processor_data.data_store.clone();
-  let mut data_store = ds.lock().unwrap();
 
-  match data_store.find_user(&user_model.email_address) {
+  match data::find_user(&ds, &user_model.email_address) {
       Ok(user) => {
           if user.is_some() {
               Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
           }
           else {
-            let error = data_store.insert_user(&user_model);
+            let error = data::insert_user(&ds, &user_model);
             if error.is_some() {
                 Some(EvelynCoreError::FailedToCreateUser(error.unwrap()))
             }
@@ -50,9 +50,8 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
 
 pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<LogonUserResponseModel, EvelynCoreError> {
   let ds = processor_data.data_store.clone();
-  let mut data_store = ds.lock().unwrap();
 
-  match data_store.find_user(&model.email_address) {
+  match data::find_user(&ds, &model.email_address) {
       Ok(user) => {
           if user.is_some() {
               let user = user.unwrap();

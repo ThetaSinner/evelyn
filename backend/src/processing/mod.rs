@@ -15,20 +15,19 @@
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use std::sync::Arc;
-use std::sync::Mutex;
 
 use serde_json;
 
 use server::routing::{Router, RouterInput, RouterOutput};
 use model;
-use data::MongoClient;
+use mongodb::{Client};
 use data::conf;
 use core::{user, simple_task};
 use core::token_service::TokenService;
 use core::error_messages::{EvelynServiceError, EvelynCoreError};
 
 pub struct ProcessorData {
-  pub data_store: Arc<Mutex<MongoClient>>,
+  pub data_store: Client,
   pub token_service: TokenService,
   pub conf: conf::Conf,
 }

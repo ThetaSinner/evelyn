@@ -30,8 +30,8 @@ mod processing;
 pub mod model;
 pub mod core;
 
-use std::sync::Arc;
-use std::sync::Mutex;
+use mongodb::{Client, ThreadedClient};
+
 use processing::ProcessorData;
 use server::http::HttpServer;
 use server::routing::Router;
@@ -40,9 +40,9 @@ pub fn hello_evelyn() {
   println!("Starting...");
 
   let conf = data::conf::Conf::new();
-
+  let uri = conf.get_db_connnection_string();
   // Note this will not fail if MongoDB is not available.
-  let client = match data::MongoClient::new(&conf) {
+  let client = match Client::with_uri(uri.as_str()) {
       Ok(client) => client,
       Err(e) => panic!("Connection to the database failed {}", e)
   };
@@ -50,7 +50,7 @@ pub fn hello_evelyn() {
   let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
 
   let processor_data = ProcessorData{
-      data_store: Arc::new(Mutex::new(client)),
+      data_store: client,
       token_service: token_service,
       conf: conf,
   };

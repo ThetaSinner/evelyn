@@ -20,6 +20,7 @@ use std::cmp::Ordering;
 use chrono::prelude::*;
 use uuid::{Uuid, NAMESPACE_DNS};
 
+use data;
 use processing::ProcessorData;
 use model;
 use core::error_messages::EvelynCoreError;
@@ -37,10 +38,9 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, proc
     due_date: model.due_date,
   };
 
-  let ds = processor_data.data_store.clone();
-  let mut data_store = ds.lock().unwrap();
+  let ds = processor_data.data_store.clone(); 
 
-  let error = data_store.insert_simple_task(&simple_task_model);
+  let error = data::insert_simple_task(&ds, &simple_task_model);
   if error.is_some() {
     model::simple_task::CreateSimpleTaskResponseModel {
         error: Some(model::ErrorModel{
@@ -65,9 +65,8 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
   };
 
   let ds = processor_data.data_store.clone();
-  let mut data_store = ds.lock().unwrap();
 
-  let tasks = data_store.lookup_simple_tasks(&simple_task_lookup_model);
+  let tasks = data::lookup_simple_tasks(&ds, &simple_task_lookup_model);
   if tasks.is_some() {
     let mut tasks = tasks.unwrap();
     tasks.sort_by(|a, b| {
@@ -111,9 +110,8 @@ pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestMode
     };
 
     let ds = processor_data.data_store.clone();
-    let mut data_store = ds.lock().unwrap();
 
-    match data_store.update_simple_task(simple_task_update_model) {
+    match data::update_simple_task(&ds, simple_task_update_model) {
         None => None,
         Some(e) => {
             Some(EvelynCoreError::FailedToUpdateSimpleTask(e))
