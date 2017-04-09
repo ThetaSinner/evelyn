@@ -53,6 +53,9 @@ pub struct SimpleTaskModel {
 
     #[serde(rename="dueDate")]
     pub due_date: String,
+
+    #[serde(rename="completed")]
+    pub completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -98,6 +101,9 @@ pub struct UpdateSimpleTaskRequestModel {
 
     #[serde(rename="NewDueDate")]
     pub new_due_date: Option<String>,
+
+    #[serde(rename="NewCompleted")]
+    pub new_completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -122,4 +128,7 @@ pub struct SimpleTaskUpdateModel {
 
     #[serde(rename="dueDate")]
     pub due_date: Option<String>,
+
+    #[serde(rename="completed")]
+    pub completed: bool,
 }

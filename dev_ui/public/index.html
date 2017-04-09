@@ -24,7 +24,13 @@
             <h5><%= data.title %></h5>
             <p><%= data.description %></p>
             <p><%= data.dueDate %></p>
-        </div>
+            <label>Completed:
+              <% if (data.completed) {%>
+                <input type="checkbox" checked disabled>
+              <% } else {%>
+              <input type="checkbox" disabled>
+              <% } %>
+        </div></label>
     </script>
 
     <script>

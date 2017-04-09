@@ -36,9 +36,10 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, proc
     title: model.title,
     description: model.description,
     due_date: model.due_date,
+    completed: false,
   };
 
-  let ds = processor_data.data_store.clone(); 
+  let ds = processor_data.data_store.clone();
 
   let error = data::insert_simple_task(&ds, &simple_task_model);
   if error.is_some() {
@@ -107,6 +108,7 @@ pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestMode
       title: model.new_title,
       description: model.new_description,
       due_date: model.new_due_date,
+      completed: model.new_completed,
     };
 
     let ds = processor_data.data_store.clone();
