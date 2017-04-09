@@ -23,13 +23,12 @@ services:
       - "8080:8080"
     expose:
       - "8080"
-    volumes: 
+    volumes:
       - ./backend:/source
-      - ./backend/registry-cache:/root/.cargo
+      - ~/.cargo:/root/.cargo
     depends_on:
       - mongodb
     command: bash -c "cargo run -j 8"
 
 volumes:
   mongo_vol:
-    
