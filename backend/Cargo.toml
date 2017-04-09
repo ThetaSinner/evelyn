@@ -3,8 +3,8 @@
 name = "evelyn"
 version = "0.0.1"
 authors = [
-  "Gregory Jensen <greatdjonfire@hotmail.co.uk>",
-  "Dylan Clarke <dylcla@me.com>"
+  "ThetaSinner <greatdjonfire@hotmail.co.uk>",
+  "SubXaero <dylcla@me.com>"
   ]
 
 [dependencies]
