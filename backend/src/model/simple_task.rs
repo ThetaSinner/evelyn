@@ -42,6 +42,9 @@ pub struct SimpleTaskModel {
     #[serde(rename="userId")]
     pub user_id: String,
 
+    #[serde(rename="taskId")]
+    pub task_id: String,
+
     #[serde(rename="title")]
     pub title: String,
 
@@ -77,4 +80,46 @@ pub struct SimpleTaskLookupModel {
 
     #[serde(rename="Limit")]
     pub limit: u32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateSimpleTaskRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="TaskId")]
+    pub task_id: String,
+
+    #[serde(rename="NewTitle")]
+    pub new_title: Option<String>,
+
+    #[serde(rename="NewDescription")]
+    pub new_description: Option<String>,
+
+    #[serde(rename="NewDueDate")]
+    pub new_due_date: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateSimpleTaskResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SimpleTaskUpdateModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+
+    #[serde(rename="taskId")]
+    pub task_id: String,
+
+    #[serde(rename="title")]
+    pub title: Option<String>,
+
+    #[serde(rename="description")]
+    pub description: Option<String>,
+
+    #[serde(rename="dueDate")]
+    pub due_date: Option<String>,
 }

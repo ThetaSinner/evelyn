@@ -16,16 +16,22 @@
 
 use std::sync::Arc;
 use std::cmp::Ordering;
+
 use chrono::prelude::*;
+use uuid::{Uuid, NAMESPACE_DNS};
 
 use processing::ProcessorData;
 use model;
+use core::error_messages::EvelynCoreError;
 
 pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> model::simple_task::CreateSimpleTaskResponseModel {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
+  let task_id = Uuid::new_v5(&NAMESPACE_DNS, "evelyn-lang.org");
+
   let simple_task_model = model::simple_task::SimpleTaskModel{
     user_id: session_token_model.user_id,
+    task_id: format!("{}", task_id),
     title: model.title,
     description: model.description,
     due_date: model.due_date,
@@ -91,4 +97,26 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
           tasks: Vec::new()
       }
   }
+}
+
+pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
+    let session_token_model = processor_data.token_service.extract_session_token(&model.token);
+
+    let simple_task_update_model = model::simple_task::SimpleTaskUpdateModel {
+      user_id: session_token_model.user_id,
+      task_id: model.task_id,
+      title: model.new_title,
+      description: model.new_description,
+      due_date: model.new_due_date,
+    };
+
+    let ds = processor_data.data_store.clone();
+    let mut data_store = ds.lock().unwrap();
+
+    match data_store.update_simple_task(simple_task_update_model) {
+        None => None,
+        Some(e) => {
+            Some(EvelynCoreError::FailedToUpdateSimpleTask(e))
+        }
+    }
 }
