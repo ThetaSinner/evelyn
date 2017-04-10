@@ -65,6 +65,9 @@ pub struct LookupSimpleTaskRequestModel {
 
     #[serde(rename="Limit")]
     pub limit: u32,
+
+    #[serde(rename="ShowCompleted")]
+    pub show_completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -83,6 +86,9 @@ pub struct SimpleTaskLookupModel {
 
     #[serde(rename="Limit")]
     pub limit: u32,
+
+    #[serde(rename="ShowCompleted")]
+    pub show_completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]

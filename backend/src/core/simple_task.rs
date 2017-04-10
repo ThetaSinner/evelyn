@@ -62,7 +62,8 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
 
   let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
     user_id: session_token_model.user_id,
-    limit: model.limit
+    limit: model.limit,
+    show_completed: model.show_completed,
   };
 
   let ds = processor_data.data_store.clone();
@@ -83,8 +84,17 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
         }
     });
 
+    let mut filtered_tasks : Vec<model::simple_task::SimpleTaskModel> = Vec::new();
+    for x in tasks {
+        if simple_task_lookup_model.show_completed {
+            filtered_tasks.push(x);
+        } else if !simple_task_lookup_model.show_completed && !x.completed {
+            filtered_tasks.push(x);
+        }
+    }
+
     model::simple_task::LookupSimpleTaskResponseModel {
-    tasks: tasks,
+    tasks: filtered_tasks,
     error: None,
     }
   }

@@ -92,6 +92,9 @@
 
                 var form_submit_data = {};
                 for (var i = 0; i < form_data.length; i++) {
+                    if (form_data[i].value == "on") {
+                      form_data[i].value = "true";
+                    }
                     form_submit_data[form_data[i].name] = form_data[i].value;
                 }
 
@@ -217,6 +220,11 @@
             <h5>Lookup simple tasks</h5>
             <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
                 <input type="submit" class="button" value="Lookup"/>
+                <label>
+                    Show Completed
+                    <input type="hidden" name="ShowCompleted" value="false" />
+                    <input type="checkbox" name="ShowCompleted"/>
+                </label>
                 <label>
                     Limit
                     <input type="number" min="0" value="0" name="Limit"/>
