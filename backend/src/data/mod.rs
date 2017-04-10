@@ -17,7 +17,6 @@
 pub mod conf;
 
 use bson;
-use mongodb;
 use bson::{Bson, Document};
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
@@ -87,13 +86,8 @@ pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::s
 
     let ref user_id = simple_task_lookup_model.user_id;
     let query = doc!{"userId" => user_id};
-    let mut options = mongodb::coll::options::FindOptions::new();
 
-    if simple_task_lookup_model.limit > 0 {
-        options.limit = Some(simple_task_lookup_model.limit as i64);
-    }
-
-    let cursor = collection.find(Some(query), Some(options));
+    let cursor = collection.find(Some(query), None);
 
     match cursor {
         Ok(c) => {

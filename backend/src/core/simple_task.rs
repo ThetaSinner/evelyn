@@ -93,6 +93,10 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
         }
     }
 
+    if simple_task_lookup_model.limit > 0 {
+        filtered_tasks.truncate(simple_task_lookup_model.limit as usize);
+    }
+
     model::simple_task::LookupSimpleTaskResponseModel {
     tasks: filtered_tasks,
     error: None,
