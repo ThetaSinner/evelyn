@@ -23,7 +23,6 @@ extern crate rustc_serialize;
 extern crate chrono;
 extern crate config;
 extern crate uuid;
-extern crate chrono;
 
 mod server;
 mod data;
