@@ -76,7 +76,15 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
         let b_date = b.due_date.parse::<DateTime<UTC>>();
 
         // TODO unsafe
-        if a_date.unwrap().lt(&b_date.unwrap()) {
+        if a_date.unwrap().eq(&b_date.unwrap()) {
+            if a.title < b.title {
+                Ordering::Less
+            }
+            else {
+                Ordering::Greater
+            }
+        }
+        else if a_date.unwrap().lt(&b_date.unwrap()) {
             Ordering::Less
         }
         else {
