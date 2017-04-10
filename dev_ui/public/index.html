@@ -157,83 +157,103 @@
     </div>
 </div>
 <br>
-<div class="row" data-equalizer>
-    <div class="large-6 columns callout" data-equalizer-watch>
-        <div class=tile-container>
-            <h5>Create user</h5>
-            <form id="form_create_user" action="/user/create" method="post">
-                <label class="tile-label">User Name
-                    <input name="UserName" type="text" placeholder="User Name">
-                </label>
-                <label class="tile-label">E-Mail Address
-                    <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-                </label>
-                <label class="tile-label">Password
-                    <input name="Password" type="text" placeholder="Password">
-                </label>
 
-                <input type="submit" class="button" value="Create"/>
-            </form>
+<ul class="tabs" data-tabs id="control-tabs">
+  <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Login / Register</a></li>
+  <li class="tabs-title"><a href="#panel2">Create Task</a></li>
+  <li class="tabs-title"><a href="#panel3">Lookup Tasks</a></li>
+</ul>
+
+<div class="tabs-content" data-tabs-content="control-tabs">
+  <div class="tabs-panel is-active" id="panel1">
+    <div class="row">
+        <div class="large-6 columns">
+            <div class=tile-container>
+                <h5>Create user</h5>
+                <form id="form_create_user" action="/user/create" method="post">
+                    <label class="tile-label">User Name
+                        <input name="UserName" type="text" placeholder="User Name">
+                    </label>
+                    <label class="tile-label">E-Mail Address
+                        <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                    </label>
+                    <label class="tile-label">Password
+                        <input name="Password" type="text" placeholder="Password">
+                    </label>
+
+                    <input type="submit" class="button" value="Create"/>
+                </form>
+              </div>
+        </div>
+        <div class="large-6 columns">
+            <div class="tile-container">
+                <h5>Logon user</h5>
+                <form id="form_logon_user" action="/user/logon" method="post">
+                    <label class="tile-label">E-Mail Address
+                        <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                    </label>
+                    <label class="tile-label">Password
+                        <input name="Password" type="text" placeholder="Password">
+                    </label>
+
+                    <input type="submit" class="button" value="Logon"/>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="large-6 columns callout" data-equalizer-watch>
-        <div class="tile-container">
-            <h5>Logon user</h5>
-            <form id="form_logon_user" action="/user/logon" method="post">
-                <label class="tile-label">E-Mail Address
-                    <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-                </label>
-                <label class="tile-label">Password
-                    <input name="Password" type="text" placeholder="Password">
-                </label>
+  </div>
+  <div class="tabs-panel" id="panel2">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="tile-container">
+                <h5>Create Simple task</h5>
+                <form id="form_create_simple_task" action="/simpletask/create" method="post">
+                    <label class="tile-label">Title
+                        <input name="Title" type="text" placeholder="Title">
+                    </label>
+                    <label class="tile-label">Description
+                        <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
+                    </label>
+                    <label class="tile-label">Due Date
+                        <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
+                    </label>
 
-                <input type="submit" class="button" value="Logon"/>
-            </form>
+                    <input type="submit" class="button" value="Create"/>
+                </form>
+            </div>
         </div>
     </div>
+  </div>
+  <div class="tabs-panel" id="panel3">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="tile-container">
+                <h5>Lookup simple tasks</h5>
+                <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
+                    <input type="submit" class="button" value="Lookup"/>
+                    <label>
+                        Show Completed
+                        <input type="hidden" name="ShowCompleted" value="false" />
+                        <input type="checkbox" name="ShowCompleted"/>
+                    </label>
+                    <label>
+                        Limit
+                        <input type="number" min="0" value="0" name="Limit"/>
+                    </label>
+                </form>
+
+                <div id="target_for_simple_tasks"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+
 </div>
 
-<div class="row">
-    <div class="large-12 columns callout">
-        <div class="tile-container">
-            <h5>Create Simple task</h5>
-            <form id="form_create_simple_task" action="/simpletask/create" method="post">
-                <label class="tile-label">Title
-                    <input name="Title" type="text" placeholder="Title">
-                </label>
-                <label class="tile-label">Description
-                    <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
-                </label>
-                <label class="tile-label">Due Date
-                    <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
-                </label>
 
-                <input type="submit" class="button" value="Create"/>
-            </form>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="large-12 columns callout">
-        <div class="tile-container">
-            <h5>Lookup simple tasks</h5>
-            <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
-                <input type="submit" class="button" value="Lookup"/>
-                <label>
-                    Show Completed
-                    <input type="hidden" name="ShowCompleted" value="false" />
-                    <input type="checkbox" name="ShowCompleted"/>
-                </label>
-                <label>
-                    Limit
-                    <input type="number" min="0" value="0" name="Limit"/>
-                </label>
-            </form>
 
-            <div id="target_for_simple_tasks"></div>
-        </div>
-    </div>
-</div>
+
+
 </body>
 </html>
