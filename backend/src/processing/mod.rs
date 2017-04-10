@@ -20,7 +20,7 @@ use serde_json;
 
 use server::routing::{Router, RouterInput, RouterOutput};
 use model;
-use mongodb::{Client};
+use mongodb::Client;
 use data::conf;
 use core::{user, simple_task};
 use core::token_service::TokenService;
