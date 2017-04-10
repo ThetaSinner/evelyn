@@ -18,8 +18,6 @@ extern crate evelyn;
 
 use evelyn::hello_evelyn;
 
-extern crate chrono;
-
 fn main() {
   hello_evelyn();
 }

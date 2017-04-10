@@ -138,7 +138,6 @@ pub fn update_simple_task(client : &Client, simple_task_update_model: model::sim
     match collection.update_one(filter, set_update_query, None) {
         Ok(_) => {None},
         Err(e) => {
-            println!("{}", e);
             Some(EvelynDatabaseError::UpdateSimpleTask(e))
         }
     }

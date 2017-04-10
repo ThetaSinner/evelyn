@@ -14,6 +14,9 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+pub mod user;
+pub mod simple_task;
+
 use std::error::Error;
 
 use core::error_messages;
@@ -40,7 +43,3 @@ impl From<error_messages::EvelynServiceError> for ErrorModel {
 pub struct SessionTokenModel {
     pub user_id: String,
 }
-
-
-pub mod user;
-pub mod simple_task;
