@@ -16,7 +16,6 @@
 
 extern crate evelyn;
 
-#[macro_use]
 extern crate serde_json;
 
 extern crate hyper;
