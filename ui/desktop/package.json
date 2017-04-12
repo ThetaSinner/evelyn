@@ -1,14 +1,22 @@
 {
   "name": "evelyndesktop",
   "version": "0.0.1",
-  "description": "",
-  "main": "main.js",
+  "description": "Evelyn UI for Desktop",
+  "main": "app/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThetaSinner",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^1.6.2"
+    "cssnano": "^3.10.0",
+    "electron": "^1.6.2",
+    "foundation-sites": "^6.3.1",
+    "grunt": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-postcss": "^0.8.0",
+    "pixrem": "^3.0.2"
   }
 }

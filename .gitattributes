@@ -9,3 +9,5 @@ dev_ui/public/css/foundation.css linguist-vendored
 dev_ui/public/css/foundation-datepicker.css linguist-vendored
 dev_ui/scss/_foundation_settings.scss linguist-vendored
 dev_ui/scss/custom-foundation.scss linguist-vendored
+
+ui/shared/vendored/* linguist-vendored
