@@ -21,7 +21,7 @@ class SimpleTask extends React.Component {
     if (this.state.isEdit) {
       return (
         <form>
-          <input onChange={this.handleTitleChange} value={this.state.task.title} />
+          <input type="text" onChange={this.handleTitleChange} value={this.state.task.title} />
           <textarea onChange={this.handleDescriptionChange} value={this.state.task.description}></textarea>
           <button className="button" onClick={this.save}>Save</button>
         </form>

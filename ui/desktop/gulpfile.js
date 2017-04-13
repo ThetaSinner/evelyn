@@ -13,13 +13,13 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const uglify = require('gulp-uglify');
 const gutil = require('gulp-util');
-var streamify = require('gulp-streamify')
+const streamify = require('gulp-streamify')
 
 const srcPaths = {
   sass: '../shared/scss/main.scss',
   css: '../shared/vendored/foundation-icon-fonts-3/foundation-icons.css',
   es6: ['../shared/react_components/simpletask.js'],
-  js: [
+  vendoredJs: [
     '../shared/vendored/js/jquery-3.2.1-dev.js',
     '../shared/vendored/js/underscore-1.8.3-dev.js',
     '../shared/vendored/js/backbone-1.3.3-dev.js',
@@ -35,7 +35,7 @@ const sassCompileSettings = {
   includePaths: [
     './node_modules/foundation-sites/scss'
   ],
-  outputStyle: 'compressed' // if css compressed **file size**
+  outputStyle: 'compressed', // if css compressed **file size**
 }
 
 const autoPrefixerSettings = {
@@ -69,6 +69,30 @@ gulp.task('babel', function() {
       .pipe(gulp.dest(outPaths.js));
 });
 
+gulp.task('javascript', ['babel'], function () {
+  var b = browserify({
+    entries: './app/js/app.js',
+    debug: true
+  });
+
+  return b.bundle()
+    .pipe(source('app.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+        //.pipe(uglify())
+        .on('error', gutil.log)
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('app/js/'));
+});
+
+gulp.task('lib', function() {
+  return gulp.src(srcPaths.vendoredJs)
+    .pipe(sourcemaps.init())
+      .pipe(concat('lib.js'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(outPaths.js));
+});
+
 gulp.task('copy-main', function() {
   return gulp.src('src/*').pipe(gulp.dest('app/'));
 });
@@ -85,30 +109,9 @@ gulp.task('copy-font-icons-svgs', function() {
   return gulp.src('../shared/vendored/foundation-icon-fonts-3/svgs/*').pipe(gulp.dest('app/css/svgs'));
 });
 
-gulp.task('javascript', ['babel'], function () {
-  var b = browserify({
-    entries: './app/js/app.js',
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source('app.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-        // Add transformation tasks to the pipeline here.
-        .pipe(addsrc.prepend(srcPaths.js))
-        .pipe(streamify(concat('app.js')))
-        .pipe(uglify())
-        .on('error', gutil.log)
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('app/js/'));
-});
-
-// TODO the lib code really shouldn't just be minified, production versions need
-// to be obtained. In particular, React rightly warns you for doing this.
-
-gulp.task('default', ['sass', 'javascript', 'copy-main', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
+gulp.task('default', ['sass', 'javascript', 'lib', 'copy-main', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
   gulp.watch([srcPaths.sass, srcPaths.css], ['sass']);
-  gulp.watch([srcPaths.es6, srcPaths.js], ['js']);
+  gulp.watch([srcPaths.es6], ['javascript']);
+  gulp.watch([srcPaths.vendoredJs], ['lib'])
   gulp.watch(['src/*'], ['copy-main']);
 });
