@@ -37,6 +37,7 @@ module.exports = function(grunt) {
           {expand: true, cwd: 'src/', src: ['**'], dest: 'app/'},
           {expand: true, cwd: '../shared/vendored/js/', src: ['**'], dest: 'app/js'},
           {expand: true, cwd: 'node_modules/foundation-sites/dist/js', src: 'foundation.js', dest: 'app/js'},
+          {expand: true, cwd: '../shared/vendored/foundation-icon-fonts-3/', src: '**', dest: 'app/css'},
         ],
       },
     },
