@@ -21,6 +21,9 @@ const srcPaths = {
   es6: ['../shared/react_components/simpletask.js'],
   vendoredJs: [
     '../shared/vendored/js/jquery-3.2.1-dev.js',
+    '../shared/vendored/js/lodash-4.17.4-dev.js',
+    '../shared/vendored/js/lodash-no-conflict.js',
+    '../shared/vendored/js/angular-1.6.4-dev.js',
     '../shared/vendored/js/underscore-1.8.3-dev.js',
     '../shared/vendored/js/backbone-1.3.3-dev.js',
     'node_modules/foundation-sites/dist/js/foundation.js'],
@@ -36,7 +39,7 @@ const sassCompileSettings = {
     './node_modules/foundation-sites/scss'
   ],
   outputStyle: 'compressed', // if css compressed **file size**
-}
+};
 
 const autoPrefixerSettings = {
   browsers: ['last 2 versions'],
