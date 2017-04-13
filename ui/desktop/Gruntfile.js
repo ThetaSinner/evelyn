@@ -3,6 +3,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-browserify');
+
+  require("load-grunt-tasks")(grunt); // babel.
 
   grunt.initConfig({
     sass: {
@@ -37,6 +40,30 @@ module.exports = function(grunt) {
         ],
       },
     },
+    babel: {
+      options: {
+        sourceRoot: ".",
+        sourceMap: false,
+        presets: ["babel-preset-es2015", "babel-preset-react"].map(require.resolve),
+      },
+      dev: {
+        files: {
+          "app/js/react_components.js": "../shared/react_components/simpletask.js",
+        },
+      },
+    },
+    browserify: {
+      dev: {
+        options: {
+          browserifyOptions: {
+             debug: false, // control source maps
+          },
+       },
+        files: {
+          'app/js/react_components.js': ['app/js/react_components.js'],
+        },
+      },
+    },
     watch: {
       scss: {
         files: '../shared/scss/*.scss',
@@ -48,12 +75,16 @@ module.exports = function(grunt) {
   grunt.registerTask('dev-build', [
     'sass:dev',
     'postcss:dev',
+    'babel:dev',
+    'browserify:dev',
     'copy:dev'
   ]);
 
   grunt.registerTask('build', [
     'sass:dev',
     'postcss:dev',
+    'babel:dev',
+    'browserify:dev',
     'copy:dev'
   ]);
 }
