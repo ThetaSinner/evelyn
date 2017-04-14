@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="simpleTaskApp">
   <head>
     <meta charset="UTF-8">
     <title>Evelyn Desktop</title>
 
+    <link rel="stylesheet" type="text/css" href="css/app.css" />
+
     <!-- Electron integration -->
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
     <script type="text/javascript" src="js/lib.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/app-node-part.js"></script>
+
     <!-- Electron integration -->
     <script>if (window.module) module = window.module;</script>
 
-    <link rel="stylesheet" type="text/css" href="css/app.css" />
-  </head>
-  <body>
-    <div id="root"></div>
-
-    <script type="text/javascript" src="js/app.js"></script>
-    <script type="text/javascript" src="js/app-node-part.js"></script>
     <script>
       $(document).ready(function () {
           $(document).foundation();
       });
     </script>
-
+  </head>
+  <body ng-controller="SimpleTaskController">
+    <p>{{'Hello, ' + name}}</p>
+    <p>{{'Hello, ' + 'You'}}</p>
   </body>
 </html>

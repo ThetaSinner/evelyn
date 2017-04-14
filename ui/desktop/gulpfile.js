@@ -18,7 +18,12 @@ const streamify = require('gulp-streamify')
 const srcPaths = {
   sass: '../shared/scss/main.scss',
   css: '../shared/vendored/foundation-icon-fonts-3/foundation-icons.css',
-  es6: ['../shared/react_components/simpletask.js'],
+  nodeJs: [
+    '../shared/react_components/simpletask.js',
+  ],
+  js: [
+    '../shared/angular_components/simpletask.js',
+  ],
   vendoredJs: [
     '../shared/vendored/js/jquery-3.2.1-dev.js',
     '../shared/vendored/js/lodash-4.17.4-dev.js',
@@ -26,7 +31,8 @@ const srcPaths = {
     '../shared/vendored/js/angular-1.6.4-dev.js',
     '../shared/vendored/js/underscore-1.8.3-dev.js',
     '../shared/vendored/js/backbone-1.3.3-dev.js',
-    'node_modules/foundation-sites/dist/js/foundation.js'],
+    'node_modules/foundation-sites/dist/js/foundation.js',
+  ],
 };
 
 const outPaths = {
@@ -64,22 +70,22 @@ const babelSettings = {
 };
 
 gulp.task('babel', function() {
-  return gulp.src(srcPaths.es6)
+  return gulp.src(srcPaths.nodeJs)
       .pipe(sourcemaps.init())
         .pipe(babel(babelSettings))
-        .pipe(concat('app.js'))
+        .pipe(concat('app-node-part.js'))
       .pipe(sourcemaps.write("./"))
       .pipe(gulp.dest(outPaths.js));
 });
 
-gulp.task('javascript', ['babel'], function () {
+gulp.task('browserify', ['babel'], function () {
   var b = browserify({
-    entries: './app/js/app.js',
+    entries: './app/js/app-node-part.js',
     debug: true
   });
 
   return b.bundle()
-    .pipe(source('app.js'))
+    .pipe(source('app-node-part.js'))
     .pipe(buffer())
     .pipe(sourcemaps.init({loadMaps: true}))
         //.pipe(uglify())
@@ -88,10 +94,17 @@ gulp.task('javascript', ['babel'], function () {
     .pipe(gulp.dest('app/js/'));
 });
 
+gulp.task('javascript', function () {
+  return gulp.src(srcPaths.js)
+    .pipe(concat('app.js'))
+    .pipe(gulp.dest(outPaths.js));
+});
+
 gulp.task('lib', function() {
   return gulp.src(srcPaths.vendoredJs)
     .pipe(sourcemaps.init())
       .pipe(concat('lib.js'))
+      //.pipe(uglify())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(outPaths.js));
 });
@@ -112,9 +125,10 @@ gulp.task('copy-font-icons-svgs', function() {
   return gulp.src('../shared/vendored/foundation-icon-fonts-3/svgs/*').pipe(gulp.dest('app/css/svgs'));
 });
 
-gulp.task('default', ['sass', 'javascript', 'lib', 'copy-main', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
+gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
   gulp.watch([srcPaths.sass, srcPaths.css], ['sass']);
-  gulp.watch([srcPaths.es6], ['javascript']);
-  gulp.watch([srcPaths.vendoredJs], ['lib'])
+  gulp.watch([srcPaths.js], ['javascript']);
+  gulp.watch([srcPaths.nodeJs], ['browserify']);
+  gulp.watch([srcPaths.vendoredJs], ['lib']);
   gulp.watch(['src/*'], ['copy-main']);
 });
