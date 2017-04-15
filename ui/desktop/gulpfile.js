@@ -29,6 +29,7 @@ const srcPaths = {
     '../shared/vendored/js/lodash-4.17.4-dev.js',
     '../shared/vendored/js/lodash-no-conflict.js',
     '../shared/vendored/js/angular-1.6.4-dev.js',
+    '../shared/vendored/js/angular-route-1.6.4-dev.js',
     '../shared/vendored/js/underscore-1.8.3-dev.js',
     '../shared/vendored/js/backbone-1.3.3-dev.js',
     'node_modules/foundation-sites/dist/js/foundation.js',
@@ -125,7 +126,11 @@ gulp.task('copy-font-icons-svgs', function() {
   return gulp.src('../shared/vendored/foundation-icon-fonts-3/svgs/*').pipe(gulp.dest('app/css/svgs'));
 });
 
-gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
+gulp.task('copy-partials', function() {
+  return gulp.src('../shared/partials/**').pipe(gulp.dest('app/partials'));
+});
+
+gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'copy-partials', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
   gulp.watch([srcPaths.sass, srcPaths.css], ['sass']);
   gulp.watch([srcPaths.js], ['javascript']);
   gulp.watch([srcPaths.nodeJs], ['browserify']);
