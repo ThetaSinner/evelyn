@@ -14,10 +14,6 @@ simpleTaskApp.config(function($routeProvider, $locationProvider) {
       templateUrl: 'partials/simpletask/lookup.html',
       controller: 'SimpleTaskLookupController',
     });
-
-  $locationProvider
-    .html5Mode(true)
-    .hashPrefix('');
 });
 
 simpleTaskApp.controller('SimpleTaskLookupController', function SimpleTaskLookupController($scope) {
