@@ -136,4 +136,5 @@ gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'c
   gulp.watch([srcPaths.nodeJs], ['browserify']);
   gulp.watch([srcPaths.vendoredJs], ['lib']);
   gulp.watch(['src/*'], ['copy-main']);
+  gulp.watch(['../shared/partials/**'], ['copy-partials']);
 });

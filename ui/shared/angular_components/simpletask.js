@@ -17,9 +17,7 @@ simpleTaskApp.config(function($routeProvider, $locationProvider) {
 });
 
 simpleTaskApp.controller('SimpleTaskLookupController', function SimpleTaskLookupController($scope) {
-  $scope.title = 'Lookup';
 });
 
 simpleTaskApp.controller('SimpleTaskCreateController', function SimpleTaskCreateController($scope) {
-  $scope.title = 'Create';
 });

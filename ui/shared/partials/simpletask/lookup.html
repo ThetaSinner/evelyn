@@ -1,1 +1,22 @@
-<p>{{title}}</p>
+<a class="button secondary" href="#!/create">Create</a>
+
+<div class="rows">
+  <div class="columns">
+    <p>Lookup tasks.</p>
+
+    <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
+        <label>
+            Show Completed
+            <input type="hidden" name="ShowCompleted" value="false" />
+            <input type="checkbox" name="ShowCompleted"/>
+        </label>
+        <label>
+            Limit
+            <input type="number" min="0" value="0" name="Limit"/>
+        </label>
+        <input type="submit" class="button" value="Lookup"/>
+    </form>
+
+    <div id="target_for_simple_tasks"></div>
+  </div>
+</div>
