@@ -35,6 +35,9 @@ pub enum EvelynServiceError {
 
     // simple task
     FailedToUpdateSimpleTask(EvelynCoreError),
+
+    // todo list
+    CreateTodoList(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -72,6 +75,10 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::FailedToUpdateSimpleTask(_) => {
                 write!(f, "100301")
             },
+
+            EvelynServiceError::CreateTodoList(_) => {
+                write!(f, "100401")
+            },
         }
     }
 }
@@ -95,6 +102,8 @@ impl error::Error for EvelynServiceError {
                 "Failed to logon user",
             EvelynServiceError::FailedToUpdateSimpleTask(_) =>
                 "Failed to update simple task",
+            EvelynServiceError::CreateTodoList(_) =>
+                "Failed to create todo list",
         }
     }
 
@@ -108,6 +117,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::LogonUser(ref err) => Some(err),
             EvelynServiceError::FailedToLogonUser(ref err) => Some(err),
             EvelynServiceError::FailedToUpdateSimpleTask(ref err) => Some(err),
+            EvelynServiceError::CreateTodoList(ref err) => Some(err),
         }
     }
 }
@@ -121,6 +131,7 @@ pub enum EvelynCoreError {
     InvalidLogon,
     FailedToLogonUser(EvelynDatabaseError),
     FailedToUpdateSimpleTask(EvelynDatabaseError),
+    FailedToCreateTodoList(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -138,6 +149,8 @@ impl fmt::Display for EvelynCoreError {
                 write!(f, "Failed to logon user: {}", err),
             EvelynCoreError::FailedToUpdateSimpleTask(ref err) =>
                 write!(f, "Failed to update task: {}", err),
+            EvelynCoreError::FailedToCreateTodoList(ref err) =>
+                write!(f, "Failed to create todo list: {}", err),
         }
     }
 }
@@ -157,6 +170,8 @@ impl error::Error for EvelynCoreError {
                 "Failed to logon user",
             EvelynCoreError::FailedToUpdateSimpleTask(_) =>
                 "Failed to update task",
+            EvelynCoreError::FailedToCreateTodoList(_) =>
+                "Failed to create todo list",
         }
     }
 
@@ -168,6 +183,7 @@ impl error::Error for EvelynCoreError {
             EvelynCoreError::InvalidLogon => None,
             EvelynCoreError::FailedToLogonUser(ref err) => Some(err),
             EvelynCoreError::FailedToUpdateSimpleTask(ref err) => Some(err),
+            EvelynCoreError::FailedToCreateTodoList(ref err) => Some(err),
         }
     }
 }
@@ -178,6 +194,7 @@ pub enum EvelynDatabaseError {
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
     UpdateSimpleTask(MongoDbError),
+    InsertTodoList(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -191,6 +208,8 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Failed to lookup user: {}", e),
             EvelynDatabaseError::UpdateSimpleTask(ref e) =>
                 write!(f, "Failed to update simple task: {}", e),
+            EvelynDatabaseError::InsertTodoList(ref e) =>
+                write!(f, "Failed to insert todo list: {}", e),
         }
     }
 }
@@ -206,6 +225,8 @@ impl error::Error for EvelynDatabaseError {
                 "Failed to lookup user",
             EvelynDatabaseError::UpdateSimpleTask(_) =>
                 "Failed to update simple task",
+            EvelynDatabaseError::InsertTodoList(_) =>
+                "Failed to insert todo list",
         }
     }
 
@@ -215,6 +236,7 @@ impl error::Error for EvelynDatabaseError {
             EvelynDatabaseError::InsertUser(ref err) => Some(err),
             EvelynDatabaseError::LookupUser(ref err) => Some(err),
             EvelynDatabaseError::UpdateSimpleTask(ref err) => Some(err),
+            EvelynDatabaseError::InsertTodoList(ref err) => Some(err),
         }
     }
 }

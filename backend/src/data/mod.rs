@@ -142,3 +142,19 @@ pub fn update_simple_task(client : &Client, simple_task_update_model: model::sim
         }
     }
 }
+
+pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_list::TodoListModel) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("todolist");
+
+    let bson_todo_list_model = bson::to_bson(&create_todo_list_model).unwrap();
+
+    if let bson::Bson::Document(document) = bson_todo_list_model {
+      match collection.insert_one(document, None) {
+          Ok(_) => None,
+          Err(e) => Some(EvelynDatabaseError::InsertTodoList(e))
+      }
+    }
+    else {
+      Some(EvelynDatabaseError::SerialisationFailed)
+    }
+}

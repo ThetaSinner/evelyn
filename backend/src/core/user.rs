@@ -45,7 +45,7 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
       Err(e) => {
           Some(EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(e))
       },
-  }
+    }
   }
 
 pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<LogonUserResponseModel, EvelynCoreError> {

@@ -22,7 +22,7 @@ use server::routing::{Router, RouterInput, RouterOutput};
 use model;
 use mongodb::Client;
 use data::conf;
-use core::{user, simple_task};
+use core::{user, simple_task, todo_list};
 use core::token_service::TokenService;
 use core::error_messages::{EvelynServiceError, EvelynCoreError};
 
@@ -39,6 +39,8 @@ pub fn load_processors(router: &mut Router) {
   router.add_rule("/simpletask/create", create_simple_task_processor);
   router.add_rule("/simpletask/lookup", lookup_simple_task_processor);
   router.add_rule("/simpletask/update", update_simple_task_processor);
+
+  router.add_rule("/todolist/create", create_todo_list_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -189,4 +191,34 @@ fn update_simple_task_processor(router_input: RouterInput, processor_data: Arc<P
           }
       }
     }
+}
+
+fn create_todo_list_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+  let request_model_decoded: Result<model::todo_list::CreateTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
+    Ok(request_model) => {
+        match todo_list::create_todo_list(request_model, processor_data) {
+            Ok(response) => {
+                RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+            },
+            Err(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::CreateTodoListResponseModel {
+                        todo_list_id: None,
+                        error: Some(From::from(EvelynServiceError::CreateTodoList(e))),
+                    }).unwrap()
+                }
+            },
+        }
+    },
+    Err(e) => {
+        let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+                error: Some(model),
+            }).unwrap()
+        }
+    }
+  }
 }
