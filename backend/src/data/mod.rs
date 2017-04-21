@@ -158,3 +158,30 @@ pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_l
       Some(EvelynDatabaseError::SerialisationFailed)
     }
 }
+
+pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::AddItemTodoListModel) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("todolist");
+
+    let ref user_id = add_item_todo_list_model.user_id;
+    let ref todo_list_id = add_item_todo_list_model.todo_list_id;
+    let filter = doc!("userId" => user_id, "todoListId" => todo_list_id);
+
+    let mut update_query = Document::new();
+    let bson_todo_list_item_model = bson::to_bson(&add_item_todo_list_model.todo_list_item).unwrap();
+    if let bson::Bson::Document(document) = bson_todo_list_item_model {
+        update_query.insert("todoListItems", document);
+
+        let mut push_update_query = Document::new();
+        push_update_query.insert("$push", update_query);
+
+        match collection.update_one(filter, push_update_query, None) {
+            Ok(_) => None,
+            Err(e) => {
+                Some(EvelynDatabaseError::AddItemToTodoList(e))
+            }
+        }
+    }
+    else {
+        Some(EvelynDatabaseError::SerialisationFailed)
+    }
+}

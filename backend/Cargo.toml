@@ -18,7 +18,7 @@ mongodb = "0.*"
 jsonwebtoken = "1.*"
 rustc-serialize = "0.*"
 
-uuid = { version = "0.*", features = ["v5"] }
+uuid = { version = "0.*", features = ["v4"] }
 
 chrono = { version = "0.*", features = ["serde", "rustc-serialize"] }
 

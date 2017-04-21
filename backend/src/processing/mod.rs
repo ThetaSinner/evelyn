@@ -41,6 +41,7 @@ pub fn load_processors(router: &mut Router) {
   router.add_rule("/simpletask/update", update_simple_task_processor);
 
   router.add_rule("/todolist/create", create_todo_list_processor);
+  router.add_rule("/todolist/additem", add_item_todo_list_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -215,7 +216,41 @@ fn create_todo_list_processor(router_input: RouterInput, processor_data: Arc<Pro
     Err(e) => {
         let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
         RouterOutput {
-            response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+            response_body: serde_json::to_string(&model::todo_list::CreateTodoListResponseModel {
+                todo_list_id: None,
+                error: Some(model),
+            }).unwrap()
+        }
+    }
+  }
+}
+
+fn add_item_todo_list_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+  let request_model_decoded: Result<model::todo_list::AddItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
+    Ok(request_model) => {
+        match todo_list::add_item_to_todo_list(request_model, processor_data) {
+            Some(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+                        error: Some(From::from(EvelynServiceError::AddItemToTodoList(e))),
+                    }).unwrap()
+                }
+            },
+            None => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+                        error: None,
+                    }).unwrap()
+                }
+            },
+        }
+    },
+    Err(e) => {
+        let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
                 error: Some(model),
             }).unwrap()
         }

@@ -18,7 +18,7 @@ use std::sync::Arc;
 use std::cmp::Ordering;
 
 use chrono::prelude::*;
-use uuid::{Uuid, NAMESPACE_DNS};
+use uuid::Uuid;
 
 use data;
 use processing::ProcessorData;
@@ -28,7 +28,7 @@ use core::error_messages::EvelynCoreError;
 pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> model::simple_task::CreateSimpleTaskResponseModel {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
-  let task_id = Uuid::new_v5(&NAMESPACE_DNS, "my-evelyn.org");
+  let task_id = Uuid::new_v4();
 
   let simple_task_model = model::simple_task::SimpleTaskModel{
     user_id: session_token_model.user_id,

@@ -58,8 +58,32 @@ pub struct TodoListModel {
     pub todo_list_items: Vec<TodoListItemModel>,
 }
 
-impl TodoListModel {
-    pub fn add_item(&mut self, item: TodoListItemModel) {
-        self.todo_list_items.push(item);
-    }
+#[derive(Serialize, Deserialize)]
+pub struct AddItemTodoListRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="TodoListId")]
+    pub todo_list_id: String,
+
+    #[serde(rename="TodoListItem")]
+    pub todo_list_item: TodoListItemModel,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AddItemTodoListResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AddItemTodoListModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+
+    #[serde(rename="todoListId")]
+    pub todo_list_id: String,
+
+    #[serde(rename="todoListItem")]
+    pub todo_list_item: TodoListItemModel,
 }
