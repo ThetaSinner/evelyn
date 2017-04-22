@@ -93,3 +93,42 @@ pub struct AddItemTodoListModel {
     #[serde(rename="todoListItem")]
     pub todo_list_item: TodoListItemModel,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListsRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TodoListsExternalModel {
+    #[serde(rename="Title")]
+    pub title: String,
+
+    #[serde(rename="TodoListId")]
+    pub todo_list_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListsResponseModel {
+    #[serde(rename="TodoLists")]
+    pub todo_lists: Option<Vec<TodoListsExternalModel>>,
+
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListsModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TodoListsModel {
+    #[serde(rename="title")]
+    pub title: String,
+
+    #[serde(rename="todoListId")]
+    pub todo_list_id: String,
+}

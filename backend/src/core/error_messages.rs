@@ -39,6 +39,7 @@ pub enum EvelynServiceError {
     // todo list
     CreateTodoList(EvelynCoreError),
     AddItemToTodoList(EvelynCoreError),
+    LookupTodoLists(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -83,6 +84,9 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::AddItemToTodoList(_) => {
                 write!(f, "100402")
             },
+            EvelynServiceError::LookupTodoLists(_) => {
+                write!(f, "100403")
+            },
         }
     }
 }
@@ -110,6 +114,8 @@ impl error::Error for EvelynServiceError {
                 "Failed to create todo list",
             EvelynServiceError::AddItemToTodoList(_) =>
                 "Failed to add item to todo list",
+            EvelynServiceError::LookupTodoLists(_) =>
+                "Failed to lookup todo lists",
         }
     }
 
@@ -125,6 +131,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::FailedToUpdateSimpleTask(ref err) => Some(err),
             EvelynServiceError::CreateTodoList(ref err) => Some(err),
             EvelynServiceError::AddItemToTodoList(ref err) => Some(err),
+            EvelynServiceError::LookupTodoLists(ref err) => Some(err),
         }
     }
 }
@@ -140,6 +147,7 @@ pub enum EvelynCoreError {
     FailedToUpdateSimpleTask(EvelynDatabaseError),
     FailedToCreateTodoList(EvelynDatabaseError),
     FailedToAddItemToTodoList(EvelynDatabaseError),
+    FailedToLookupTodoLists(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -161,6 +169,8 @@ impl fmt::Display for EvelynCoreError {
                 write!(f, "Failed to create todo list: {}", err),
             EvelynCoreError::FailedToAddItemToTodoList(ref err) =>
                 write!(f, "Failed to add item to todo list: {}", err),
+            EvelynCoreError::FailedToLookupTodoLists(ref err) =>
+                write!(f, "Failed to lookup todo lists: {}", err),
         }
     }
 }
@@ -184,6 +194,8 @@ impl error::Error for EvelynCoreError {
                 "Failed to create todo list",
             EvelynCoreError::FailedToAddItemToTodoList(_) =>
                 "Failed to add item to todo list",
+            EvelynCoreError::FailedToLookupTodoLists(_) =>
+                "Failed to lookup todo lists",
         }
     }
 
@@ -197,6 +209,7 @@ impl error::Error for EvelynCoreError {
             EvelynCoreError::FailedToUpdateSimpleTask(ref err) => Some(err),
             EvelynCoreError::FailedToCreateTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToAddItemToTodoList(ref err) => Some(err),
+            EvelynCoreError::FailedToLookupTodoLists(ref err) => Some(err),
         }
     }
 }
@@ -209,6 +222,7 @@ pub enum EvelynDatabaseError {
     UpdateSimpleTask(MongoDbError),
     InsertTodoList(MongoDbError),
     AddItemToTodoList(MongoDbError),
+    LookupTodoLists(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -226,6 +240,8 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Failed to insert todo list: {}", e),
             EvelynDatabaseError::AddItemToTodoList(ref e) =>
                 write!(f, "Failed to add item to todo list: {}", e),
+            EvelynDatabaseError::LookupTodoLists(ref e) =>
+                write!(f, "Failed to lookup todo lists: {}", e),
         }
     }
 }
@@ -245,6 +261,8 @@ impl error::Error for EvelynDatabaseError {
                 "Failed to insert todo list",
             EvelynDatabaseError::AddItemToTodoList(_) =>
                 "Failed to add item to todo list",
+            EvelynDatabaseError::LookupTodoLists(_) =>
+                "Failed to lookup todo lists",
         }
     }
 
@@ -256,6 +274,7 @@ impl error::Error for EvelynDatabaseError {
             EvelynDatabaseError::UpdateSimpleTask(ref err) => Some(err),
             EvelynDatabaseError::InsertTodoList(ref err) => Some(err),
             EvelynDatabaseError::AddItemToTodoList(ref err) => Some(err),
+            EvelynDatabaseError::LookupTodoLists(ref err) => Some(err),
         }
     }
 }

@@ -42,6 +42,7 @@ pub fn load_processors(router: &mut Router) {
 
   router.add_rule("/todolist/create", create_todo_list_processor);
   router.add_rule("/todolist/additem", add_item_todo_list_processor);
+  router.add_rule("/todolist/lookuplists", lookup_todo_lists_processor);
 }
 
 fn create_user_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
@@ -242,6 +243,36 @@ fn add_item_todo_list_processor(router_input: RouterInput, processor_data: Arc<P
                 RouterOutput{
                     response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
                         error: None,
+                    }).unwrap()
+                }
+            },
+        }
+    },
+    Err(e) => {
+        let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+                error: Some(model),
+            }).unwrap()
+        }
+    }
+  }
+}
+
+fn lookup_todo_lists_processor(router_input: RouterInput, processor_data: Arc<ProcessorData>) -> RouterOutput {
+  let request_model_decoded: Result<model::todo_list::LookupTodoListsRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
+    Ok(request_model) => {
+        match todo_list::lookup_todo_lists(request_model, processor_data) {
+            Ok(result) => {
+                RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
+            },
+            Err(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::LookupTodoListsResponseModel {
+                        todo_lists: None,
+                        error: Some(From::from(EvelynServiceError::LookupTodoLists(e))),
                     }).unwrap()
                 }
             },

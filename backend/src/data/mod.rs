@@ -20,6 +20,7 @@ use bson;
 use bson::{Bson, Document};
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
+use mongodb::coll::options::FindOptions;
 
 use model;
 use model::user::{UserModel};
@@ -183,5 +184,41 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
     }
     else {
         Some(EvelynDatabaseError::SerialisationFailed)
+    }
+}
+
+pub fn lookup_todo_lists(client : &Client, lookup_todo_lists_model: &model::todo_list::LookupTodoListsModel) -> Result<Vec<model::todo_list::TodoListsModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("todolist");
+
+    let ref user_id = lookup_todo_lists_model.user_id;
+    let query = doc!{"userId" => user_id};
+
+    let mut find_options = FindOptions::new();
+
+    let mut projection = Document::new();
+    projection.insert("title", Bson::I32(1));
+    projection.insert("todoListId", Bson::I32(1));
+    projection.insert("_id", Bson::I32(0));
+    find_options.projection = Some(projection);
+
+    let cursor = collection.find(Some(query), Some(find_options));
+
+    match cursor {
+        Ok(cursor) => {
+            Ok(cursor.map(|x| {
+                match x {
+                    Ok(x) => {
+                        bson::from_bson(bson::Bson::Document(x)).unwrap()
+                    },
+                    Err(e) => {
+                        println!("Database error in lookup todo lists {}", e);
+                        panic!() // need a better way to handle this ideally.
+                    }
+                }
+            }).collect())
+        },
+        Err(e) => {
+            Err(EvelynDatabaseError::LookupTodoLists(e))
+        }
     }
 }
