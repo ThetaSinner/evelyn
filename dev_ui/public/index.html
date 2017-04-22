@@ -39,6 +39,21 @@
         <div class="callout">
             <h5><%= data.Title %></h5>
             <p><%= data.TodoListId %></p>
+            <button class="button">activate</button>
+        </div>
+    </script>
+
+    <script id="todo_list_template_definition" type="text/template">
+        <div class="callout">
+            <h5><%= data.title %></h5>
+
+            <ul>
+              <% _.each(data.todo_items, function (i) { %> <li><%= i.text %></li> <% }); %>
+            </ul>
+            <label>New item
+              <input type="text" placeholder="something to do" />
+              <button class="add button">+</button>
+            </label>
         </div>
     </script>
 
@@ -50,6 +65,45 @@
         var moment_date_format = "DD/MM/YYYY HH:mm";
 
         var templates = {};
+
+        var todoListHandle = null;
+
+        var TodoListModel = Backbone.Model.extend({
+          defaults: {
+            title: "_title",
+            todo_list_id: "_todo_list_id",
+          },
+        });
+
+        var TodoListView = Backbone.View.extend({
+          el: '#active_todo_list',
+
+          template: _.template($("#todo_list_template_definition").text(), {variable: "data"}),
+
+          events: {
+            'click .add': 'addItem',
+          },
+
+          initialize: function() {
+            this.render();
+          },
+
+          render: function() {
+            this.$el.html(this.template({
+              title: this.model.get('title'),
+              todo_items: this.model.get('todo_items'),
+            }));
+          },
+
+          addItem: function() {
+            alert(this.$el.find("input").val()); // TODO send to server
+          },
+
+          switchModel: function(m) {
+            this.model.set(m);
+            this.render();
+          },
+        });
 
         function render_simple_task(data) {
             if (!templates.simple_task_template) {
@@ -89,6 +143,16 @@
                 var todoLists = response.TodoLists;
                 for (var i = 0; i < todoLists.length; i++) {
                     target.append(render_todo_list_preview(todoLists[i]));
+
+                    target.find("div:last-child > button").on("click", todoLists[i], function (event) {
+                      // TODO load todo items for this list.
+
+                      todoListViewHandle.switchModel({
+                        title: event.data.Title,
+                        todo_list_id: event.data.TodoListId,
+                        // TODO map todo items
+                      });
+                    });
                 }
             }
         }
@@ -174,6 +238,8 @@
             add_submit_hook("#form_lookup_simple_tasks");
             add_submit_hook("#form_create_todo_list");
             add_submit_hook("#form_lookup_todo_lists");
+
+            todoListViewHandle = new TodoListView({model: new TodoListModel()});
         });
     </script>
 </head>
@@ -301,6 +367,12 @@
             </div>
 
             <div id="target_for_todo_list_previews"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="large-12 columns">
+            <div id="active_todo_list" class="tile-container"></div>
         </div>
     </div>
   </div>
