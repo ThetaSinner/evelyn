@@ -45,7 +45,7 @@ pub fn create_todo_list(model: model::todo_list::CreateTodoListRequestModel, pro
 
   let data_store = processor_data.data_store.clone();
 
-  let error = data::insert_todo_list(&data_store, &todo_list_model);
+  let error = data::todo_list::insert_todo_list(&data_store, &todo_list_model);
   if let Some(e) = error {
     Err(EvelynCoreError::FailedToCreateTodoList(e))
   }
@@ -70,7 +70,7 @@ pub fn add_item_to_todo_list(model: model::todo_list::AddItemTodoListRequestMode
 
   let data_store = processor_data.data_store.clone();
 
-  let error = data::add_item_to_todo_list(&data_store, &todo_list_model);
+  let error = data::todo_list::add_item_to_todo_list(&data_store, &todo_list_model);
   if let Some(e) = error {
     Some(EvelynCoreError::FailedToAddItemToTodoList(e))
   }
@@ -88,7 +88,7 @@ pub fn lookup_todo_lists(model: model::todo_list::LookupTodoListsRequestModel, p
 
   let data_store = processor_data.data_store.clone();
 
-  match data::lookup_todo_lists(&data_store, &lookup_todo_lists_model) {
+  match data::todo_list::lookup_todo_lists(&data_store, &lookup_todo_lists_model) {
       Ok(result) => {
           let todo_lists = result.into_iter().map(|x| model::todo_list::TodoListsExternalModel {
               title: x.title,

@@ -41,7 +41,7 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, proc
 
   let ds = processor_data.data_store.clone();
 
-  let error = data::insert_simple_task(&ds, &simple_task_model);
+  let error = data::simple_task::insert_simple_task(&ds, &simple_task_model);
   if error.is_some() {
     model::simple_task::CreateSimpleTaskResponseModel {
         error: Some(model::ErrorModel{
@@ -68,7 +68,7 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
 
   let ds = processor_data.data_store.clone();
 
-  let tasks = data::lookup_simple_tasks(&ds, &simple_task_lookup_model);
+  let tasks = data::simple_task::lookup_simple_tasks(&ds, &simple_task_lookup_model);
   if tasks.is_some() {
     let mut tasks = tasks.unwrap();
     tasks.sort_by(|a, b| {
@@ -135,7 +135,7 @@ pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestMode
 
     let ds = processor_data.data_store.clone();
 
-    match data::update_simple_task(&ds, simple_task_update_model) {
+    match data::simple_task::update_simple_task(&ds, simple_task_update_model) {
         None => None,
         Some(e) => {
             Some(EvelynCoreError::FailedToUpdateSimpleTask(e))

@@ -26,13 +26,13 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
 
   let ds = processor_data.data_store.clone();
 
-  match data::find_user(&ds, &user_model.email_address) {
+  match data::user::find_user(&ds, &user_model.email_address) {
       Ok(user) => {
           if user.is_some() {
               Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
           }
           else {
-            let error = data::insert_user(&ds, &user_model);
+            let error = data::user::insert_user(&ds, &user_model);
             if error.is_some() {
                 Some(EvelynCoreError::FailedToCreateUser(error.unwrap()))
             }
@@ -51,7 +51,7 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
 pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> Result<LogonUserResponseModel, EvelynCoreError> {
   let ds = processor_data.data_store.clone();
 
-  match data::find_user(&ds, &model.email_address) {
+  match data::user::find_user(&ds, &model.email_address) {
       Ok(user) => {
           if user.is_some() {
               let user = user.unwrap();
