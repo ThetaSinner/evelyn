@@ -25,7 +25,7 @@ pub struct CreateTodoListRequestModel {
     pub title: String,
 
     #[serde(rename="TodoListItems")]
-    pub todo_list_items: Option<Vec<TodoListItemModel>>,
+    pub todo_list_items: Option<Vec<TodoListItemExternalModel>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -38,8 +38,14 @@ pub struct CreateTodoListResponseModel {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct TodoListItemModel {
+pub struct TodoListItemExternalModel {
     #[serde(rename="Text")]
+    pub text: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TodoListItemModel {
+    #[serde(rename="text")]
     pub text: String,
 }
 
@@ -67,7 +73,7 @@ pub struct AddItemTodoListRequestModel {
     pub todo_list_id: String,
 
     #[serde(rename="TodoListItem")]
-    pub todo_list_item: TodoListItemModel,
+    pub todo_list_item: TodoListItemExternalModel,
 }
 
 #[derive(Serialize, Deserialize)]

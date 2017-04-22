@@ -37,7 +37,9 @@ pub fn create_todo_list(model: model::todo_list::CreateTodoListRequestModel, pro
 
   if let Some(todo_list_items) = model.todo_list_items {
       for i in todo_list_items {
-          todo_list_model.todo_list_items.push(i);
+          todo_list_model.todo_list_items.push(model::todo_list::TodoListItemModel {
+              text: i.text,
+          });
       }
   }
 
@@ -61,7 +63,9 @@ pub fn add_item_to_todo_list(model: model::todo_list::AddItemTodoListRequestMode
   let todo_list_model = model::todo_list::AddItemTodoListModel {
     user_id: session_token_model.user_id,
     todo_list_id: model.todo_list_id,
-    todo_list_item: model.todo_list_item,
+    todo_list_item: model::todo_list::TodoListItemModel {
+        text: model.todo_list_item.text,
+    },
   };
 
   let data_store = processor_data.data_store.clone();
