@@ -4,6 +4,7 @@ dev_ui/public/js/jquery-3.1.1.js linguist-vendored
 dev_ui/public/js/underscore.js linguist-vendored
 dev_ui/public/js/what-input.js linguist-vendored
 dev_ui/public/js/foundation-datepicker.js linguist-vendored
+dev_ui/public/js/backbone-1.3.3.js linguist-vendored
 
 dev_ui/public/css/foundation.css linguist-vendored
 dev_ui/public/css/foundation-datepicker.css linguist-vendored
