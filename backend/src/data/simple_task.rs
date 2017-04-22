@@ -1,3 +1,19 @@
+/// Evelyn: Your personal assistant, project manager and calendar
+/// Copyright (C) 2017 Gregory Jensen
+///
+/// This program is free software: you can redistribute it and/or modify
+/// it under the terms of the GNU General Public License as published by
+/// the Free Software Foundation, either version 3 of the License, or
+/// (at your option) any later version.
+///
+/// This program is distributed in the hope that it will be useful,
+/// but WITHOUT ANY WARRANTY; without even the implied warranty of
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/// GNU General Public License for more details.
+///
+/// You should have received a copy of the GNU General Public License
+/// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 use bson;
 use bson::{Bson, Document};
 use mongodb::db::ThreadedDatabase;
@@ -5,7 +21,6 @@ use mongodb::db::ThreadedDatabase;
 use model;
 use core::error_messages::EvelynDatabaseError;
 use mongodb::{Client, ThreadedClient};
-
 
 pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_task::SimpleTaskModel) -> Option<String> {
     let collection = client.db("evelyn").collection("simpletask");
@@ -25,8 +40,6 @@ pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_ta
       Some(String::from("Error converting the BSON object into a MongoDB document"))
     }
 }
-
-
 
 pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel) -> Option<Vec<model::simple_task::SimpleTaskModel>> {
     let collection = client.db("evelyn").collection("simpletask");
