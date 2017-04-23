@@ -68,6 +68,8 @@
 
         var todoListHandle = null;
 
+        var evelynServerBridge = new EvelynServerBridge();
+
         var TodoListModel = Backbone.Model.extend({
           defaults: {
             title: "_title",
@@ -96,7 +98,12 @@
           },
 
           addItem: function() {
-            alert(this.$el.find("input").val()); // TODO send to server
+            evelynServerBridge.send_to_server("/todolist/additem", {
+              TodoListId: this.model.get('todo_list_id'),
+              TodoListItem: {
+                Text: this.$el.find("input").val(),
+              },
+            }, render_response_payload);
           },
 
           switchModel: function(m) {
@@ -121,7 +128,46 @@
             return templates.todo_list_preview_template(data);
         }
 
-        function process_response(response) {
+        function render_response_payload(response) {
+          $("#json-response").val(JSON.stringify(response, null, 4));
+
+          if (response.hasOwnProperty("Error") && response.Error !== null) {
+              var status_label = $("#status-label");
+              status_label.removeClass("success");
+              status_label.addClass("alert");
+              status_label.text(response.Error.ErrorCode);
+          }
+          else {
+              var status_label = $("#status-label");
+              status_label.removeClass("alert");
+              status_label.addClass("success");
+              status_label.text("Success");
+          }
+        }
+
+        function serialize_form(form_selector) {
+          var form_data = form_selector.serializeArray();
+
+          var form_submit_data = {};
+          for (var i = 0; i < form_data.length; i++) {
+              if (form_data[i].value == "on") {
+                form_data[i].value = "true";
+              }
+              form_submit_data[form_data[i].name] = form_data[i].value;
+          }
+
+          return form_submit_data;
+        };
+
+        function EvelynServerBridge() {
+          this.baseUrl = "http://localhost:8080";
+        }
+
+        EvelynServerBridge.prototype.make_url_from_action = function(action) {
+          return this.baseUrl + action;
+        };
+
+        EvelynServerBridge.prototype.process_response = function(response) {
             if (response.hasOwnProperty("Token") && response.Token !== null) {
                 localStorage.token = response.Token;
             }
@@ -155,9 +201,9 @@
                     });
                 }
             }
-        }
+        };
 
-        function process_request(request) {
+        EvelynServerBridge.prototype.process_request = function(request) {
             if (localStorage.token) {
                 request.Token = localStorage.token;
             }
@@ -169,6 +215,17 @@
             }
 
             return request;
+        };
+
+        EvelynServerBridge.prototype.send_to_server = function(action, payload, callback) {
+          var url = this.make_url_from_action(action);
+          var processed_payload = this.process_request(payload);
+          var _this = this;
+          $.post(url, JSON.stringify(processed_payload), function (response) {
+              _this.process_response(response);
+
+              callback(response);
+          }, "json");
         }
 
         function add_submit_hook(form_id) {
@@ -176,42 +233,11 @@
                 event.preventDefault();
 
                 var form_selector = $(this);
+                var form_submit_data = serialize_form(form_selector);
 
-                var url = "http://localhost:8080" + form_selector.attr("action");
-                var form_data = form_selector.serializeArray();
-
-                var form_submit_data = {};
-                for (var i = 0; i < form_data.length; i++) {
-                    if (form_data[i].value == "on") {
-                      form_data[i].value = "true";
-                    }
-                    form_submit_data[form_data[i].name] = form_data[i].value;
-                }
-
-                form_submit_data = process_request(form_submit_data);
-                $.post(url, JSON.stringify(form_submit_data), function (response) {
-                    console.log(response);
-
-                    process_response(response);
-
-                    $("#json-response").val(JSON.stringify(response, null, 4));
-
-                    if (response.hasOwnProperty("Error") && response.Error != null) {
-                        var status_label = $("#status-label");
-                        status_label.removeClass("success");
-                        status_label.addClass("alert");
-                        status_label.text(response.Error.ErrorCode);
-                    }
-                    else {
-                        var status_label = $("#status-label");
-                        status_label.removeClass("alert");
-                        status_label.addClass("success");
-                        status_label.text("Success");
-                    }
-
-                }, "json");
+                evelynServerBridge.send_to_server(form_selector.attr("action"), form_submit_data, render_response_payload);
             });
-        }
+        };
 
         $(document).ready(function () {
             if (typeof(Storage) === "undefined") {
