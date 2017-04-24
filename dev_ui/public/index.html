@@ -241,11 +241,37 @@
           var url = this.make_url_from_action(action);
           var processed_payload = this.process_request(payload);
           var _this = this;
-          $.post(url, JSON.stringify(processed_payload), function (response) {
-              _this.process_response(response);
+          $.ajax({
+            method: "POST",
+            url: url,
+            data: JSON.stringify(processed_payload),
+            dataType: "json",
+            timeout: 500,
+            success: function (response) {
+                _this.process_response(response);
 
-              callback(response);
-          }, "json");
+                callback(response);
+            },
+            error: function(jqxhr, text_status, error) {
+              if (text_status === "timeout") {
+                render_response_payload({
+                  Error: {
+                    ErrorCode: 0,
+                    ErrorMessage: "Evelyn service not available.",
+                  }
+                });
+              }
+              else {
+                console.log(jqxhr);
+                render_response_payload({
+                  Error: {
+                    ErrorCode: 0,
+                    ErrorMessage: "Unhandled error occured in Evelyn bridge [" + text_status + "]",
+                  }
+                });
+              }
+            },
+          });
         }
 
         function add_submit_hook(form_id) {
