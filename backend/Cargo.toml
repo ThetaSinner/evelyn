@@ -8,12 +8,13 @@ authors = [
   ]
 
 [dependencies]
-serde = "0.*"
-serde_derive = "0.*"
-serde_json = "0.*"
+serde = "0.9.*"
+serde_derive = "0.9.*"
+serde_json = "0.9.*"
 
-bson = "0.*"
-mongodb = "0.*"
+# MongoDB uses bson and so the versions must match, hence the specific versions.
+bson = "0.6.1"
+mongodb = "0.2.6"
 
 jsonwebtoken = "1.*"
 rustc-serialize = "0.*"
