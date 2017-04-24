@@ -69,7 +69,7 @@ fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<Proc
 
   let data = reader.fill_buf().unwrap();
   let str_data = str::from_utf8(data).unwrap();
-  println!("{:?}", str_data);
+  debug!("Incoming request to evelyn rest api: {:?}", str_data);
   let process_result = process_request(str_data, router, processor_data);
 
   let mut writer = BufWriter::new(&stream);
@@ -82,6 +82,9 @@ fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: String) {
     "\r\nContent-Type: application/json",
     "\r\nAccess-Control-Allow-Origin: *",
     process_result);
+
+  debug!("Outgoing response from evelyn rest api: {:?}", response);
+
   writer.write_all(response.as_bytes()).unwrap();
 }
 

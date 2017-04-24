@@ -14,8 +14,10 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#[macro_use(bson, doc)] extern crate bson;
-#[macro_use] extern crate serde_derive;
+#[macro_use(bson, doc)]
+extern crate bson;
+#[macro_use]
+extern crate serde_derive;
 extern crate mongodb;
 extern crate serde_json;
 extern crate jsonwebtoken as jwt;
@@ -23,6 +25,9 @@ extern crate rustc_serialize;
 extern crate chrono;
 extern crate config;
 extern crate uuid;
+#[macro_use]
+extern crate log;
+extern crate log4rs;
 
 mod server;
 mod data;
@@ -38,6 +43,9 @@ use server::routing::Router;
 
 pub fn hello_evelyn() {
   println!("Starting...");
+
+  // Initialise the logging back end.
+  log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 
   let conf = data::conf::Conf::new();
   let uri = conf.get_db_connnection_string();

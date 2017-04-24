@@ -49,6 +49,7 @@ pub fn find_user(client : &Client, email_address: &String) -> Result<Option<User
                 Ok(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
             }
             else {
+                // TODO fix me.
                 Ok(None)
             }
         },
