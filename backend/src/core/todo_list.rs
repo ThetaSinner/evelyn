@@ -105,3 +105,37 @@ pub fn lookup_todo_lists(model: model::todo_list::LookupTodoListsRequestModel, p
       }
   }
 }
+
+pub fn lookup_todo_list(model: model::todo_list::LookupTodoListRequestModel, processor_data: Arc<ProcessorData>) -> Result<model::todo_list::LookupTodoListResponseModel, EvelynCoreError> {
+  let session_token_model = processor_data.token_service.extract_session_token(&model.token);
+
+  let lookup_todo_list_model = model::todo_list::LookupTodoListModel {
+    user_id: session_token_model.user_id,
+    todo_list_id: model.todo_list_id,
+  };
+
+  let data_store = processor_data.data_store.clone();
+
+  match data::todo_list::lookup_todo_list(&data_store, &lookup_todo_list_model) {
+      Ok(result) => {
+          let mut todo_list_model = model::todo_list::TodoListExternalModel {
+              title: result.title,
+              todo_list_items: Vec::new(),
+          };
+
+          for i in result.todo_list_items {
+              todo_list_model.todo_list_items.push(model::todo_list::TodoListItemExternalModel {
+                  text: i.text,
+              });
+          }
+
+          Ok(model::todo_list::LookupTodoListResponseModel {
+              todo_list: Some(todo_list_model),
+              error: None,
+          })
+      },
+      Err(e) => {
+          Err(EvelynCoreError::FailedToLookupTodoList(e))
+      }
+  }
+}

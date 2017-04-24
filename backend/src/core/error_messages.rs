@@ -40,6 +40,7 @@ pub enum EvelynServiceError {
     CreateTodoList(EvelynCoreError),
     AddItemToTodoList(EvelynCoreError),
     LookupTodoLists(EvelynCoreError),
+    LookupTodoList(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -87,6 +88,9 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::LookupTodoLists(_) => {
                 write!(f, "100403")
             },
+            EvelynServiceError::LookupTodoList(_) => {
+                write!(f, "100404")
+            },
         }
     }
 }
@@ -116,6 +120,8 @@ impl error::Error for EvelynServiceError {
                 "Failed to add item to todo list",
             EvelynServiceError::LookupTodoLists(_) =>
                 "Failed to lookup todo lists",
+            EvelynServiceError::LookupTodoList(_) =>
+                "Failed to lookup todo list",
         }
     }
 
@@ -132,6 +138,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::CreateTodoList(ref err) => Some(err),
             EvelynServiceError::AddItemToTodoList(ref err) => Some(err),
             EvelynServiceError::LookupTodoLists(ref err) => Some(err),
+            EvelynServiceError::LookupTodoList(ref err) => Some(err),
         }
     }
 }
@@ -148,6 +155,7 @@ pub enum EvelynCoreError {
     FailedToCreateTodoList(EvelynDatabaseError),
     FailedToAddItemToTodoList(EvelynDatabaseError),
     FailedToLookupTodoLists(EvelynDatabaseError),
+    FailedToLookupTodoList(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -171,6 +179,8 @@ impl fmt::Display for EvelynCoreError {
                 write!(f, "Failed to add item to todo list: {}", err),
             EvelynCoreError::FailedToLookupTodoLists(ref err) =>
                 write!(f, "Failed to lookup todo lists: {}", err),
+            EvelynCoreError::FailedToLookupTodoList(ref err) =>
+                write!(f, "Failed to lookup todo list: {}", err),
         }
     }
 }
@@ -196,6 +206,8 @@ impl error::Error for EvelynCoreError {
                 "Failed to add item to todo list",
             EvelynCoreError::FailedToLookupTodoLists(_) =>
                 "Failed to lookup todo lists",
+            EvelynCoreError::FailedToLookupTodoList(_) =>
+                "Failed to lookup todo list",
         }
     }
 
@@ -210,6 +222,7 @@ impl error::Error for EvelynCoreError {
             EvelynCoreError::FailedToCreateTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToAddItemToTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToLookupTodoLists(ref err) => Some(err),
+            EvelynCoreError::FailedToLookupTodoList(ref err) => Some(err),
         }
     }
 }
@@ -223,6 +236,8 @@ pub enum EvelynDatabaseError {
     InsertTodoList(MongoDbError),
     AddItemToTodoList(MongoDbError),
     LookupTodoLists(MongoDbError),
+    TodoListNotFound,
+    LookupTodoList(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -242,6 +257,10 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Failed to add item to todo list: {}", e),
             EvelynDatabaseError::LookupTodoLists(ref e) =>
                 write!(f, "Failed to lookup todo lists: {}", e),
+            EvelynDatabaseError::TodoListNotFound =>
+                write!(f, "Todo list not found"),
+            EvelynDatabaseError::LookupTodoList(ref e) =>
+                write!(f, "Failed to lookup todo list: {}", e),
         }
     }
 }
@@ -263,6 +282,10 @@ impl error::Error for EvelynDatabaseError {
                 "Failed to add item to todo list",
             EvelynDatabaseError::LookupTodoLists(_) =>
                 "Failed to lookup todo lists",
+            EvelynDatabaseError::TodoListNotFound =>
+                "Todo list not found",
+            EvelynDatabaseError::LookupTodoList(_) =>
+                "Failed to lookup todo list",
         }
     }
 
@@ -275,6 +298,8 @@ impl error::Error for EvelynDatabaseError {
             EvelynDatabaseError::InsertTodoList(ref err) => Some(err),
             EvelynDatabaseError::AddItemToTodoList(ref err) => Some(err),
             EvelynDatabaseError::LookupTodoLists(ref err) => Some(err),
+            EvelynDatabaseError::TodoListNotFound => None,
+            EvelynDatabaseError::LookupTodoList(ref err) => Some(err),
         }
     }
 }

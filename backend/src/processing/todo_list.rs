@@ -117,3 +117,34 @@ pub fn lookup_todo_lists_processor(router_input: RouterInput, processor_data: Ar
     }
   }
 }
+
+pub fn lookup_todo_list_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
+  let request_model_decoded: Result<model::todo_list::LookupTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
+    Ok(request_model) => {
+        match todo_list::lookup_todo_list(request_model, processor_data) {
+            Ok(result) => {
+                RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
+            },
+            Err(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::LookupTodoListResponseModel {
+                        todo_list: None,
+                        error: Some(From::from(EvelynServiceError::LookupTodoList(e))),
+                    }).unwrap()
+                }
+            },
+        }
+    },
+    Err(e) => {
+        let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model::todo_list::LookupTodoListResponseModel {
+                todo_list: None,
+                error: Some(model),
+            }).unwrap()
+        }
+    }
+  }
+}

@@ -98,12 +98,23 @@
           },
 
           addItem: function() {
+            var item = this.$el.find("input").val();
+
             evelynServerBridge.send_to_server("/todolist/additem", {
               TodoListId: this.model.get('todo_list_id'),
               TodoListItem: {
-                Text: this.$el.find("input").val(),
+                Text: item,
               },
             }, render_response_payload);
+
+            // TODO this renders even if the save fails.
+            this.model.set({
+                todo_items : this.model.get("todo_items").concat({
+                  text: item,
+                }),
+            });
+
+            this.render();
           },
 
           switchModel: function(m) {
@@ -191,13 +202,22 @@
                     target.append(render_todo_list_preview(todoLists[i]));
 
                     target.find("div:last-child > button").on("click", todoLists[i], function (event) {
-                      // TODO load todo items for this list.
+                      function callback(response) {
+                        console.log(response);
+                        render_response_payload(response);
+                        // TODO handle errors.
+                        todoListViewHandle.switchModel({
+                          title: event.data.Title,
+                          todo_list_id: event.data.TodoListId,
+                          todo_items: _.map(response.TodoList.TodoListItems, function (i) {
+                            return {text: i.Text};
+                          }),
+                        });
+                      }
 
-                      todoListViewHandle.switchModel({
-                        title: event.data.Title,
-                        todo_list_id: event.data.TodoListId,
-                        // TODO map todo items
-                      });
+                      evelynServerBridge.send_to_server("/todolist/lookuplist", {
+                        TodoListId: event.data.TodoListId,
+                      }, callback);
                     });
                 }
             }

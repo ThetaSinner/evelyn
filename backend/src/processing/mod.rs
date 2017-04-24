@@ -40,4 +40,5 @@ pub fn load_processors(router: &mut Router) {
   router.add_rule("/todolist/create", todo_list::create_todo_list_processor);
   router.add_rule("/todolist/additem", todo_list::add_item_todo_list_processor);
   router.add_rule("/todolist/lookuplists", todo_list::lookup_todo_lists_processor);
+  router.add_rule("/todolist/lookuplist", todo_list::lookup_todo_list_processor);
 }

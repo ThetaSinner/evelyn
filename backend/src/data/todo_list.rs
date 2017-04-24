@@ -101,3 +101,25 @@ pub fn lookup_todo_lists(client : &Client, lookup_todo_lists_model: &model::todo
         }
     }
 }
+
+pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_list::LookupTodoListModel) -> Result<model::todo_list::TodoListModel, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("todolist");
+
+    let ref user_id = lookup_todo_list_model.user_id;
+    let ref todo_list_id = lookup_todo_list_model.todo_list_id;
+    let query = doc!{"userId" => user_id, "todoListId" => todo_list_id};
+
+    match collection.find_one(Some(query), None) {
+        Ok(result) => {
+            if let Some(result) = result {
+                Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
+            }
+            else {
+                Err(EvelynDatabaseError::TodoListNotFound)
+            }
+        },
+        Err(e) => {
+            Err(EvelynDatabaseError::LookupTodoList(e))
+        }
+    }
+}

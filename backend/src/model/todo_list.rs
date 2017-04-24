@@ -44,6 +44,15 @@ pub struct TodoListItemExternalModel {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct TodoListExternalModel {
+    #[serde(rename="Title")]
+    pub title: String,
+
+    #[serde(rename="TodoListItems")]
+    pub todo_list_items: Vec<TodoListItemExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct TodoListItemModel {
     #[serde(rename="text")]
     pub text: String,
@@ -131,4 +140,31 @@ pub struct TodoListsModel {
 
     #[serde(rename="todoListId")]
     pub todo_list_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="TodoListId")]
+    pub todo_list_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+
+    #[serde(rename="todoListId")]
+    pub todo_list_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupTodoListResponseModel {
+    #[serde(rename="TodoList")]
+    pub todo_list: Option<TodoListExternalModel>,
+
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
 }
