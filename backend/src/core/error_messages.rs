@@ -25,6 +25,7 @@ use mongodb::error::Error as MongoDbError;
 pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo,
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse,
+    ExpectedHeaderOnRequestButNoneWasFound,
     CouldNotDecodeTheRequestPayload(serde_json::Error),
 
     // user
@@ -52,6 +53,9 @@ impl fmt::Display for EvelynServiceError {
             },
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => {
                 write!(f, "100002")
+            },
+            EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound => {
+                write!(f, "100003")
             },
 
             // Processing layer.
@@ -102,6 +106,8 @@ impl error::Error for EvelynServiceError {
                 "Request for an action which Evelyn does now know how to do",
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse =>
                 "Evelyn tried to handle the request but hasn't managed to give anything back",
+            EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound =>
+                "Expected a header with the request but didn't find a header",
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) =>
                 "Could not decode the JSON request payload",
             EvelynServiceError::CreateUser(_) =>
@@ -129,6 +135,7 @@ impl error::Error for EvelynServiceError {
         match *self {
             EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo => None,
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
+            EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
             EvelynServiceError::CreateUser(ref err) => Some(err),
             EvelynServiceError::UserAlreadyExists(ref err) => Some(err),

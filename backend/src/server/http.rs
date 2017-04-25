@@ -19,6 +19,7 @@ use std::net::{TcpListener, TcpStream};
 use std::str;
 use std::thread;
 use std::sync::Arc;
+use std::fmt;
 
 use serde_json;
 
@@ -32,6 +33,28 @@ pub struct HttpServer {
   processor_data: Arc<ProcessorData>,
   port: i64,
   hostname: String,
+}
+
+enum HttpStatus {
+    Ok,
+    BadRequest,
+    InternalServerError,
+}
+
+impl fmt::Display for HttpStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            HttpStatus::Ok => write!(f, "200 OK"),
+            HttpStatus::BadRequest => write!(f, "400 Bad Request"),
+            HttpStatus::InternalServerError => write!(f, "500 Internal Server Error"),
+        }
+    }
+}
+
+struct HttpProcessResult {
+    pub http_status: HttpStatus,
+
+    pub response_body: String,
 }
 
 impl HttpServer {
@@ -76,19 +99,19 @@ fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<Proc
   send_response(&mut writer, process_result);
 }
 
-fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: String) {
-  let response = format!("{}{}{}\r\n\r\n{}",
-    "HTTP/1.1 200 OK",
+fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: HttpProcessResult) {
+  let response = format!("HTTP/1.1 {}{}{}\r\n\r\n{}",
+    process_result.http_status,
     "\r\nContent-Type: application/json",
     "\r\nAccess-Control-Allow-Origin: *",
-    process_result);
+    process_result.response_body);
 
   debug!("Outgoing response from evelyn rest api: {:?}", response);
 
   writer.write_all(response.as_bytes()).unwrap();
 }
 
-fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<ProcessorData>) -> String {
+fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<ProcessorData>) -> HttpProcessResult {
   let lines = request.lines();
 
   let mut is_processing_header = true;
@@ -109,16 +132,32 @@ fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<Proce
       }
   }
 
-  let top_line = header[0];
-  let top_line_values: Vec<_> = top_line.split(' ').collect();
+  if header.len() == 0 {
+      let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound);
 
-  let router_output = router.route(top_line_values[1], RouterInput{request_body: body}, processor_data);
-
-  if router_output.is_some() {
-     router_output.unwrap().response_body
+      HttpProcessResult {
+          http_status: HttpStatus::BadRequest,
+          response_body: serde_json::to_string(&model).unwrap()
+      }
   }
   else {
-      let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse);
-      serde_json::to_string(&model).unwrap()
+      let top_line = header[0];
+      let top_line_values: Vec<_> = top_line.split(' ').collect();
+
+      let router_output = router.route(top_line_values[1], RouterInput{request_body: body}, processor_data);
+
+      if router_output.is_some() {
+         HttpProcessResult {
+             http_status: HttpStatus::Ok,
+             response_body: router_output.unwrap().response_body
+         }
+      }
+      else {
+          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse);
+          HttpProcessResult {
+              http_status: HttpStatus::InternalServerError,
+              response_body: serde_json::to_string(&model).unwrap()
+          }
+      }
   }
 }

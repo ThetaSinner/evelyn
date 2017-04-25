@@ -140,6 +140,8 @@
         }
 
         function render_response_payload(response) {
+          console.log(response);
+
           $("#json-response").val(JSON.stringify(response, null, 4));
 
           if (response.hasOwnProperty("Error") && response.Error !== null) {
@@ -246,8 +248,12 @@
             url: url,
             data: JSON.stringify(processed_payload),
             dataType: "json",
-            timeout: 500,
+            // The first request may be slow because a data connection must be opened on the server
+            // but after that, such a long timeout is a problem...
+            timeout: 3000,
             success: function (response) {
+                console.log("Response from evelyn", response);
+
                 _this.process_response(response);
 
                 callback(response);
