@@ -79,10 +79,17 @@ impl fmt::Display for EvelynServiceError {
                 write!(f, "100204")
             },
 
+            //
+            // Simple Task
+            //
+
             EvelynServiceError::FailedToUpdateSimpleTask(_) => {
                 write!(f, "100301")
             },
 
+            //
+            // Todo List
+            //
             EvelynServiceError::CreateTodoList(_) => {
                 write!(f, "100401")
             },
@@ -110,6 +117,8 @@ impl error::Error for EvelynServiceError {
                 "Expected a header with the request but didn't find a header",
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) =>
                 "Could not decode the JSON request payload",
+
+            // User
             EvelynServiceError::CreateUser(_) =>
                 "Failed to create user",
             EvelynServiceError::UserAlreadyExists(_) =>
@@ -118,8 +127,12 @@ impl error::Error for EvelynServiceError {
                 "Invalid logon",
             EvelynServiceError::FailedToLogonUser(_) =>
                 "Failed to logon user",
+
+            // SimpleTask
             EvelynServiceError::FailedToUpdateSimpleTask(_) =>
                 "Failed to update simple task",
+
+            // Todo List
             EvelynServiceError::CreateTodoList(_) =>
                 "Failed to create todo list",
             EvelynServiceError::AddItemToTodoList(_) =>
@@ -137,11 +150,17 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
+
+            // User
             EvelynServiceError::CreateUser(ref err) => Some(err),
             EvelynServiceError::UserAlreadyExists(ref err) => Some(err),
             EvelynServiceError::LogonUser(ref err) => Some(err),
             EvelynServiceError::FailedToLogonUser(ref err) => Some(err),
+
+            // Simple Task
             EvelynServiceError::FailedToUpdateSimpleTask(ref err) => Some(err),
+
+            // Todo List
             EvelynServiceError::CreateTodoList(ref err) => Some(err),
             EvelynServiceError::AddItemToTodoList(ref err) => Some(err),
             EvelynServiceError::LookupTodoLists(ref err) => Some(err),
@@ -158,7 +177,11 @@ pub enum EvelynCoreError {
     FailedToCreateUser(EvelynDatabaseError),
     InvalidLogon,
     FailedToLogonUser(EvelynDatabaseError),
+
+    // Simple Task`
     FailedToUpdateSimpleTask(EvelynDatabaseError),
+
+    // Todo List
     FailedToCreateTodoList(EvelynDatabaseError),
     FailedToAddItemToTodoList(EvelynDatabaseError),
     FailedToLookupTodoLists(EvelynDatabaseError),
@@ -168,6 +191,7 @@ pub enum EvelynCoreError {
 impl fmt::Display for EvelynCoreError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            //User
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
                 write!(f, "Will not create the requested user because that user already exists."),
             EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(ref err) =>
@@ -178,8 +202,12 @@ impl fmt::Display for EvelynCoreError {
                 write!(f, "Invalid logon"),
             EvelynCoreError::FailedToLogonUser(ref err) =>
                 write!(f, "Failed to logon user: {}", err),
+
+            // Simple Task
             EvelynCoreError::FailedToUpdateSimpleTask(ref err) =>
                 write!(f, "Failed to update task: {}", err),
+
+            //Todo List
             EvelynCoreError::FailedToCreateTodoList(ref err) =>
                 write!(f, "Failed to create todo list: {}", err),
             EvelynCoreError::FailedToAddItemToTodoList(ref err) =>
@@ -195,6 +223,7 @@ impl fmt::Display for EvelynCoreError {
 impl error::Error for EvelynCoreError {
     fn description(&self) -> &str {
         match *self {
+            // User
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists =>
                 "Will not create the requested user because that user already exists.",
             EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(_) =>
@@ -205,8 +234,12 @@ impl error::Error for EvelynCoreError {
                 "Invalid Logon",
             EvelynCoreError::FailedToLogonUser(_) =>
                 "Failed to logon user",
+
+            // Simple Task
             EvelynCoreError::FailedToUpdateSimpleTask(_) =>
                 "Failed to update task",
+
+            // Todo List
             EvelynCoreError::FailedToCreateTodoList(_) =>
                 "Failed to create todo list",
             EvelynCoreError::FailedToAddItemToTodoList(_) =>
@@ -220,12 +253,17 @@ impl error::Error for EvelynCoreError {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
+            // user
             EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => None,
             EvelynCoreError::CannotCheckIfUserExistsSoWillNotCreateNewUser(ref err) => Some(err),
             EvelynCoreError::FailedToCreateUser(ref err) => Some(err),
             EvelynCoreError::InvalidLogon => None,
             EvelynCoreError::FailedToLogonUser(ref err) => Some(err),
+
+            // Simple Task
             EvelynCoreError::FailedToUpdateSimpleTask(ref err) => Some(err),
+
+            // Todo List
             EvelynCoreError::FailedToCreateTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToAddItemToTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToLookupTodoLists(ref err) => Some(err),
@@ -237,9 +275,15 @@ impl error::Error for EvelynCoreError {
 #[derive(Debug)]
 pub enum EvelynDatabaseError {
     SerialisationFailed,
+
+    // User
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
+
+    // Simple Task
     UpdateSimpleTask(MongoDbError),
+
+    // Todo List
     InsertTodoList(MongoDbError),
     AddItemToTodoList(MongoDbError),
     LookupTodoLists(MongoDbError),
@@ -252,12 +296,18 @@ impl fmt::Display for EvelynDatabaseError {
         match *self {
             EvelynDatabaseError::SerialisationFailed =>
                 write!(f, "Failed to serialise data for storage."),
+
+            // User
             EvelynDatabaseError::InsertUser(ref e) =>
                 write!(f, "Failed to create record for new user\n {}", e),
             EvelynDatabaseError::LookupUser(ref e) =>
                 write!(f, "Failed to lookup user: {}", e),
+
+            // Simple Task
             EvelynDatabaseError::UpdateSimpleTask(ref e) =>
                 write!(f, "Failed to update simple task: {}", e),
+
+            // Todo List
             EvelynDatabaseError::InsertTodoList(ref e) =>
                 write!(f, "Failed to insert todo list: {}", e),
             EvelynDatabaseError::AddItemToTodoList(ref e) =>
@@ -277,12 +327,18 @@ impl error::Error for EvelynDatabaseError {
         match *self {
             EvelynDatabaseError::SerialisationFailed =>
                 "Failed to serialise data for storage.",
+
+            // User
             EvelynDatabaseError::InsertUser(_) =>
                 "Failed to create record for new user",
             EvelynDatabaseError::LookupUser(_) =>
                 "Failed to lookup user",
+
+            // Simple Task
             EvelynDatabaseError::UpdateSimpleTask(_) =>
                 "Failed to update simple task",
+
+            // Todo list
             EvelynDatabaseError::InsertTodoList(_) =>
                 "Failed to insert todo list",
             EvelynDatabaseError::AddItemToTodoList(_) =>
@@ -299,9 +355,15 @@ impl error::Error for EvelynDatabaseError {
     fn cause(&self) -> Option<&error::Error> {
         match *self {
             EvelynDatabaseError::SerialisationFailed => None,
+
+            // User
             EvelynDatabaseError::InsertUser(ref err) => Some(err),
             EvelynDatabaseError::LookupUser(ref err) => Some(err),
+
+            // Simple Task
             EvelynDatabaseError::UpdateSimpleTask(ref err) => Some(err),
+
+            // Todo List
             EvelynDatabaseError::InsertTodoList(ref err) => Some(err),
             EvelynDatabaseError::AddItemToTodoList(ref err) => Some(err),
             EvelynDatabaseError::LookupTodoLists(ref err) => Some(err),
