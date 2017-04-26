@@ -98,7 +98,7 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
         }
 
         Ok(model::simple_task::LookupSimpleTaskResponseModel {
-            tasks: Some(filtered_tasks),
+            tasks: filtered_tasks,
             error: None,
         })
     }

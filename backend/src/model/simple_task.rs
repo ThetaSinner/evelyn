@@ -76,7 +76,7 @@ pub struct LookupSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,
 
     #[serde(rename="SimpleTasks")]
-    pub tasks: Option<Vec<SimpleTaskModel>>,
+    pub tasks: Vec<SimpleTaskModel>,
 }
 
 #[derive(Serialize, Deserialize)]
