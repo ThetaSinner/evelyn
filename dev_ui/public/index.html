@@ -159,15 +159,19 @@
         }
 
         function serialize_form(form_selector) {
-          var form_data = form_selector.serializeArray();
-
           var form_submit_data = {};
-          for (var i = 0; i < form_data.length; i++) {
-              if (form_data[i].value == "on") {
-                form_data[i].value = "true";
-              }
-              form_submit_data[form_data[i].name] = form_data[i].value;
-          }
+
+          form_selector.serializeArray().map(function (x) {
+            if (x.value == "on") {
+              form_submit_data[x.name] = x.value = true;
+            } else if (x.value == "false") {
+              form_submit_data[x.name] = false;
+            } else if (!isNaN(x.value)) { //check if value is convertible to number
+              form_submit_data[x.name] = Number(x.value);
+            } else {
+              form_submit_data[x.name] = x.value;
+            }
+          });
 
           return form_submit_data;
         };
