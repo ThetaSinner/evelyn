@@ -62,7 +62,7 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
         let response = model::simple_task::CreateSimpleTaskResponseModel {
             error: Some(model::ErrorModel {
                 error_code: "102001".to_owned(),
-                error_message: "Failed to process create simple task".to_owned()
+                error_message: "Failed to process lookup simple task".to_owned()
             })
         };
 
