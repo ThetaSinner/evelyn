@@ -27,8 +27,9 @@ impl Conf {
       c.set_default("host", "localhost").unwrap();
       c.set_default("db_connection_string", "mongodb://localhost:27017").unwrap();
 
+      println!("Reading config from evelyn.json");
       match c.merge(config::File::new("evelyn", config::FileFormat::Json)) {
-          Ok(_) => println!("Reading config from evelyn"),
+          Ok(_) => println!("Config loaded"),
           Err(e) => println!("Failed to load config {:?}", e)
       };
 
