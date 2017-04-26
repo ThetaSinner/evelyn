@@ -22,26 +22,22 @@ use model;
 use core::error_messages::EvelynDatabaseError;
 use mongodb::{Client, ThreadedClient};
 
-pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_task::SimpleTaskModel) -> Option<String> {
+pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_task::SimpleTaskModel) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("simpletask");
 
     let bson_simple_task_model = bson::to_bson(&simple_task_model).unwrap();
 
     if let bson::Bson::Document(document) = bson_simple_task_model {
       match collection.insert_one(document, None) {
-          Ok(_) => {None},
-          Err(e) => {
-              println!("Database Error: Insert error {}", e);
-              Some(String::from("Failed to insert simple task"))
-          }
+          Ok(_) => None,
+          Err(e) => Some(EvelynDatabaseError::InsertSimpleTask(e))
       }
     } else {
-      println!("Error converting the BSON object into a MongoDB document");
-      Some(String::from("Error converting the BSON object into a MongoDB document"))
+      Some(EvelynDatabaseError::SerialisationFailed)
     }
 }
 
-pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel) -> Option<Vec<model::simple_task::SimpleTaskModel>> {
+pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel) -> Result<Vec<model::simple_task::SimpleTaskModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("simpletask");
 
     let ref user_id = simple_task_lookup_model.user_id;
@@ -64,11 +60,10 @@ pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::s
                     }
                 })
                 .collect();
-            Some(docs)
+            Ok(docs)
         },
         Err(e) => {
-            println!("Failed to lookup simple tasks {}", e);
-            None
+            Err(EvelynDatabaseError::LookupSimpleTask(e))
         }
     }
 }

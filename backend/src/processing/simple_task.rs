@@ -30,17 +30,24 @@ pub fn create_simple_task_processor(router_input: RouterInput, processor_data: A
 
     match request_model_de {
       Ok(request_model) => {
-        let response = simple_task::create_simple_task(request_model, processor_data);
-        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+        match simple_task::create_simple_task(request_model, processor_data) {
+            Ok(response) => {
+                RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+            }
+            Err(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::simple_task::LookupSimpleTaskResponseModel {
+                        tasks: None,
+                        error: Some(From::from(EvelynServiceError::FailedToCreateSimpleTask(e))),
+                    }).unwrap()
+                }
+            }
+        }
       },
       Err(e) => {
-        println!("Bad payload, {}", e);
-
-        let response = model::simple_task::CreateSimpleTaskResponseModel {
-            error: Some(model::ErrorModel {
-                error_code: "102001".to_owned(),
-                error_message: "Failed to process create simple task".to_owned()
-            })
+        let response = model::simple_task::LookupSimpleTaskResponseModel {
+            tasks: None,
+            error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
         };
 
         RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
@@ -53,17 +60,24 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
 
     match request_model_de {
       Ok(request_model) => {
-        let response = simple_task::lookup_simple_tasks(request_model, processor_data);
-        RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+        match simple_task::lookup_simple_tasks(request_model, processor_data) {
+            Ok(response) => {
+                RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
+            }
+            Err(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::simple_task::LookupSimpleTaskResponseModel {
+                        tasks: None,
+                        error: Some(From::from(EvelynServiceError::FailedToLookupSimpleTask(e))),
+                    }).unwrap()
+                }
+            }
+        }
       },
       Err(e) => {
-        println!("Bad payload, {}", e);
-
-        let response = model::simple_task::CreateSimpleTaskResponseModel {
-            error: Some(model::ErrorModel {
-                error_code: "102001".to_owned(),
-                error_message: "Failed to process lookup simple task".to_owned()
-            })
+        let response = model::simple_task::LookupSimpleTaskResponseModel {
+            tasks: None,
+            error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
         };
 
         RouterOutput{response_body: serde_json::to_string(&response).unwrap()}

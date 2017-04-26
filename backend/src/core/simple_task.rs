@@ -25,7 +25,7 @@ use processing::ProcessorData;
 use model;
 use core::error_messages::EvelynCoreError;
 
-pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> model::simple_task::CreateSimpleTaskResponseModel {
+pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
   let task_id = Uuid::new_v4();
@@ -41,23 +41,16 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, proc
 
   let ds = processor_data.data_store.clone();
 
-  let error = data::simple_task::insert_simple_task(&ds, &simple_task_model);
-  if error.is_some() {
-    model::simple_task::CreateSimpleTaskResponseModel {
-        error: Some(model::ErrorModel{
-            error_code: "102002".to_owned(),
-            error_message: "Failed to insert simple task".to_owned()
+  match data::simple_task::insert_simple_task(&ds, &simple_task_model) {
+      Some(e) => Err(EvelynCoreError::FailedToCreateSimpleTask(e)),
+      None => Ok(
+        model::simple_task::CreateSimpleTaskResponseModel {
+            error: None,
         })
     }
-  }
-  else {
-    model::simple_task::CreateSimpleTaskResponseModel {
-        error: None,
-    }
-  }
 }
 
-pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> model::simple_task::LookupSimpleTaskResponseModel {
+pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::LookupSimpleTaskResponseModel, EvelynCoreError> {
   let session_token_model = processor_data.token_service.extract_session_token(&model.token);
 
   let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
@@ -68,57 +61,49 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
 
   let ds = processor_data.data_store.clone();
 
-  let tasks = data::simple_task::lookup_simple_tasks(&ds, &simple_task_lookup_model);
-  if tasks.is_some() {
-    let mut tasks = tasks.unwrap();
-    tasks.sort_by(|a, b| {
-        let a_date = a.due_date.parse::<DateTime<UTC>>();
-        let b_date = b.due_date.parse::<DateTime<UTC>>();
+  match data::simple_task::lookup_simple_tasks(&ds, &simple_task_lookup_model) {
+      Ok(mut tasks) => {
+        tasks.sort_by(|a, b| {
+            let a_date = a.due_date.parse::<DateTime<UTC>>();
+            let b_date = b.due_date.parse::<DateTime<UTC>>();
 
-        // TODO unsafe
-        if a_date.unwrap().eq(&b_date.unwrap()) {
-            if a.title < b.title {
+            // TODO unsafe
+            if a_date.unwrap().eq(&b_date.unwrap()) {
+                if a.title < b.title {
+                    Ordering::Less
+                }
+                else {
+                    Ordering::Greater
+                }
+            }
+            else if a_date.unwrap().lt(&b_date.unwrap()) {
                 Ordering::Less
             }
             else {
                 Ordering::Greater
             }
-        }
-        else if a_date.unwrap().lt(&b_date.unwrap()) {
-            Ordering::Less
-        }
-        else {
-            Ordering::Greater
-        }
-    });
+        });
 
-    let mut filtered_tasks : Vec<model::simple_task::SimpleTaskModel> = Vec::new();
-    for x in tasks {
-        if simple_task_lookup_model.show_completed {
-            filtered_tasks.push(x);
-        } else if !simple_task_lookup_model.show_completed && !x.completed {
-            filtered_tasks.push(x);
+        let mut filtered_tasks : Vec<model::simple_task::SimpleTaskModel> = Vec::new();
+        for x in tasks {
+            if simple_task_lookup_model.show_completed {
+                filtered_tasks.push(x);
+            } else if !simple_task_lookup_model.show_completed && !x.completed {
+                filtered_tasks.push(x);
+            }
         }
-    }
 
-    if simple_task_lookup_model.limit > 0 {
-        filtered_tasks.truncate(simple_task_lookup_model.limit as usize);
-    }
+        if simple_task_lookup_model.limit > 0 {
+            filtered_tasks.truncate(simple_task_lookup_model.limit as usize);
+        }
 
-    model::simple_task::LookupSimpleTaskResponseModel {
-        tasks: filtered_tasks,
-        error: None,
+        Ok(model::simple_task::LookupSimpleTaskResponseModel {
+            tasks: Some(filtered_tasks),
+            error: None,
+        })
     }
-  }
-  else {
-      model::simple_task::LookupSimpleTaskResponseModel {
-          error: Some(model::ErrorModel{
-              error_code: "103001".to_owned(),
-              error_message: "Failed to lookup simple tasks".to_owned()
-          }),
-          tasks: Vec::new()
-      }
-  }
+  Err(e) => Err(EvelynCoreError::FailedToLookupSimpleTask(e))
+}
 }
 
 pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
