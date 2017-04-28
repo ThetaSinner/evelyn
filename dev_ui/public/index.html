@@ -47,11 +47,16 @@
         <div class="callout">
             <h5><%= data.title %></h5>
 
-            <ul>
-              <% _.each(data.todo_items, function (i) { %> <li><%= i.text %></li> <% }); %>
-            </ul>
+            <div>
+              <% _.each(data.todo_items, function (i) { %>
+                <label>
+                  <input type="checkbox" class="done-checkbox" />
+                  <%= i.text %>
+                </label>
+              <% }); %>
+            </div>
             <label>New item
-              <input type="text" placeholder="something to do" />
+              <input type="text" class="new-todo-item" placeholder="something to do" />
               <button class="add button">+</button>
             </label>
         </div>
@@ -84,6 +89,7 @@
 
           events: {
             'click .add': 'addItem',
+            'change .done-checkbox': 'markItemDone',
           },
 
           initialize: function() {
@@ -98,7 +104,7 @@
           },
 
           addItem: function() {
-            var item = this.$el.find("input").val();
+            var item = this.$el.find("input[class='new-todo-item']").val();
 
             evelynServerBridge.send_to_server("/todolist/additem", {
               TodoListId: this.model.get('todo_list_id'),
@@ -115,6 +121,17 @@
             });
 
             this.render();
+          },
+
+          markItemDone: function(e) {
+            var checkBox = $(e.target);
+            var itemIndex = checkBox.parent().index();
+
+            evelynServerBridge.send_to_server("/todolist/updateitem", {
+              TodoListId: this.model.get("todo_list_id"),
+              ItemIndex: itemIndex,
+              IsDone: checkBox.prop("checked"),
+            }, render_response_payload);
           },
 
           switchModel: function(m) {
@@ -159,21 +176,22 @@
         }
 
         function serialize_form(form_selector) {
-          var form_submit_data = {};
+          return _.object(_.map(form_selector.serializeArray(), function(item) {
+            // {name: "name", value: "data"}
 
-          form_selector.serializeArray().map(function (x) {
-            if (x.value == "on") {
-              form_submit_data[x.name] = x.value = true;
-            } else if (x.value == "false") {
-              form_submit_data[x.name] = false;
-            } else if (!isNaN(x.value)) { //check if value is convertible to number
-              form_submit_data[x.name] = Number(x.value);
-            } else {
-              form_submit_data[x.name] = x.value;
+            if (item.value === "on") {
+              return [item.name, true];
             }
-          });
-
-          return form_submit_data;
+            else if (item.value == "false") {
+              return [item.name, false];
+            }
+            else if (!isNaN(item.value)) { //check if value is convertible to number
+              return [item.name, Number(item.value)];
+            }
+            else {
+              return [item.name, item.value];
+            }
+          }));
         };
 
         function EvelynServerBridge() {

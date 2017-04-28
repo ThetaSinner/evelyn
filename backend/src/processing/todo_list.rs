@@ -148,3 +148,36 @@ pub fn lookup_todo_list_processor(router_input: RouterInput, processor_data: Arc
     }
   }
 }
+
+pub fn update_item_todo_list_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
+  let request_model_decoded: Result<model::todo_list::UpdateItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+
+  match request_model_decoded {
+    Ok(request_model) => {
+        match todo_list::update_todo_list_item(request_model, processor_data) {
+            None => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+                        error: None,
+                    }).unwrap()
+                }
+            },
+            Some(e) => {
+                RouterOutput{
+                    response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+                        error: Some(From::from(EvelynServiceError::UpdateTodoListItem(e))),
+                    }).unwrap()
+                }
+            },
+        }
+    },
+    Err(e) => {
+        let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+        RouterOutput {
+            response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+                error: Some(model),
+            }).unwrap()
+        }
+    }
+  }
+}

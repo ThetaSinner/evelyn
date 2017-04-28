@@ -168,3 +168,39 @@ pub struct LookupTodoListResponseModel {
     #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateItemTodoListRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="TodoListId")]
+    pub todo_list_id: String,
+
+    #[serde(rename="ItemIndex")]
+    pub item_index: i32,
+
+    #[serde(rename="IsDone")]
+    pub is_done: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateItemTodoListResponseModel {
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdateTodoListItemModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+
+    #[serde(rename="todoListId")]
+    pub todo_list_id: String,
+
+    #[serde(rename="itemIndex")]
+    pub item_index: i32,
+
+    #[serde(rename="isDone")]
+    pub is_done: bool,
+}

@@ -123,3 +123,26 @@ pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_l
         }
     }
 }
+
+pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::UpdateTodoListItemModel) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("todolist");
+
+    let ref user_id = update_todo_list_item.user_id;
+    let ref todo_list_id = update_todo_list_item.todo_list_id;
+    let match_query = doc!{"userId" => user_id, "todoListId" => todo_list_id};
+
+    let mut update_query = Document::new();
+    update_query.insert(format!("todoListItems.{}.is_done", update_todo_list_item.item_index), update_todo_list_item.is_done);
+
+    let mut set_update_query = Document::new();
+    set_update_query.insert("$set", update_query);
+
+    match collection.update_one(match_query, set_update_query, None) {
+        Ok(_) => {
+            None
+        },
+        Err(e) => {
+            Some(EvelynDatabaseError::UpdateTodoListItem(e))
+        }
+    }
+}

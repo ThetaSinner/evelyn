@@ -139,3 +139,25 @@ pub fn lookup_todo_list(model: model::todo_list::LookupTodoListRequestModel, pro
       }
   }
 }
+
+pub fn update_todo_list_item(model: model::todo_list::UpdateItemTodoListRequestModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
+  let session_token_model = processor_data.token_service.extract_session_token(&model.token);
+
+  let update_todo_list_item_model = model::todo_list::UpdateTodoListItemModel {
+    user_id: session_token_model.user_id,
+    todo_list_id: model.todo_list_id,
+    item_index: model.item_index,
+    is_done: model.is_done,
+  };
+
+  let data_store = processor_data.data_store.clone();
+
+  match data::todo_list::update_todo_list_item(&data_store, &update_todo_list_item_model) {
+      None => {
+          None
+      },
+      Some(e) => {
+          Some(EvelynCoreError::FailedToUpdateTodoListItem(e))
+      }
+  }
+}

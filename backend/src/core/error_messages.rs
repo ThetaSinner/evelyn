@@ -44,6 +44,7 @@ pub enum EvelynServiceError {
     AddItemToTodoList(EvelynCoreError),
     LookupTodoLists(EvelynCoreError),
     LookupTodoList(EvelynCoreError),
+    UpdateTodoListItem(EvelynCoreError),
 }
 
 impl fmt::Display for EvelynServiceError {
@@ -109,6 +110,9 @@ impl fmt::Display for EvelynServiceError {
             EvelynServiceError::LookupTodoList(_) => {
                 write!(f, "100404")
             },
+            EvelynServiceError::UpdateTodoListItem(_) => {
+                write!(f, "100405")
+            },
         }
     }
 }
@@ -152,6 +156,8 @@ impl error::Error for EvelynServiceError {
                 "Failed to lookup todo lists",
             EvelynServiceError::LookupTodoList(_) =>
                 "Failed to lookup todo list",
+            EvelynServiceError::UpdateTodoListItem(_) =>
+                "Failed to update todo list item",
         }
     }
 
@@ -178,6 +184,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::AddItemToTodoList(ref err) => Some(err),
             EvelynServiceError::LookupTodoLists(ref err) => Some(err),
             EvelynServiceError::LookupTodoList(ref err) => Some(err),
+            EvelynServiceError::UpdateTodoListItem(ref err) => Some(err),
         }
     }
 }
@@ -201,6 +208,7 @@ pub enum EvelynCoreError {
     FailedToAddItemToTodoList(EvelynDatabaseError),
     FailedToLookupTodoLists(EvelynDatabaseError),
     FailedToLookupTodoList(EvelynDatabaseError),
+    FailedToUpdateTodoListItem(EvelynDatabaseError),
 }
 
 impl fmt::Display for EvelynCoreError {
@@ -235,6 +243,8 @@ impl fmt::Display for EvelynCoreError {
                 write!(f, "Failed to lookup todo lists: {}", err),
             EvelynCoreError::FailedToLookupTodoList(ref err) =>
                 write!(f, "Failed to lookup todo list: {}", err),
+            EvelynCoreError::FailedToUpdateTodoListItem(ref err) =>
+                write!(f, "Failed to update todo list item: {}", err),
         }
     }
 }
@@ -271,6 +281,8 @@ impl error::Error for EvelynCoreError {
                 "Failed to lookup todo lists",
             EvelynCoreError::FailedToLookupTodoList(_) =>
                 "Failed to lookup todo list",
+            EvelynCoreError::FailedToUpdateTodoListItem(_) =>
+                "Failed to update todo list item",
         }
     }
 
@@ -293,6 +305,7 @@ impl error::Error for EvelynCoreError {
             EvelynCoreError::FailedToAddItemToTodoList(ref err) => Some(err),
             EvelynCoreError::FailedToLookupTodoLists(ref err) => Some(err),
             EvelynCoreError::FailedToLookupTodoList(ref err) => Some(err),
+            EvelynCoreError::FailedToUpdateTodoListItem(ref err) => Some(err),
         }
     }
 }
@@ -316,6 +329,7 @@ pub enum EvelynDatabaseError {
     LookupTodoLists(MongoDbError),
     TodoListNotFound,
     LookupTodoList(MongoDbError),
+    UpdateTodoListItem(MongoDbError),
 }
 
 impl fmt::Display for EvelynDatabaseError {
@@ -349,6 +363,8 @@ impl fmt::Display for EvelynDatabaseError {
                 write!(f, "Todo list not found"),
             EvelynDatabaseError::LookupTodoList(ref e) =>
                 write!(f, "Failed to lookup todo list: {}", e),
+            EvelynDatabaseError::UpdateTodoListItem(ref e) =>
+                write!(f, "Failed to update todo list item: {}", e),
         }
     }
 }
@@ -384,6 +400,8 @@ impl error::Error for EvelynDatabaseError {
                 "Todo list not found",
             EvelynDatabaseError::LookupTodoList(_) =>
                 "Failed to lookup todo list",
+            EvelynDatabaseError::UpdateTodoListItem(_) =>
+                "Failed to update todo list item",
         }
     }
 
@@ -406,6 +424,7 @@ impl error::Error for EvelynDatabaseError {
             EvelynDatabaseError::LookupTodoLists(ref err) => Some(err),
             EvelynDatabaseError::TodoListNotFound => None,
             EvelynDatabaseError::LookupTodoList(ref err) => Some(err),
+            EvelynDatabaseError::UpdateTodoListItem(ref err) => Some(err),
         }
     }
 }
