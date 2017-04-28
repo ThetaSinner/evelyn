@@ -132,7 +132,7 @@ pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::to
     let match_query = doc!{"userId" => user_id, "todoListId" => todo_list_id};
 
     let mut update_query = Document::new();
-    update_query.insert(format!("todoListItems.{}.is_done", update_todo_list_item.item_index), update_todo_list_item.is_done);
+    update_query.insert(format!("todoListItems.{}.isDone", update_todo_list_item.item_index), update_todo_list_item.is_done);
 
     let mut set_update_query = Document::new();
     set_update_query.insert("$set", update_query);

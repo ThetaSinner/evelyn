@@ -39,6 +39,7 @@ pub fn create_todo_list(model: model::todo_list::CreateTodoListRequestModel, pro
       for i in todo_list_items {
           todo_list_model.todo_list_items.push(model::todo_list::TodoListItemModel {
               text: i.text,
+              is_done: i.is_done,
           });
       }
   }
@@ -65,6 +66,7 @@ pub fn add_item_to_todo_list(model: model::todo_list::AddItemTodoListRequestMode
     todo_list_id: model.todo_list_id,
     todo_list_item: model::todo_list::TodoListItemModel {
         text: model.todo_list_item.text,
+        is_done: model.todo_list_item.is_done,
     },
   };
 
@@ -126,6 +128,7 @@ pub fn lookup_todo_list(model: model::todo_list::LookupTodoListRequestModel, pro
           for i in result.todo_list_items {
               todo_list_model.todo_list_items.push(model::todo_list::TodoListItemExternalModel {
                   text: i.text,
+                  is_done: i.is_done,
               });
           }
 

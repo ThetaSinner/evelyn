@@ -41,6 +41,9 @@ pub struct CreateTodoListResponseModel {
 pub struct TodoListItemExternalModel {
     #[serde(rename="Text")]
     pub text: String,
+
+    #[serde(rename="IsDone")]
+    pub is_done: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -56,6 +59,9 @@ pub struct TodoListExternalModel {
 pub struct TodoListItemModel {
     #[serde(rename="text")]
     pub text: String,
+
+    #[serde(rename="isDone")]
+    pub is_done: bool,
 }
 
 #[derive(Serialize, Deserialize)]

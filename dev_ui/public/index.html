@@ -50,7 +50,7 @@
             <div>
               <% _.each(data.todo_items, function (i) { %>
                 <label>
-                  <input type="checkbox" class="done-checkbox" />
+                  <input type="checkbox" class="done-checkbox" <% if (i.is_done) { %> <%= checked="checked" %> <%}%>  />
                   <%= i.text %>
                 </label>
               <% }); %>
@@ -110,6 +110,7 @@
               TodoListId: this.model.get('todo_list_id'),
               TodoListItem: {
                 Text: item,
+                IsDone: false,
               },
             }, render_response_payload);
 
@@ -117,6 +118,7 @@
             this.model.set({
                 todo_items : this.model.get("todo_items").concat({
                   text: item,
+                  is_done: false,
                 }),
             });
 
@@ -234,7 +236,7 @@
                           title: event.data.Title,
                           todo_list_id: event.data.TodoListId,
                           todo_items: _.map(response.TodoList.TodoListItems, function (i) {
-                            return {text: i.Text};
+                            return {text: i.Text, is_done: i.IsDone};
                           }),
                         });
                       }
