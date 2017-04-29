@@ -1,0 +1,5 @@
+{
+  "port": 8080,
+  "host": "backend",
+  "db_connection_string": "mongodb://mongodb:27017"
+}
