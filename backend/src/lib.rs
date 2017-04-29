@@ -47,7 +47,7 @@ pub fn hello_evelyn() {
   // Initialise the logging back end.
   log4rs::init_file("log4rs.yml", Default::default()).unwrap();
 
-  let conf = data::conf::Conf::new();
+  let conf = data::conf::Conf::new("evelyn.json");
   let uri = conf.get_db_connnection_string();
   // Note this will not fail if MongoDB is not available.
   let client = match Client::with_uri(uri.as_str()) {
