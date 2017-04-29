@@ -21,14 +21,14 @@ pub struct Conf {
 }
 
 impl Conf {
-    pub fn new() -> Self {
+    pub fn new(filename : &str) -> Self {
       let mut c = config::Config::new();
       c.set_default("port", "8080").unwrap();
       c.set_default("host", "localhost").unwrap();
       c.set_default("db_connection_string", "mongodb://localhost:27017").unwrap();
 
       println!("Reading config from evelyn.json");
-      match c.merge(config::File::new("evelyn", config::FileFormat::Json)) {
+      match c.merge(config::File::new(filename, config::FileFormat::Json)) {
           Ok(_) => println!("Config loaded"),
           Err(e) => println!("Failed to load config {:?}", e)
       };
