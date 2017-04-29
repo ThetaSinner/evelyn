@@ -45,7 +45,7 @@ pub fn hello_evelyn() {
   println!("Starting...");
 
   // Initialise the logging back end.
-  log4rs::init_file("log4rs.yml", Default::default()).unwrap();
+  log4rs::init_file("./configs/log4rs.yml", Default::default()).unwrap();
 
   let conf = data::conf::Conf::new("evelyn.json");
   let uri = conf.get_db_connnection_string();
