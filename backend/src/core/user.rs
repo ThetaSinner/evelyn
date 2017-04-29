@@ -56,8 +56,10 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
           if user.is_some() {
               let user = user.unwrap();
               if user.password == model.password {
+                  let token = processor_data.token_service.create_session_token(&processor_data.server_session_token, &user);
+
                   Ok(LogonUserResponseModel {
-                      token: Some(processor_data.token_service.create_session_token(&user)),
+                      token: Some(token),
                       error: None
                   })
               }

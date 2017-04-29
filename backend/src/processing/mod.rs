@@ -27,6 +27,7 @@ pub struct ProcessorData {
   pub data_store: Client,
   pub token_service: TokenService,
   pub conf: conf::Conf,
+  pub server_session_token: String,
 }
 
 pub fn load_processors(router: &mut Router) {

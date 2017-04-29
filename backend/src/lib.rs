@@ -56,11 +56,13 @@ pub fn hello_evelyn() {
   };
 
   let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
+  let server_session_token = token_service.create_server_session_token();
 
   let processor_data = ProcessorData{
       data_store: client,
       token_service: token_service,
       conf: conf,
+      server_session_token: server_session_token,
   };
 
   let mut router = Router::new();

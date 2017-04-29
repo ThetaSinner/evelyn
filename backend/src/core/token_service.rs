@@ -16,6 +16,7 @@
 
 use jwt::{encode, decode, Header, Algorithm};
 use jwt::errors::{Error};
+use uuid::Uuid;
 
 use model::{SessionTokenModel};
 use model::user::{UserModel};
@@ -29,14 +30,15 @@ impl TokenService {
         TokenService{private_key: private_key}
     }
 
-    pub fn create_session_token(&self, user_model: &UserModel) -> String {
+    pub fn create_session_token(&self, server_session_token: &String, user_model: &UserModel) -> String {
         let session_token_model = SessionTokenModel {
             user_id: user_model.email_address.to_owned(),
+            server_session_token: server_session_token.to_owned(),
         };
 
         match encode(Header::default(), &session_token_model, self.private_key.as_ref()) {
             Ok(t) => t,
-            Err(_) => panic!() // in practice you would return the error
+            Err(_) => panic!() // TODO in practice you would return the error
         }
     }
 
@@ -51,5 +53,9 @@ impl TokenService {
 
         println!("{:?}", token_data);
         token_data.claims
+    }
+
+    pub fn create_server_session_token(&self) -> String {
+        format!("{}", Uuid::new_v4())
     }
 }

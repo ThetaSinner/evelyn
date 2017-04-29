@@ -43,4 +43,6 @@ impl From<error_messages::EvelynServiceError> for ErrorModel {
 #[derive(Debug, RustcEncodable, RustcDecodable)]
 pub struct SessionTokenModel {
     pub user_id: String,
+
+    pub server_session_token: String,
 }
