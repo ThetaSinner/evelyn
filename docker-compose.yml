@@ -28,7 +28,6 @@ services:
       - ~/.cargo:/root/.cargo
     depends_on:
       - mongodb
-    command: bash -c "cargo run -j 8"
-
+    command: bash -c "./scripts/docker_test.sh && ./target/debug/evelyn"
 volumes:
   mongo_vol:
