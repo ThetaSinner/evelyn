@@ -31,10 +31,10 @@ pub fn create_user() {
     let req = serde_json::to_string(&model).unwrap();
 
     let conf = evelyn::data::conf::Conf::new("./configs/integration_test.json");
-    let hostname = conf.get_hostname();
+    let hosturl = conf.get_hostname();
 
     let client = hyper::Client::new();
-    let res = client.post("http://" + hostname.as_str() + ":8080/user/create").body(&req).send().unwrap();
+    let res = client.post(format!("{}{}{}", "http://", hosturl, ":8080/user/create").as_str()).body(&req).send().unwrap();
 
     assert_eq!(res.status, hyper::Ok);
 

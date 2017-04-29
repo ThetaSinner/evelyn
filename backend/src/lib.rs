@@ -30,7 +30,7 @@ extern crate log;
 extern crate log4rs;
 
 mod server;
-mod data;
+pub mod data;
 mod processing;
 pub mod model;
 pub mod core;
