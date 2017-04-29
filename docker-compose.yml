@@ -18,7 +18,7 @@ services:
     volumes:
       - mongo_vol:/data/db
   backend:
-    image: jimmycuadra/rust
+    image: subxaero/rust
     ports:
       - "8080:8080"
     expose:
