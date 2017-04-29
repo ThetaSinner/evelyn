@@ -23,6 +23,12 @@ use std::error::Error;
 use core::error_messages;
 
 #[derive(Serialize, Deserialize)]
+pub struct ErrorResponseModel {
+    #[serde(rename="Error")]
+    pub error: ErrorModel,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct ErrorModel {
     #[serde(rename="ErrorCode")]
     pub error_code: String,

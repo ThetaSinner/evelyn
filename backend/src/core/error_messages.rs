@@ -27,6 +27,7 @@ pub enum EvelynServiceError {
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse,
     ExpectedHeaderOnRequestButNoneWasFound,
     CouldNotDecodeTheRequestPayload(serde_json::Error),
+    ForeignSessionToken,
 
     // user
     CreateUser(EvelynCoreError),
@@ -64,6 +65,10 @@ impl fmt::Display for EvelynServiceError {
             // Processing layer.
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) => {
                 write!(f, "100101")
+            },
+
+            EvelynServiceError::ForeignSessionToken => {
+                write!(f, "100102")
             },
 
             EvelynServiceError::CreateUser(_) => {
@@ -128,6 +133,8 @@ impl error::Error for EvelynServiceError {
                 "Expected a header with the request but didn't find a header",
             EvelynServiceError::CouldNotDecodeTheRequestPayload(_) =>
                 "Could not decode the JSON request payload",
+            EvelynServiceError::ForeignSessionToken =>
+                "The server has been restarted, please log on again",
 
             // User
             EvelynServiceError::CreateUser(_) =>
@@ -167,6 +174,7 @@ impl error::Error for EvelynServiceError {
             EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse => None,
             EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound => None,
             EvelynServiceError::CouldNotDecodeTheRequestPayload(ref err) => Some(err),
+            EvelynServiceError::ForeignSessionToken => None,
 
             // User
             EvelynServiceError::CreateUser(ref err) => Some(err),

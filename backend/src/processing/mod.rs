@@ -19,6 +19,9 @@ use mongodb::Client;
 use data::conf;
 use core::token_service::TokenService;
 
+#[macro_use]
+mod macros;
+
 pub mod user;
 pub mod simple_task;
 pub mod todo_list;

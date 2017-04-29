@@ -25,10 +25,8 @@ use processing::ProcessorData;
 use model;
 use core::error_messages::EvelynCoreError;
 
-pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
-  let session_token_model = processor_data.token_service.extract_session_token(&model.token);
-
-  let task_id = Uuid::new_v4();
+pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
+    let task_id = Uuid::new_v4();
 
   let simple_task_model = model::simple_task::SimpleTaskModel{
     user_id: session_token_model.user_id,
@@ -50,9 +48,7 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, proc
     }
 }
 
-pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::LookupSimpleTaskResponseModel, EvelynCoreError> {
-  let session_token_model = processor_data.token_service.extract_session_token(&model.token);
-
+pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Result<model::simple_task::LookupSimpleTaskResponseModel, EvelynCoreError> {
   let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
     user_id: session_token_model.user_id,
     limit: model.limit,
@@ -106,9 +102,7 @@ pub fn lookup_simple_tasks(model: model::simple_task::LookupSimpleTaskRequestMod
 }
 }
 
-pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
-    let session_token_model = processor_data.token_service.extract_session_token(&model.token);
-
+pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
     let simple_task_update_model = model::simple_task::SimpleTaskUpdateModel {
       user_id: session_token_model.user_id,
       task_id: model.task_id,
