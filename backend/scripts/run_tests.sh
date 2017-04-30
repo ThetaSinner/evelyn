@@ -3,7 +3,7 @@
 cargo build
 
 # If cargo build fails then just exit, don't try to run tests.
-if [ $? -ne 0 ] then
+if [ $? -ne 0 ]; then
   echo "Failed to build"
   exit 1
 fi
@@ -16,7 +16,7 @@ cargo test
 
 # Keep the exit code from cargo test.
 test_exit_code=0
-if [ $? -ne 0 ] then
+if [ $? -ne 0 ]; then
   test_exit_code=$?
 fi
 
