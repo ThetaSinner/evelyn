@@ -12,13 +12,11 @@ fi
 ./target/debug/evelyn >/dev/null &
 server_pid=$!
 
+# Run the tests.
 cargo test
 
 # Keep the exit code from cargo test.
-test_exit_code=0
-if [ $? -ne 0 ]; then
-  test_exit_code=$?
-fi
+test_exit_code=$?
 
 # Kill the Evelyn server.
 kill -15 $server_pid
