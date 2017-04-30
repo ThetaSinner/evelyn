@@ -21,7 +21,6 @@ extern crate serde_derive;
 extern crate mongodb;
 extern crate serde_json;
 extern crate jsonwebtoken as jwt;
-extern crate rustc_serialize;
 extern crate chrono;
 extern crate config;
 extern crate uuid;
