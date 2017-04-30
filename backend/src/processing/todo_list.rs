@@ -22,14 +22,16 @@ use server::routing::{RouterInput, RouterOutput};
 use model;
 use processing;
 use core::todo_list;
-use core::error_messages::EvelynServiceError;
+use core::error_messages::{EvelynServiceError, EvelynBaseError};
 
 pub fn create_todo_list_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
   let request_model_decoded: Result<model::todo_list::CreateTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
 
   match request_model_decoded {
     Ok(request_model) => {
-        match todo_list::create_todo_list(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match todo_list::create_todo_list(request_model, session_token_model, processor_data) {
             Ok(response) => {
                 RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
             },
@@ -60,7 +62,9 @@ pub fn add_item_todo_list_processor(router_input: RouterInput, processor_data: A
 
   match request_model_decoded {
     Ok(request_model) => {
-        match todo_list::add_item_to_todo_list(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match todo_list::add_item_to_todo_list(request_model, session_token_model, processor_data) {
             Some(e) => {
                 RouterOutput{
                     response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
@@ -93,7 +97,9 @@ pub fn lookup_todo_lists_processor(router_input: RouterInput, processor_data: Ar
 
   match request_model_decoded {
     Ok(request_model) => {
-        match todo_list::lookup_todo_lists(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match todo_list::lookup_todo_lists(session_token_model, processor_data) {
             Ok(result) => {
                 RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
             },
@@ -123,7 +129,9 @@ pub fn lookup_todo_list_processor(router_input: RouterInput, processor_data: Arc
 
   match request_model_decoded {
     Ok(request_model) => {
-        match todo_list::lookup_todo_list(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match todo_list::lookup_todo_list(request_model, session_token_model, processor_data) {
             Ok(result) => {
                 RouterOutput{response_body: serde_json::to_string(&result).unwrap()}
             },
@@ -154,7 +162,9 @@ pub fn update_item_todo_list_processor(router_input: RouterInput, processor_data
 
   match request_model_decoded {
     Ok(request_model) => {
-        match todo_list::update_todo_list_item(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match todo_list::update_todo_list_item(request_model, session_token_model, processor_data) {
             None => {
                 RouterOutput{
                     response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {

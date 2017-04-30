@@ -27,6 +27,7 @@ pub enum EvelynServiceError {
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse(EvelynBaseError),
     ExpectedHeaderOnRequestButNoneWasFound(EvelynBaseError),
     CouldNotDecodeTheRequestPayload(serde_json::Error),
+    ForeignSessionToken(EvelynBaseError),
 
     // user
     CreateUser(EvelynCoreError),
@@ -48,7 +49,7 @@ pub enum EvelynServiceError {
 }
 
 macro_rules! EvelynServiceErrorDisplay {
-    ($({$x:ident::$x2:ident, $y:expr}),+) => {
+    ($({$x:ident::$x2:ident, $y:expr, $z:expr}),+) => {
         impl fmt::Display for EvelynServiceError {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 match *self {
@@ -60,7 +61,7 @@ macro_rules! EvelynServiceErrorDisplay {
         impl error::Error for EvelynServiceError {
             fn description(&self) -> &str {
                 match *self {
-                    $($x::$x2(_) => $y),*
+                    $($x::$x2(_) => $z),*
                 }
             }
 
@@ -75,28 +76,30 @@ macro_rules! EvelynServiceErrorDisplay {
 
 EvelynServiceErrorDisplay!{
     // Processing layer.
-    {EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo, "100001"},
-    {EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse, "100002"},
-    {EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound, "100003"},
-    {EvelynServiceError::CouldNotDecodeTheRequestPayload, "100101"},
+    {EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo, "100001", "Request for an action which Evelyn does now know how to do"},
+    {EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse, "100002", "Evelyn tried to handle the request but hasn't managed to give anything back"},
+    {EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound, "100003", "Expected a header with the request but didn't find a header"},
+
+    {EvelynServiceError::CouldNotDecodeTheRequestPayload, "100101", "Could not decode the JSON request payload"},
+    {EvelynServiceError::ForeignSessionToken, "100102", "The server has been restarted please log on again"},
 
     // User
-    {EvelynServiceError::CreateUser, "100201"},
-    {EvelynServiceError::UserAlreadyExists, "100202"},
-    {EvelynServiceError::LogonUser, "100203"},
-    {EvelynServiceError::FailedToLogonUser, "100204"},
+    {EvelynServiceError::CreateUser, "100201", "Failed to create user"},
+    {EvelynServiceError::UserAlreadyExists, "100202", "Failed to create user a user with that name already exists"},
+    {EvelynServiceError::LogonUser, "100203", "Invalid logon"},
+    {EvelynServiceError::FailedToLogonUser, "100204", "Failed to logon user"},
 
     // Simple Task
-    {EvelynServiceError::FailedToCreateSimpleTask, "100301"},
-    {EvelynServiceError::FailedToUpdateSimpleTask, "100302"},
-    {EvelynServiceError::FailedToLookupSimpleTask, "100303"},
+    {EvelynServiceError::FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
+    {EvelynServiceError::FailedToUpdateSimpleTask, "100302", "Failed to update simple task"},
+    {EvelynServiceError::FailedToLookupSimpleTask, "100303", "Failed to lookup simple task"},
 
     // Todo List
-    {EvelynServiceError::CreateTodoList, "100401"},
-    {EvelynServiceError::AddItemToTodoList, "100402"},
-    {EvelynServiceError::LookupTodoLists, "100403"},
-    {EvelynServiceError::LookupTodoList, "100404"},
-    {EvelynServiceError::UpdateTodoListItem, "100405"}
+    {EvelynServiceError::CreateTodoList, "100401", "Failed to create todo list"},
+    {EvelynServiceError::AddItemToTodoList, "100402", "Failed to add item to todo list"},
+    {EvelynServiceError::LookupTodoLists, "100403", "Failed to lookup todo lists"},
+    {EvelynServiceError::LookupTodoList, "100404", "Failed to lookup todo list"},
+    {EvelynServiceError::UpdateTodoListItem, "100405", "Failed to update todo list item"}
 }
 
 #[derive(Debug)]

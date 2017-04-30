@@ -22,15 +22,16 @@ use server::routing::{RouterInput, RouterOutput};
 use model;
 use processing;
 use core::simple_task;
-use core::error_messages::EvelynServiceError;
-
+use core::error_messages::{EvelynServiceError, EvelynBaseError};
 
 pub fn create_simple_task_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
     let request_model_de: Result<model::simple_task::CreateSimpleTaskModel,_> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
       Ok(request_model) => {
-        match simple_task::create_simple_task(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match simple_task::create_simple_task(request_model, session_token_model, processor_data) {
             Ok(response) => {
                 RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
             }
@@ -58,7 +59,9 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
 
     match request_model_de {
       Ok(request_model) => {
-        match simple_task::lookup_simple_tasks(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match simple_task::lookup_simple_tasks(request_model, session_token_model, processor_data) {
             Ok(response) => {
                 RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
             }
@@ -70,7 +73,7 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
                     }).unwrap()
                 }
             }
-        } 
+        }
       },
       Err(e) => {
         let response = model::simple_task::LookupSimpleTaskResponseModel {
@@ -88,7 +91,9 @@ pub fn update_simple_task_processor(router_input: RouterInput, processor_data: A
 
     match request_model_de {
       Ok(request_model) => {
-        match simple_task::update_simple_task(request_model, processor_data) {
+        let session_token_model = validate_session!(processor_data, request_model);
+
+        match simple_task::update_simple_task(request_model, session_token_model, processor_data) {
             None => {
                 RouterOutput{response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
                     error: None,

@@ -22,7 +22,11 @@ use processing::ProcessorData;
 use data;
 
 pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
-  let user_model = UserModel{user_name: model.user_name, email_address: model.email_address, password: model.password};
+  let user_model = UserModel{
+      user_name: model.user_name,
+      email_address: model.email_address,
+      password: model.password,
+  };
 
   let ds = processor_data.data_store.clone();
 
