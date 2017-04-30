@@ -22,7 +22,7 @@ use server::routing::{RouterInput, RouterOutput};
 use model;
 use processing;
 use core::user;
-use core::error_messages::{EvelynServiceError, EvelynCoreError};
+use core::error_messages::{EvelynServiceError, EvelynCoreError, EvelynBaseError};
 
 
 pub fn create_user_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
@@ -36,7 +36,7 @@ pub fn create_user_processor(router_input: RouterInput, processor_data: Arc<proc
             },
             Some(e) => {
                 match e {
-                    EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists => {
+                    EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists(EvelynBaseError::NothingElse) => {
                         RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                             error: Some(From::from(EvelynServiceError::UserAlreadyExists(e)))
                         }).unwrap()}
@@ -72,7 +72,7 @@ pub fn logon_user_processor(router_input: RouterInput, processor_data: Arc<proce
             },
             Err(e) => {
                 match e {
-                    EvelynCoreError::InvalidLogon => {
+                    EvelynCoreError::InvalidLogon(EvelynBaseError::NothingElse) => {
                         RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
                             token: None,
                             error: Some(From::from(EvelynServiceError::LogonUser(e)))

@@ -49,7 +49,7 @@ impl Router {
     match processor_opt {
       Some(processor) => { Some(processor(router_input, processor_data)) },
       None => {
-          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo);
+          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo(error_messages::EvelynBaseError::NothingElse));
           Some(RouterOutput {
               response_body: serde_json::to_string(&model).unwrap()
           })

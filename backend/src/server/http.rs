@@ -133,7 +133,7 @@ fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<Proce
   }
 
   if header.len() == 0 {
-      let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound);
+      let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound(error_messages::EvelynBaseError::NothingElse));
 
       HttpProcessResult {
           http_status: HttpStatus::BadRequest,
@@ -153,7 +153,7 @@ fn process_request(request: &str, router: Arc<Router>, processor_data: Arc<Proce
          }
       }
       else {
-          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse);
+          let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse(error_messages::EvelynBaseError::NothingElse));
           HttpProcessResult {
               http_status: HttpStatus::InternalServerError,
               response_body: serde_json::to_string(&model).unwrap()

@@ -19,7 +19,7 @@ use bson::{Bson, Document};
 use mongodb::db::ThreadedDatabase;
 
 use model;
-use core::error_messages::EvelynDatabaseError;
+use core::error_messages::{EvelynDatabaseError, EvelynBaseError};
 use mongodb::{Client, ThreadedClient};
 
 pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_task::SimpleTaskModel) -> Option<EvelynDatabaseError> {
@@ -33,7 +33,7 @@ pub fn insert_simple_task(client : &Client, simple_task_model: &model::simple_ta
           Err(e) => Some(EvelynDatabaseError::InsertSimpleTask(e))
       }
     } else {
-      Some(EvelynDatabaseError::SerialisationFailed)
+      Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 

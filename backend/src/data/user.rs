@@ -18,7 +18,7 @@ use bson;
 use mongodb::db::ThreadedDatabase;
 
 use model::user::{UserModel};
-use core::error_messages::EvelynDatabaseError;
+use core::error_messages::{EvelynDatabaseError, EvelynBaseError};
 use mongodb::{Client, ThreadedClient};
 
 pub fn insert_user(client : &Client, user_model: &UserModel) -> Option<EvelynDatabaseError> {
@@ -33,7 +33,7 @@ pub fn insert_user(client : &Client, user_model: &UserModel) -> Option<EvelynDat
       }
     }
     else {
-      Some(EvelynDatabaseError::SerialisationFailed)
+      Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 

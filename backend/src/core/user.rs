@@ -16,7 +16,7 @@
 
 use std::sync::Arc;
 
-use core::error_messages::EvelynCoreError;
+use core::error_messages::{EvelynCoreError, EvelynBaseError};
 use model::user::{CreateUserModel, LogonUserModel, UserModel, LogonUserResponseModel};
 use processing::ProcessorData;
 use data;
@@ -29,7 +29,7 @@ pub fn create_user(model: CreateUserModel, processor_data: Arc<ProcessorData>) -
   match data::user::find_user(&ds, &user_model.email_address) {
       Ok(user) => {
           if user.is_some() {
-              Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists)
+              Some(EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists(EvelynBaseError::NothingElse))
           }
           else {
             let error = data::user::insert_user(&ds, &user_model);
@@ -64,11 +64,11 @@ pub fn logon_user(model: LogonUserModel, processor_data: Arc<ProcessorData>) -> 
                   })
               }
               else {
-                  Err(EvelynCoreError::InvalidLogon)
+                  Err(EvelynCoreError::InvalidLogon(EvelynBaseError::NothingElse))
               }
           }
           else {
-              Err(EvelynCoreError::InvalidLogon)
+              Err(EvelynCoreError::InvalidLogon(EvelynBaseError::NothingElse))
           }
       },
       Err(e) => {

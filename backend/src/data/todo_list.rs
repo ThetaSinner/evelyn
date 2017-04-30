@@ -20,7 +20,7 @@ use mongodb::db::ThreadedDatabase;
 use mongodb::coll::options::FindOptions;
 
 use model;
-use core::error_messages::EvelynDatabaseError;
+use core::error_messages::{EvelynDatabaseError, EvelynBaseError};
 use mongodb::{Client, ThreadedClient};
 
 pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_list::TodoListModel) -> Option<EvelynDatabaseError> {
@@ -35,7 +35,7 @@ pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_l
       }
     }
     else {
-      Some(EvelynDatabaseError::SerialisationFailed)
+      Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 
@@ -62,7 +62,7 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
         }
     }
     else {
-        Some(EvelynDatabaseError::SerialisationFailed)
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 
@@ -115,7 +115,7 @@ pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_l
                 Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
             }
             else {
-                Err(EvelynDatabaseError::TodoListNotFound)
+                Err(EvelynDatabaseError::TodoListNotFound(EvelynBaseError::NothingElse))
             }
         },
         Err(e) => {
