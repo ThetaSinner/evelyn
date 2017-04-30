@@ -19,3 +19,4 @@ pub mod token_service;
 pub mod simple_task;
 pub mod todo_list;
 pub mod error_messages;
+pub mod calendar;

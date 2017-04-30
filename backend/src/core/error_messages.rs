@@ -46,6 +46,9 @@ pub enum EvelynServiceError {
     LookupTodoLists(EvelynCoreError),
     LookupTodoList(EvelynCoreError),
     UpdateTodoListItem(EvelynCoreError),
+
+    // Calendar
+    AddCalendarEvent(EvelynCoreError),
 }
 
 macro_rules! EvelynErrorDisplay {
@@ -133,7 +136,10 @@ EvelynErrorDisplay!{
     {AddItemToTodoList, "100402", "Failed to add item to todo list"},
     {LookupTodoLists, "100403", "Failed to lookup todo lists"},
     {LookupTodoList, "100404", "Failed to lookup todo list"},
-    {UpdateTodoListItem, "100405", "Failed to update todo list item"}
+    {UpdateTodoListItem, "100405", "Failed to update todo list item"},
+
+    // Calendar
+    {AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
 
 #[derive(Debug)]
@@ -156,6 +162,9 @@ pub enum EvelynCoreError {
     FailedToLookupTodoLists(EvelynDatabaseError),
     FailedToLookupTodoList(EvelynDatabaseError),
     FailedToUpdateTodoListItem(EvelynDatabaseError),
+
+    // Calendar
+    FailedToAddCalendarEvent(EvelynDatabaseError),
 }
 
 EvelynErrorDisplay!{
@@ -177,9 +186,11 @@ EvelynErrorDisplay!{
     {FailedToAddItemToTodoList, "Failed to add item to todo list: {}"},
     {FailedToLookupTodoLists, "Failed to lookup todo lists: {}"},
     {FailedToLookupTodoList, "Failed to lookup todo list: {}"},
-    {FailedToUpdateTodoListItem, "Failed to update todo list item: {}"}
-}
+    {FailedToUpdateTodoListItem, "Failed to update todo list item: {}"},
 
+    // Calendar
+    {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
+}
 
 #[derive(Debug)]
 pub enum EvelynDatabaseError {
@@ -201,6 +212,9 @@ pub enum EvelynDatabaseError {
     TodoListNotFound(EvelynBaseError),
     LookupTodoList(MongoDbError),
     UpdateTodoListItem(MongoDbError),
+
+    // Calendar
+    InsertCalendarEvent(MongoDbError),
 }
 
 EvelynErrorDisplay!{
@@ -223,7 +237,10 @@ EvelynErrorDisplay!{
     {LookupTodoLists, "Failed to lookup todo lists: {}"},
     {TodoListNotFound, "Todo list not found {}"},
     {LookupTodoList, "Failed to lookup todo list:  {}"},
-    {UpdateTodoListItem, "Failed to update todo list item:  {}"}
+    {UpdateTodoListItem, "Failed to update todo list item:  {}"},
+
+    // Calendar
+    {InsertCalendarEvent, "Failed to insert calendar event: {}"}
 }
 
 

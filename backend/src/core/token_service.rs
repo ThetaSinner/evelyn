@@ -14,8 +14,7 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use jwt::{encode, decode, Header, Algorithm};
-use jwt::errors::{Error};
+use jwt::{encode, decode, Header, Validation};
 use uuid::Uuid;
 
 use model::{SessionTokenModel};
@@ -36,18 +35,17 @@ impl TokenService {
             server_session_token: server_session_token.to_owned(),
         };
 
-        match encode(Header::default(), &session_token_model, self.private_key.as_ref()) {
+        match encode(&Header::default(), &session_token_model, self.private_key.as_ref()) {
             Ok(t) => t,
             Err(_) => panic!() // TODO in practice you would return the error
         }
     }
 
     pub fn extract_session_token(&self, token: &String) -> SessionTokenModel {
-        let token_data = match decode::<SessionTokenModel>(&token, self.private_key.as_ref(), Algorithm::HS256) {
+        let token_data = match decode::<SessionTokenModel>(&token, self.private_key.as_ref(), &Validation::default()) {
             Ok(c) => c,
-            Err(err) => match err {
-                Error::InvalidToken => panic!(), // Example on how to handle a specific error
-                _ => panic!()
+            Err(err) => {
+                panic!("JWT failure {}", err)
             }
         };
 

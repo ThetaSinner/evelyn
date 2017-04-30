@@ -17,6 +17,7 @@
 pub mod user;
 pub mod simple_task;
 pub mod todo_list;
+pub mod calendar;
 
 use std::error::Error;
 
@@ -46,7 +47,7 @@ impl From<error_messages::EvelynServiceError> for ErrorModel {
     }
 }
 
-#[derive(Debug, RustcEncodable, RustcDecodable)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SessionTokenModel {
     pub user_id: String,
 
