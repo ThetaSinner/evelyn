@@ -35,6 +35,6 @@ pub fn create_and_decode_session_token_using_the_token_service() {
     let decoded = token_service.extract_session_token(&session_token);
 
     // TODO temp!!!!!
-    assert_eq!(decoded.user_id, "the  address");
+    assert_eq!(decoded.user_id, "the email address");
     assert_eq!(decoded.server_session_token, server_session_token);
 }
