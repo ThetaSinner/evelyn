@@ -25,6 +25,7 @@ mod macros;
 pub mod user;
 pub mod simple_task;
 pub mod todo_list;
+pub mod calendar;
 
 pub struct ProcessorData {
   pub data_store: Client,
@@ -46,4 +47,6 @@ pub fn load_processors(router: &mut Router) {
   router.add_rule("/todolist/lookuplists", todo_list::lookup_todo_lists_processor);
   router.add_rule("/todolist/lookuplist", todo_list::lookup_todo_list_processor);
   router.add_rule("/todolist/updateitem", todo_list::update_item_todo_list_processor);
+
+  router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }

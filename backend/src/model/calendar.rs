@@ -34,7 +34,25 @@ pub struct CalendarAddEventRequestModel {
 #[derive(Serialize, Deserialize)]
 pub struct CalendarAddEventResponseModel {
     #[serde(rename="Error")]
-    pub error: ErrorModel,
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CalendarEventModel {
+    #[serde(rename="userId")]
+    pub user_id: String,
+
+    #[serde(rename="eventId")]
+    pub event_id: String,
+
+    #[serde(rename="eventBegin")]
+    pub event_begin: String,
+
+    #[serde(rename="eventEnd")]
+    pub event_end: String,
+
+    #[serde(rename="title")]
+    pub title: String,
 }
 
 #[derive(Serialize, Deserialize)]

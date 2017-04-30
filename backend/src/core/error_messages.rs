@@ -46,6 +46,9 @@ pub enum EvelynServiceError {
     LookupTodoLists(EvelynCoreError),
     LookupTodoList(EvelynCoreError),
     UpdateTodoListItem(EvelynCoreError),
+
+    // Calendar
+    AddCalendarEvent(EvelynCoreError),
 }
 
 macro_rules! EvelynServiceErrorDisplay {
@@ -99,7 +102,10 @@ EvelynServiceErrorDisplay!{
     {EvelynServiceError::AddItemToTodoList, "100402", "Failed to add item to todo list"},
     {EvelynServiceError::LookupTodoLists, "100403", "Failed to lookup todo lists"},
     {EvelynServiceError::LookupTodoList, "100404", "Failed to lookup todo list"},
-    {EvelynServiceError::UpdateTodoListItem, "100405", "Failed to update todo list item"}
+    {EvelynServiceError::UpdateTodoListItem, "100405", "Failed to update todo list item"},
+
+    // Calendar
+    {EvelynServiceError::AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
 
 #[derive(Debug)]
@@ -122,6 +128,9 @@ pub enum EvelynCoreError {
     FailedToLookupTodoLists(EvelynDatabaseError),
     FailedToLookupTodoList(EvelynDatabaseError),
     FailedToUpdateTodoListItem(EvelynDatabaseError),
+
+    // Calendar
+    FailedToAddCalendarEvent(EvelynDatabaseError),
 }
 
 macro_rules! EvelynCoreErrorDisplay {
@@ -168,7 +177,10 @@ EvelynCoreErrorDisplay!{
     {EvelynCoreError::FailedToAddItemToTodoList, "Failed to add item to todo list: {}"},
     {EvelynCoreError::FailedToLookupTodoLists, "Failed to lookup todo lists: {}"},
     {EvelynCoreError::FailedToLookupTodoList, "Failed to lookup todo list: {}"},
-    {EvelynCoreError::FailedToUpdateTodoListItem, "Failed to update todo list item: {}"}
+    {EvelynCoreError::FailedToUpdateTodoListItem, "Failed to update todo list item: {}"},
+
+    // Calendar
+    {EvelynCoreError::FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
 }
 
 
@@ -192,6 +204,9 @@ pub enum EvelynDatabaseError {
     TodoListNotFound(EvelynBaseError),
     LookupTodoList(MongoDbError),
     UpdateTodoListItem(MongoDbError),
+
+    // Calendar
+    InsertCalendarEvent(MongoDbError),
 }
 
 macro_rules! EvelynDatabaseErrorDisplay {
@@ -238,7 +253,10 @@ EvelynDatabaseErrorDisplay!{
     {EvelynDatabaseError::LookupTodoLists, "Failed to lookup todo lists: {}"},
     {EvelynDatabaseError::TodoListNotFound, "Todo list not found {}"},
     {EvelynDatabaseError::LookupTodoList, "Failed to lookup todo list:  {}"},
-    {EvelynDatabaseError::UpdateTodoListItem, "Failed to update todo list item:  {}"}
+    {EvelynDatabaseError::UpdateTodoListItem, "Failed to update todo list item:  {}"},
+
+    // Calendar
+    {EvelynDatabaseError::InsertCalendarEvent, "Failed to insert calendar event: {}"}
 }
 
 
