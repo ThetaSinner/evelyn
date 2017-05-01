@@ -313,7 +313,33 @@
 
                 evelynServerBridge.send_to_server(form_selector.attr("action"), form_submit_data, render_response_payload);
             });
-        };
+        }
+
+        function add_submit_hook_for_manual_form(form_id) {
+            $(form_id).on("submit", function (event) {
+                event.preventDefault();
+
+                var form_selector = $(this);
+                var form_submit_data = serialize_form(form_selector);
+
+                var payload = null;
+                try {
+                  payload = JSON.parse(form_submit_data.Payload);
+                }
+                catch (e) {
+                  render_response_payload({
+                    Error: {
+                      ErrorCode: 0,
+                      ErrorMessage: "Invalid JSON [" + e + "]",
+                    }
+                  });
+
+                  return;
+                }
+
+                evelynServerBridge.send_to_server(form_submit_data.Action, payload, render_response_payload);
+            });
+        }
 
         $(document).ready(function () {
             if (typeof(Storage) === "undefined") {
@@ -341,6 +367,8 @@
             add_submit_hook("#form_create_todo_list");
             add_submit_hook("#form_lookup_todo_lists");
 
+            add_submit_hook_for_manual_form("#form_manual_json_request");
+
             todoListViewHandle = new TodoListView({model: new TodoListModel()});
         });
     </script>
@@ -355,6 +383,7 @@
 <br>
 
 <ul class="tabs" data-tabs id="control-tabs">
+  <li class="tabs-title"><a href="#panel0">Manual</a></li>
   <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Login / Register</a></li>
   <li class="tabs-title"><a href="#panel2">Create Task</a></li>
   <li class="tabs-title"><a href="#panel3">Lookup Tasks</a></li>
@@ -362,6 +391,25 @@
 </ul>
 
 <div class="tabs-content" data-tabs-content="control-tabs">
+  <div class="tabs-panel" id="panel0">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="tile-container">
+                <h5>Manual</h5>
+                <form id="form_manual_json_request">
+                    <label class="tile-label">Action
+                        <input name="Action" type="text" placeholder="/feature/actionname">
+                    </label>
+                    <label class="tile-label">Payload
+                        <textarea name="Payload" type="text" placeholder="{}" rows="5"></textarea>
+                    </label>
+
+                    <input type="submit" class="button" value="Send"/>
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
   <div class="tabs-panel is-active" id="panel1">
     <div class="row">
         <div class="large-6 columns">
