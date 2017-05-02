@@ -155,17 +155,17 @@ fn send_options_response<W: Write>(writer: &mut BufWriter<W>) {
   let response = format!("{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
     "HTTP/1.1 200 OK\r\n",
     dt.format("Date: %a %e %b %Y %T UTC\r\n").to_string(),   // "Date: Mon, 01 Dec 2008 01:15:39 GMT
-    "Server: Apache/2.0.61 (Unix)\r\n",
+    "Server: Evelyn (Unix)\r\n",
     "Access-Control-Allow-Origin: *\r\n",
     "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n",
-    "Access-Control-Allow-Headers: X-PINGOTHER, Content-Type\r\n",
+    "Access-Control-Allow-Headers: Content-Type\r\n",
     "Access-Control-Max-Age: 86400\r\n",
     "Vary: Accept-Encoding, Origin\r\n",
     "Content-Encoding: gzip\r\n",
     "Content-Length: 0\r\n",
     "Keep-Alive: timeout=2, max=100\r\n",
     "Connection: Keep-Alive\r\n",
-    "Content-Type: text/plain\r\n",
+    "Content-Type: application/json\r\n",
     "\r\n\r\n"
     );
 
