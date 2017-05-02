@@ -3,11 +3,12 @@
 # Ensure the server build is up-to-date.
 cd ../../backend
 cargo build
-cd ../test/server_integration_tests
 
 # Start the server.
-../../backend/target/debug/evelyn > /dev/null &
+./target/debug/evelyn > /dev/null &
 server_pid=$!
+
+cd ../test/server_integration_tests
 
 # Install test dependencies.
 npm install

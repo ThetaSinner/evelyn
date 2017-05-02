@@ -19,3 +19,4 @@ pub mod user;
 pub mod simple_task;
 pub mod todo_list;
 pub mod calendar;
+pub mod server_admin;

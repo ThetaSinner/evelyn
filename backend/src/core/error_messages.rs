@@ -21,36 +21,6 @@ use serde_json;
 
 use mongodb::error::Error as MongoDbError;
 
-#[derive(Debug)]
-pub enum EvelynServiceError {
-    ReqestForActionWhichEvelynDoesNotKnowHowToDo(EvelynBaseError),
-    EvelynTriedToHandleTheRequestButDidNotYieldAResponse(EvelynBaseError),
-    ExpectedHeaderOnRequestButNoneWasFound(EvelynBaseError),
-    CouldNotDecodeTheRequestPayload(serde_json::Error),
-    ForeignSessionToken(EvelynBaseError),
-
-    // User
-    CreateUser(EvelynCoreError),
-    UserAlreadyExists(EvelynCoreError),
-    LogonUser(EvelynCoreError),
-    FailedToLogonUser(EvelynCoreError),
-
-    // Simple Task
-    FailedToCreateSimpleTask(EvelynCoreError),
-    FailedToUpdateSimpleTask(EvelynCoreError),
-    FailedToLookupSimpleTask(EvelynCoreError),
-
-    // Todo List
-    CreateTodoList(EvelynCoreError),
-    AddItemToTodoList(EvelynCoreError),
-    LookupTodoLists(EvelynCoreError),
-    LookupTodoList(EvelynCoreError),
-    UpdateTodoListItem(EvelynCoreError),
-
-    // Calendar
-    AddCalendarEvent(EvelynCoreError),
-}
-
 macro_rules! EvelynErrorDisplay {
     // Both error codes and error messages
     ($x:ident, $({$x2:ident, $y:expr, $z:expr}),+) => (
@@ -110,6 +80,40 @@ macro_rules! EvelynErrorDisplay {
     );
 }
 
+#[derive(Debug)]
+pub enum EvelynServiceError {
+    ReqestForActionWhichEvelynDoesNotKnowHowToDo(EvelynBaseError),
+    EvelynTriedToHandleTheRequestButDidNotYieldAResponse(EvelynBaseError),
+    ExpectedHeaderOnRequestButNoneWasFound(EvelynBaseError),
+
+    CouldNotDecodeTheRequestPayload(serde_json::Error),
+    ForeignSessionToken(EvelynBaseError),
+
+    // Server Admin
+    FailedToPurge(EvelynCoreError),
+
+    // User
+    CreateUser(EvelynCoreError),
+    UserAlreadyExists(EvelynCoreError),
+    LogonUser(EvelynCoreError),
+    FailedToLogonUser(EvelynCoreError),
+
+    // Simple Task
+    FailedToCreateSimpleTask(EvelynCoreError),
+    FailedToUpdateSimpleTask(EvelynCoreError),
+    FailedToLookupSimpleTask(EvelynCoreError),
+
+    // Todo List
+    CreateTodoList(EvelynCoreError),
+    AddItemToTodoList(EvelynCoreError),
+    LookupTodoLists(EvelynCoreError),
+    LookupTodoList(EvelynCoreError),
+    UpdateTodoListItem(EvelynCoreError),
+
+    // Calendar
+    AddCalendarEvent(EvelynCoreError),
+}
+
 EvelynErrorDisplay!{
     EvelynServiceError,
     // Processing layer.
@@ -119,6 +123,7 @@ EvelynErrorDisplay!{
 
     {CouldNotDecodeTheRequestPayload, "100101", "Could not decode the JSON request payload"},
     {ForeignSessionToken, "100102", "The server has been restarted please log on again"},
+    {FailedToPurge, "100103", "Failed to purge database"},
 
     // User
     {CreateUser, "100201", "Failed to create user"},
@@ -144,7 +149,15 @@ EvelynErrorDisplay!{
 
 #[derive(Debug)]
 pub enum EvelynCoreError {
-    // user
+    // Server Admin
+    FailedToPurgeAll(EvelynDatabaseError),
+    FailedToPurgeUser(EvelynDatabaseError),
+    FailedToPurgeSimpleTask(EvelynDatabaseError),
+    FailedToPurgeTodoList(EvelynDatabaseError),
+    FailedToPurgeCalendar(EvelynDatabaseError),
+    FailedToAcquirePurgeTarget(EvelynBaseError),
+
+    // User
     WillNotCreateUserBecauseUserAlreadyExists(EvelynBaseError),
     CannotCheckIfUserExistsSoWillNotCreateNewUser(EvelynDatabaseError),
     FailedToCreateUser(EvelynDatabaseError),
@@ -169,6 +182,15 @@ pub enum EvelynCoreError {
 
 EvelynErrorDisplay!{
     EvelynCoreError,
+
+    // Server Admin
+    {FailedToPurgeAll, "Failed to purge database {}"},
+    {FailedToPurgeUser, "Failed to purge Users from database {}"},
+    {FailedToPurgeSimpleTask, "Failed to purge SimpleTasks from database {}"},
+    {FailedToPurgeTodoList, "Failed to purge TodoLists from database {}"},
+    {FailedToPurgeCalendar, "Failed to purge Calendars from database {}"},
+    {FailedToAcquirePurgeTarget, "Failed to determine purge target {}"},
+
     //User
     {WillNotCreateUserBecauseUserAlreadyExists, "Will not create the requested user because that user already exists. {}"},
     {CannotCheckIfUserExistsSoWillNotCreateNewUser, "Cannot check if the user exists so a new user will not be ceated: {}"},
@@ -196,6 +218,13 @@ EvelynErrorDisplay!{
 pub enum EvelynDatabaseError {
     SerialisationFailed(EvelynBaseError),
 
+    // Server Admin
+    PurgeAll(MongoDbError),
+    PurgeUser(MongoDbError),
+    PurgeSimpleTask(MongoDbError),
+    PurgeTodoList(MongoDbError),
+    PurgeCalendar(MongoDbError),
+
     // User
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
@@ -221,6 +250,13 @@ EvelynErrorDisplay!{
     EvelynDatabaseError,
     // Processing
     {SerialisationFailed, "Failed to serialise data for storage. {}"},
+
+    // Server Admin
+    {PurgeAll, "Failed to purge database {}"},
+    {PurgeUser, "Failed to purge Users from database {}"},
+    {PurgeSimpleTask, "Failed to purge SimpleTasks from database {}"},
+    {PurgeTodoList, "Failed to purge TodoLists from database {}"},
+    {PurgeCalendar, "Failed to purge Calendars from database {}"},
 
     // User
     {InsertUser, "Failed to create record for new user\n {}"},
