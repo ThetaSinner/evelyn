@@ -14,43 +14,19 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod simple_task;
-pub mod todo_list;
-pub mod calendar;
-pub mod server_admin;
-
-use std::error::Error;
-
-use core::error_messages;
+use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
-pub struct ErrorResponseModel {
+pub struct PurgeRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="Target")]
+    pub target: String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct PurgeResponseModel {
     #[serde(rename="Error")]
-    pub error: ErrorModel,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ErrorModel {
-    #[serde(rename="ErrorCode")]
-    pub error_code: String,
-
-    #[serde(rename="ErrorMessage")]
-    pub error_message: String,
-}
-
-impl From<error_messages::EvelynServiceError> for ErrorModel {
-    fn from(error: error_messages::EvelynServiceError) -> Self {
-        ErrorModel {
-            error_code: format!("{}", error),
-            error_message: String::from(error.description()),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SessionTokenModel {
-    pub user_id: String,
-
-    pub server_session_token: String,
+    pub error: Option<ErrorModel>,
 }

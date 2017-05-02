@@ -26,6 +26,7 @@ pub mod user;
 pub mod simple_task;
 pub mod todo_list;
 pub mod calendar;
+pub mod server_admin;
 
 pub struct ProcessorData {
   pub data_store: Client,
@@ -35,18 +36,20 @@ pub struct ProcessorData {
 }
 
 pub fn load_processors(router: &mut Router) {
-  router.add_rule("/user/create", user::create_user_processor);
-  router.add_rule("/user/logon", user::logon_user_processor);
+    router.add_rule("/purge", server_admin::purge_processor);
 
-  router.add_rule("/simpletask/create", simple_task::create_simple_task_processor);
-  router.add_rule("/simpletask/lookup", simple_task::lookup_simple_task_processor);
-  router.add_rule("/simpletask/update", simple_task::update_simple_task_processor);
+    router.add_rule("/user/create", user::create_user_processor);
+    router.add_rule("/user/logon", user::logon_user_processor);
 
-  router.add_rule("/todolist/create", todo_list::create_todo_list_processor);
-  router.add_rule("/todolist/additem", todo_list::add_item_todo_list_processor);
-  router.add_rule("/todolist/lookuplists", todo_list::lookup_todo_lists_processor);
-  router.add_rule("/todolist/lookuplist", todo_list::lookup_todo_list_processor);
-  router.add_rule("/todolist/updateitem", todo_list::update_item_todo_list_processor);
+    router.add_rule("/simpletask/create", simple_task::create_simple_task_processor);
+    router.add_rule("/simpletask/lookup", simple_task::lookup_simple_task_processor);
+    router.add_rule("/simpletask/update", simple_task::update_simple_task_processor);
 
-  router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
+    router.add_rule("/todolist/create", todo_list::create_todo_list_processor);
+    router.add_rule("/todolist/additem", todo_list::add_item_todo_list_processor);
+    router.add_rule("/todolist/lookuplists", todo_list::lookup_todo_lists_processor);
+    router.add_rule("/todolist/lookuplist", todo_list::lookup_todo_list_processor);
+    router.add_rule("/todolist/updateitem", todo_list::update_item_todo_list_processor);
+
+    router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }
