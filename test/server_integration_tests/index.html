@@ -12,6 +12,7 @@
     <script src="./node_modules/mocha/mocha.js"></script>
     <script src="./node_modules/chai/chai.js"></script>
     <script src="./node_modules/chai-http/dist/chai-http.js"></script>
+    <script src="./node_modules/promise-polyfill/promise.js"></script>
 
     <!-- Configure testing libraries -->
     <script>
@@ -25,6 +26,11 @@
       expect = chai.expect;
 
       chai.use(chaiHttp);
+
+      // Polyfill for promises (which aren't currently available in phantomjs)
+      if (!window.Promise) {
+        window.Promise = Promise;
+      }
     </script>
 
     <!-- Load specs -->
