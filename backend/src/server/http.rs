@@ -20,6 +20,7 @@ use std::str;
 use std::thread;
 use std::sync::Arc;
 use std::fmt;
+use chrono::prelude::*;
 
 use serde_json;
 
@@ -114,11 +115,7 @@ fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<Proc
             let body = request.body.unwrap();
 
             if header.method == "OPTIONS" {
-                send_options_response(&mut writer,
-                HttpProcessResult {
-                    http_status: HttpStatus::Ok,
-                    response_body: String::new()
-                })
+                send_options_response(&mut writer)
             }
             else {
                 let router_output = router.route(header.route.as_str(), RouterInput{request_body: body}, processor_data);
@@ -152,13 +149,25 @@ fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<Proc
 
     }
 
-fn send_options_response<W: Write>(writer: &mut BufWriter<W>, process_result: HttpProcessResult) {
-  let response = format!("HTTP/1.1 {}{}{}{}{}",
-    process_result.http_status,
-    "\r\nAccess-Control-Allow-Origin: *",
-    "\r\nAccess-Control-Allow-Methods: POST, GET, OPTIONS",
-    "\r\nAccess-Control-Allow-Headers: Content-Type",
-    "\r\nAccess-Control-Max-Age: 86400");
+fn send_options_response<W: Write>(writer: &mut BufWriter<W>) {
+    let dt = Local::now();
+
+  let response = format!("{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
+    "HTTP/1.1 200 OK\r\n",
+    dt.format("Date: %a %e %b %Y %T UTC\r\n").to_string(),   // "Date: Mon, 01 Dec 2008 01:15:39 GMT
+    "Server: Apache/2.0.61 (Unix)\r\n",
+    "Access-Control-Allow-Origin: *\r\n",
+    "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n",
+    "Access-Control-Allow-Headers: X-PINGOTHER, Content-Type\r\n",
+    "Access-Control-Max-Age: 86400\r\n",
+    "Vary: Accept-Encoding, Origin\r\n",
+    "Content-Encoding: gzip\r\n",
+    "Content-Length: 0\r\n",
+    "Keep-Alive: timeout=2, max=100\r\n",
+    "Connection: Keep-Alive\r\n",
+    "Content-Type: text/plain\r\n",
+    "\r\n\r\n"
+    );
 
   debug!("Outgoing response from evelyn rest api: {:?}", response);
 
