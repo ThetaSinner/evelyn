@@ -15,6 +15,9 @@
 
     <!-- Configure testing libraries -->
     <script>
+
+      var Token = null;
+
       mocha.setup({
         ui: 'bdd',
         timeout: 5000,
@@ -25,7 +28,9 @@
     </script>
 
     <!-- Load specs -->
-    <script src="spec/create_user.js"></script>
+    <script src="spec/user.js"></script>
+    <script src="spec/simple_task.js"></script>
+    <script src="spec/todo_list.js"></script>
 
     <!-- Start running tests -->
     <script>
