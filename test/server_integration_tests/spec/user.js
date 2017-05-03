@@ -1,37 +1,43 @@
 describe('User', function() {
-  describe('Create', function() {
-    it('Create', function() {
-      return chai.request('http://localhost:8080')
-      .post('/user/create')
-      .send({
-        UserName: "Theta",
-        EmailAddress: "ts@evelyn.com",
-        Password: "asdf"
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+  describe('Create user', function() {
+    it('Creates a new user', function() {
+      return chaiHttpPost(
+        '/user/create',
+        {
+          UserName: "Theta",
+          EmailAddress: "ts@evelyn.com",
+          Password: "asdf"
+        },
+        function (res) {
+          var obj = JSON.parse(res.text);
+          expect(obj.Error).to.be.null;
+        }
+      );
     });
 
-    it('Already Exists', function() {
-      return chai.request('http://localhost:8080')
-      .post('/user/create')
-      .send({
-        UserName: "Theta",
-        EmailAddress: "ts@evelyn.com",
+    it('Refuses to create a user if the user already exists', function() {
+      var payload = {
+        UserName: "Exist",
+        EmailAddress: "iexist@evelyn.com",
         Password: "asdf"
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.not.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+      };
+
+      return chaiHttpPost(
+        '/user/create',
+        payload,
+        function (res) {
+          var obj = JSON.parse(res.text);
+          expect(obj.Error).to.be.null;
+
+          return chaiHttpPost(
+            '/user/create',
+            payload,
+            function (res) {
+              var obj = JSON.parse(res.text);
+              expect(obj.Error).to.not.be.null;
+              expect(obj.Error.ErrorCode).to.equal("100202");
+          });
+        });
     });
   });
 

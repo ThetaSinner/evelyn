@@ -13,6 +13,7 @@
     <script src="./node_modules/chai/chai.js"></script>
     <script src="./node_modules/chai-http/dist/chai-http.js"></script>
     <script src="./node_modules/promise-polyfill/promise.js"></script>
+    <script src="./node_modules/lodash/lodash.js"></script>
 
     <!-- Configure testing libraries -->
     <script>
@@ -32,6 +33,9 @@
         window.Promise = Promise;
       }
     </script>
+
+    <script src="./helpers/chai-http-error-helper.js"></script>
+    <script src="./helpers/chai-http-request-helper.js"></script>
 
     <!-- Load specs -->
     <script src="spec/user.js"></script>
