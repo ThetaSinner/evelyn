@@ -105,7 +105,7 @@ function createUserAndLogon() {
     }
   )
   .then(function (response) {
-    return hang(500, response);
+    return hang(1500, response);
   })
   .then(function (response) {
     expect(response.Error).to.be.null;
