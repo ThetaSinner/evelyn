@@ -77,7 +77,6 @@ describe('User', function() {
               Password: "asdf",
             },
             function (response) {
-              console.log(response);
               expect(response.Error).to.not.be.null;
               expect(response.Error.ErrorCode).to.equal("100203");
             });
