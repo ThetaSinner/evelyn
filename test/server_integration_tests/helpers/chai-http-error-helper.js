@@ -1,3 +1,7 @@
+if (!global.Promise) {
+  global.Promise = require('bluebird');
+}
+
 var _ = require('lodash');
 
 function wrapChaiHttpError(err) {

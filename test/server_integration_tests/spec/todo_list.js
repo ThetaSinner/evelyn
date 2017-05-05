@@ -1,5 +1,8 @@
+if (!global.Promise) {
+  global.Promise = require('bluebird');
+}
+
 var expect = require('chai').expect;
-var Promise = require('promise-polyfill');
 var _ = require('lodash');
 
 var httpHelper = require('../helpers/chai-http-request-helper.js');
