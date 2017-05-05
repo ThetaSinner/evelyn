@@ -22,31 +22,44 @@ use server::routing::{RouterInput, RouterOutput};
 use model;
 use processing;
 use core::server_admin;
-use core::error_messages::{EvelynBaseError, EvelynCoreError, EvelynServiceError};
+use core::error_messages::{EvelynServiceError, EvelynBaseError};
 
 pub fn purge_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
     let request_model_de: Result<model::server_admin::PurgeRequestModel,_> = serde_json::from_str(&router_input.request_body);
 
+    // TODO check token, but need some way to mark users as privileged.
+
     match request_model_de {
         Ok(request_model) => {
-            let result = match request_model.target.as_str() {
-                "all" => server_admin::purge_all(processor_data),
-                "simpletask" => server_admin::purge_simple_task(processor_data),
-                "todolist" => server_admin::purge_todo_list(processor_data),
-                "calendar" => server_admin::purge_calendar(processor_data),
-                _ =>
-                    Some(EvelynCoreError::FailedToAcquirePurgeTarget(EvelynBaseError::NothingElse))
-            };
-
-            let model : model::server_admin::PurgeResponseModel = match result {
-                None => model::server_admin::PurgeResponseModel { error : None },
-                Some(error) =>
-                model::server_admin::PurgeResponseModel {
-                    error : Some(model::ErrorModel::from(EvelynServiceError::FailedToPurge(error)))
+            let error = match request_model.target_type.as_str() {
+                "database" => {
+                    match server_admin::purge_database(processor_data) {
+                        None => None,
+                        Some(e) => Some(EvelynServiceError::FailedToPurge(e))
+                    }
+                },
+                "database_area" => {
+                    match server_admin::purge_database_area(&request_model.target, processor_data) {
+                        None => None,
+                        Some(e) => Some(EvelynServiceError::FailedToPurge(e)),
+                    }
+                },
+                _ => {
+                    Some(EvelynServiceError::InvalidPurgeTargetType(EvelynBaseError::NothingElse))
                 }
             };
 
-            RouterOutput { response_body : serde_json::to_string( &model).unwrap() }
+            match error {
+                None => RouterOutput{response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {error: None}).unwrap()},
+                Some(e) => {
+                    RouterOutput{
+                        response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {
+                            error: Some(From::from(e))
+                        }).unwrap()
+                    }
+                }
+            }
+
         },
         Err(e) => {
             let response = model::server_admin::PurgeResponseModel {

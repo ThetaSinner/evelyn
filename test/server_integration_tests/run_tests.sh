@@ -14,7 +14,7 @@ cd ../test/server_integration_tests
 npm install
 
 # Run the tests.
-./node_modules/.bin/mocha-phantomjs ./index.html
+./node_modules/.bin/mocha spec/
 exit_code=$?
 
 # Stop the server.

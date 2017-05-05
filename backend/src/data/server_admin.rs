@@ -19,47 +19,20 @@ use mongodb::db::ThreadedDatabase;
 use core::error_messages::EvelynDatabaseError;
 use mongodb::{Client, ThreadedClient};
 
-pub fn purge_all(client : &Client) -> Option<EvelynDatabaseError> {
+pub fn purge_database(client : &Client) -> Option<EvelynDatabaseError> {
     let db = client.db("evelyn");
 
     match db.drop_database() {
       Ok(_) => None,
-      Err(e) => Some(EvelynDatabaseError::PurgeAll(e))
+      Err(e) => Some(EvelynDatabaseError::PurgeDatabase(e))
     }
 }
 
-pub fn purge_user(client : &Client) -> Option<EvelynDatabaseError> {
+pub fn purge_collection(target: &String, client : &Client) -> Option<EvelynDatabaseError> {
     let db = client.db("evelyn");
 
-    match db.drop_collection("user") {
+    match db.drop_collection(target) {
       Ok(_) => None,
-      Err(e) => Some(EvelynDatabaseError::PurgeUser(e))
-    }
-}
-
-pub fn purge_simple_task(client : &Client) -> Option<EvelynDatabaseError> {
-    let db = client.db("evelyn");
-
-    match db.drop_collection("simple_task") {
-      Ok(_) => None,
-      Err(e) => Some(EvelynDatabaseError::PurgeSimpleTask(e))
-    }
-}
-
-pub fn purge_todo_list(client : &Client) -> Option<EvelynDatabaseError> {
-    let db = client.db("evelyn");
-
-    match db.drop_collection("todolist") {
-      Ok(_) => None,
-      Err(e) => Some(EvelynDatabaseError::PurgeTodoList(e))
-    }
-}
-
-pub fn purge_calendar(client : &Client) -> Option<EvelynDatabaseError> {
-    let db = client.db("evelyn");
-
-    match db.drop_collection("calendar") {
-      Ok(_) => None,
-      Err(e) => Some(EvelynDatabaseError::PurgeCalendar(e))
+      Err(e) => Some(EvelynDatabaseError::PurgeCollection(e))
     }
 }

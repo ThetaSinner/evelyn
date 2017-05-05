@@ -1,5 +1,7 @@
+var _ = require('lodash');
+
 function wrapChaiHttpError(err) {
-  var message = "";
+  var message = "ChaiHttpErrorWrapper: ";
   if (!_.isUndefined(err.message)) {
     message += err.message + "\r\n";
   }
@@ -10,3 +12,7 @@ function wrapChaiHttpError(err) {
 
   return Error(message);
 }
+
+module.exports = {
+  wrapChaiHttpError,
+};

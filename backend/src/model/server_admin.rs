@@ -21,8 +21,11 @@ pub struct PurgeRequestModel {
     #[serde(rename="Token")]
     pub token: String,
 
+    #[serde(rename="TargetType")]
+    pub target_type: String,
+
     #[serde(rename="Target")]
-    pub target: String
+    pub target: String,
 }
 
 #[derive(Serialize, Deserialize)]

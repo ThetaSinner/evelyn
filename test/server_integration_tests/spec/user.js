@@ -1,16 +1,29 @@
+var expect = require('chai').expect;
+
+var httpHelper = require('../helpers/chai-http-request-helper.js');
+
 describe('User', function() {
+  before(function () {
+    return httpHelper.chaiHttpPostPurgeDatabase();
+  });
+
   describe('Create user', function() {
+    beforeEach(function () {
+      return httpHelper.chaiHttpPostPurgeDatabaseArea('user');
+    });
+
     it('Creates a new user', function() {
-      return chaiHttpPost(
+      var payload = {
+        UserName: "Theta",
+        EmailAddress: "ts@evelyn.com",
+        Password: "asdf"
+      };
+
+      return httpHelper.chaiHttpPost(
         '/user/create',
-        {
-          UserName: "Theta",
-          EmailAddress: "ts@evelyn.com",
-          Password: "asdf"
-        },
-        function (res) {
-          var obj = JSON.parse(res.text);
-          expect(obj.Error).to.be.null;
+        payload,
+        function (response) {
+          expect(response.Error).to.be.null;
         }
       );
     });
@@ -22,58 +35,93 @@ describe('User', function() {
         Password: "asdf"
       };
 
-      return chaiHttpPost(
+      return httpHelper.chaiHttpPost(
         '/user/create',
         payload,
-        function (res) {
-          var obj = JSON.parse(res.text);
-          expect(obj.Error).to.be.null;
+        function (response) {
+          expect(response.Error).to.be.null;
 
-          return chaiHttpPost(
+          return httpHelper.chaiHttpPost(
             '/user/create',
             payload,
-            function (res) {
-              var obj = JSON.parse(res.text);
-              expect(obj.Error).to.not.be.null;
-              expect(obj.Error.ErrorCode).to.equal("100202");
+            function (response) {
+              expect(response.Error).to.not.be.null;
+              expect(response.Error.ErrorCode).to.equal("100202");
           });
         });
     });
   });
 
   describe('Logon', function() {
-    it('Logon Incorrect', function() {
-      return chai.request('http://localhost:8080')
-      .post('/user/logon')
-      .send({
-        EmailAddress: "ts@evelyn.com",
-        Password: "thisisthewrongpassword"
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.not.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+    var createUserPayload = {
+      UserName: "IAmCorrect",
+      EmailAddress: "iamcorrect@evelyn.com",
+      Password: "asdf"
+    };
+
+    beforeEach(function () {
+      return httpHelper.chaiHttpPostPurgeDatabaseArea('user');
     });
 
-    it('Logon Correct', function() {
-      return chai.request('http://localhost:8080')
-      .post('/user/logon')
-      .send({
-        EmailAddress: "ts@evelyn.com",
-        Password: "asdf"
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-        expect(obj.Token).to.not.equal(null);
-        Token = obj.Token;
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+    it('Rejects logon with incorrect email', function() {
+      return httpHelper.chaiHttpPost(
+        '/user/create',
+        createUserPayload,
+        function (response) {
+          expect(response.Error).to.be.null;
+
+          return httpHelper.chaiHttpPost(
+            '/user/logon',
+            {
+              EmailAddress: "iamnotcorrect@evelyn.com",
+              Password: "asdf",
+            },
+            function (response) {
+              console.log(response);
+              expect(response.Error).to.not.be.null;
+              expect(response.Error.ErrorCode).to.equal("100203");
+            });
+        });
+    });
+
+    it('Rejects logon with incorrect password', function() {
+      return httpHelper.chaiHttpPost(
+        '/user/create',
+        createUserPayload,
+        function (response) {
+          expect(response.Error).to.be.null;
+
+          return httpHelper.chaiHttpPost(
+            '/user/logon',
+            {
+              EmailAddress: "iamcorrect@evelyn.com",
+              Password: "wrongpassword",
+            },
+            function (response) {
+              expect(response.Error).to.not.be.null;
+              expect(response.Error.ErrorCode).to.equal("100203");
+            });
+        });
+    });
+
+    it('Accepts correct logon and gives back a session token', function() {
+      return httpHelper.chaiHttpPost(
+        '/user/create',
+        createUserPayload,
+        function (response) {
+          expect(response.Error).to.be.null;
+
+          return httpHelper.chaiHttpPost(
+            '/user/logon',
+            {
+              EmailAddress: "iamcorrect@evelyn.com",
+              Password: "asdf",
+            },
+            function (response) {
+              expect(response.Error).to.be.null;
+              expect(response.Token).to.be.ok;
+            });
+        });
     });
   });
 });

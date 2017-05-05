@@ -91,6 +91,7 @@ pub enum EvelynServiceError {
 
     // Server Admin
     FailedToPurge(EvelynCoreError),
+    InvalidPurgeTargetType(EvelynBaseError),
 
     // User
     CreateUser(EvelynCoreError),
@@ -123,7 +124,10 @@ EvelynErrorDisplay!{
 
     {CouldNotDecodeTheRequestPayload, "100101", "Could not decode the JSON request payload"},
     {ForeignSessionToken, "100102", "The server has been restarted please log on again"},
-    {FailedToPurge, "100103", "Failed to purge database"},
+
+    // Server admin.
+    {FailedToPurge, "100103", "Failed to purge"},
+    {InvalidPurgeTargetType, "100104", "Invalid purge target type"},
 
     // User
     {CreateUser, "100201", "Failed to create user"},
@@ -150,12 +154,8 @@ EvelynErrorDisplay!{
 #[derive(Debug)]
 pub enum EvelynCoreError {
     // Server Admin
-    FailedToPurgeAll(EvelynDatabaseError),
-    FailedToPurgeUser(EvelynDatabaseError),
-    FailedToPurgeSimpleTask(EvelynDatabaseError),
-    FailedToPurgeTodoList(EvelynDatabaseError),
-    FailedToPurgeCalendar(EvelynDatabaseError),
-    FailedToAcquirePurgeTarget(EvelynBaseError),
+    FailedToPurgeDatabase(EvelynDatabaseError),
+    FailedToPurgeDatabaseArea(EvelynDatabaseError),
 
     // User
     WillNotCreateUserBecauseUserAlreadyExists(EvelynBaseError),
@@ -184,12 +184,8 @@ EvelynErrorDisplay!{
     EvelynCoreError,
 
     // Server Admin
-    {FailedToPurgeAll, "Failed to purge database {}"},
-    {FailedToPurgeUser, "Failed to purge Users from database {}"},
-    {FailedToPurgeSimpleTask, "Failed to purge SimpleTasks from database {}"},
-    {FailedToPurgeTodoList, "Failed to purge TodoLists from database {}"},
-    {FailedToPurgeCalendar, "Failed to purge Calendars from database {}"},
-    {FailedToAcquirePurgeTarget, "Failed to determine purge target {}"},
+    {FailedToPurgeDatabase, "Failed to purge database {}"},
+    {FailedToPurgeDatabaseArea, "Failed to purge database area {}"},
 
     //User
     {WillNotCreateUserBecauseUserAlreadyExists, "Will not create the requested user because that user already exists. {}"},
@@ -219,11 +215,8 @@ pub enum EvelynDatabaseError {
     SerialisationFailed(EvelynBaseError),
 
     // Server Admin
-    PurgeAll(MongoDbError),
-    PurgeUser(MongoDbError),
-    PurgeSimpleTask(MongoDbError),
-    PurgeTodoList(MongoDbError),
-    PurgeCalendar(MongoDbError),
+    PurgeDatabase(MongoDbError),
+    PurgeCollection(MongoDbError),
 
     // User
     InsertUser(MongoDbError),
@@ -252,11 +245,8 @@ EvelynErrorDisplay!{
     {SerialisationFailed, "Failed to serialise data for storage. {}"},
 
     // Server Admin
-    {PurgeAll, "Failed to purge database {}"},
-    {PurgeUser, "Failed to purge Users from database {}"},
-    {PurgeSimpleTask, "Failed to purge SimpleTasks from database {}"},
-    {PurgeTodoList, "Failed to purge TodoLists from database {}"},
-    {PurgeCalendar, "Failed to purge Calendars from database {}"},
+    {PurgeDatabase, "Failed to purge database {}"},
+    {PurgeCollection, "Failed to purge collection {}"},
 
     // User
     {InsertUser, "Failed to create record for new user\n {}"},

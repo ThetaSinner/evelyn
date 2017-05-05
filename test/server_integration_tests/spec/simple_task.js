@@ -1,92 +1,91 @@
+var expect = require('chai').expect;
+
+var httpHelper = require('../helpers/chai-http-request-helper.js');
+
 describe('Simple Task', function() {
   var date = new Date ().toISOString();
+  var token = null;
+
+  before(function () {
+    return httpHelper.chaiHttpPostPurgeDatabase().then(function () {
+        return httpHelper.createUserAndLogon().then(function (_token) {
+            token = _token;
+          });
+      });
+  });
 
   it('Create', function() {
-    return chai.request('http://localhost:8080')
-    .post('/simpletask/create')
-    .send({
-      Token: Token,
-      Title: "Test Task",
-      Description: "Descriptive",
-      DueDate: date
-    })
-    .then(function (res) {
-      var obj = JSON.parse(res.text);
-      expect(obj.Error).to.equal(null);
-    })
-    .catch(function (err) {
-      throw Error(err.actual.ErrorMessage);
-    })
+    return httpHelper.chaiHttpPost(
+      '/simpletask/create',
+      {
+        Token: token,
+        Title: "Test Task",
+        Description: "Descriptive",
+        DueDate: date,
+      },
+      function (response) {
+        expect(response.Error).to.be.null;
+      }
+    );
   });
+
+  // TODO asserts for the tests below aren't checking enough.
 
   describe("Lookup", function () {
     it('Lookup - No Limit, No Completed', function() {
-      return chai.request('http://localhost:8080')
-      .post('/simpletask/lookup')
-      .send({
-        ShowCompleted: false,
-        Limit: 0,
-        Token: Token
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+      return httpHelper.chaiHttpPost(
+        '/simpletask/lookup',
+        {
+          Token: token,
+          ShowCompleted: false,
+          Limit: 0,
+        },
+        function (response) {
+          expect(response.Error).to.be.null;
+        }
+      );
     });
 
     it('Lookup - Limit, No Completed', function() {
-      return chai.request('http://localhost:8080')
-      .post('/simpletask/lookup')
-      .send({
-        ShowCompleted: false,
-        Limit: 10,
-        Token: Token
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+      return httpHelper.chaiHttpPost(
+        '/simpletask/lookup',
+        {
+          Token: token,
+          ShowCompleted: false,
+          Limit: 10,
+        },
+        function (response) {
+          expect(response.Error).to.be.null;
+        }
+      );
     });
 
     it('Lookup - No Limit, Inc Completed', function() {
-      return chai.request('http://localhost:8080')
-      .post('/simpletask/lookup')
-      .send({
-        ShowCompleted: true,
-        Limit: 0,
-        Token: Token
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+      return httpHelper.chaiHttpPost(
+        '/simpletask/lookup',
+        {
+          Token: token,
+          ShowCompleted: true,
+          Limit: 0,
+        },
+        function (response) {
+          expect(response.Error).to.be.null;
+        }
+      );
     });
 
     it('Lookup - Limit, Inc Completed', function() {
-      return chai.request('http://localhost:8080')
-      .post('/simpletask/lookup')
-      .send({
-        ShowCompleted: true,
-        Limit: 10,
-        Token: Token
-      })
-      .then(function (res) {
-        var obj = JSON.parse(res.text);
-        expect(obj.Error).to.equal(null);
-      })
-      .catch(function (err) {
-        throw Error(err.actual.ErrorMessage);
-      })
+      return httpHelper.chaiHttpPost(
+        '/simpletask/lookup',
+        {
+          Token: token,
+          ShowCompleted: true,
+          Limit: 10,
+        },
+        function (response) {
+          expect(response.Error).to.be.null;
+        }
+      );
     });
   });
-
 });

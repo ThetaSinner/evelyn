@@ -36,6 +36,7 @@ pub struct ProcessorData {
 }
 
 pub fn load_processors(router: &mut Router) {
+    // TODO only loaded if a flag is passed to evelyn, or the request is authenticated?
     router.add_rule("/purge", server_admin::purge_processor);
 
     router.add_rule("/user/create", user::create_user_processor);
