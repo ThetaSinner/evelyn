@@ -35,7 +35,7 @@ function chaiHttpPostPurgeDatabase() {
     {
       Token: 'a temporary token',
       TargetType: 'database',
-      Target: '',
+      Target: ''
     },
     function (response) {
       if (_.isObject(response.Error)) {
@@ -53,7 +53,7 @@ function chaiHttpPostPurgeDatabaseArea(target) {
     {
       Token: 'a temporary token',
       TargetType: 'database_area',
-      Target: target,
+      Target: target
     },
     function (response) {
       if (_.isObject(response.Error)) {
@@ -97,5 +97,5 @@ module.exports = {
   chaiHttpPost: chaiHttpPost,
   chaiHttpPostPurgeDatabase: chaiHttpPostPurgeDatabase,
   chaiHttpPostPurgeDatabaseArea: chaiHttpPostPurgeDatabaseArea,
-  createUserAndLogon: createUserAndLogon,
+  createUserAndLogon: createUserAndLogon
 };

@@ -9,7 +9,7 @@ function createTodoList(token, title) {
       '/todolist/create',
       {
         Token: token,
-        Title: title,
+        Title: title
       },
       function (response) {
         expect(response.Error).to.be.null;
@@ -55,7 +55,7 @@ function lookupPreviews(token) {
     httpHelper.chaiHttpPost(
       '/todolist/lookuplists',
       {
-        Token: token,
+        Token: token
       },
       function (response) {
         expect(response.Error).to.be.null;
@@ -71,7 +71,7 @@ function lookupList(token, todo_list_id) {
       '/todolist/lookuplist',
       {
         Token: token,
-        TodoListId: todo_list_id,
+        TodoListId: todo_list_id
       },
       function (response) {
         expect(response.Error).to.be.null;
@@ -175,5 +175,4 @@ describe('Todo List', function() {
       });
     });
   });
-
 });

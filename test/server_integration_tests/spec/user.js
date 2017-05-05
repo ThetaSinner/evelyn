@@ -74,7 +74,7 @@ describe('User', function() {
             '/user/logon',
             {
               EmailAddress: "iamnotcorrect@evelyn.com",
-              Password: "asdf",
+              Password: "asdf"
             },
             function (response) {
               expect(response.Error).to.not.be.null;
@@ -94,7 +94,7 @@ describe('User', function() {
             '/user/logon',
             {
               EmailAddress: "iamcorrect@evelyn.com",
-              Password: "wrongpassword",
+              Password: "wrongpassword"
             },
             function (response) {
               expect(response.Error).to.not.be.null;
@@ -114,7 +114,7 @@ describe('User', function() {
             '/user/logon',
             {
               EmailAddress: "iamcorrect@evelyn.com",
-              Password: "asdf",
+              Password: "asdf"
             },
             function (response) {
               expect(response.Error).to.be.null;

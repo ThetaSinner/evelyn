@@ -14,5 +14,5 @@ function wrapChaiHttpError(err) {
 }
 
 module.exports = {
-  wrapChaiHttpError,
+  wrapChaiHttpError
 };

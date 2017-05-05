@@ -21,7 +21,7 @@ describe('Simple Task', function() {
         Token: token,
         Title: "Test Task",
         Description: "Descriptive",
-        DueDate: date,
+        DueDate: date
       },
       function (response) {
         expect(response.Error).to.be.null;
@@ -38,7 +38,7 @@ describe('Simple Task', function() {
         {
           Token: token,
           ShowCompleted: false,
-          Limit: 0,
+          Limit: 0
         },
         function (response) {
           expect(response.Error).to.be.null;
@@ -52,7 +52,7 @@ describe('Simple Task', function() {
         {
           Token: token,
           ShowCompleted: false,
-          Limit: 10,
+          Limit: 10
         },
         function (response) {
           expect(response.Error).to.be.null;
@@ -66,7 +66,7 @@ describe('Simple Task', function() {
         {
           Token: token,
           ShowCompleted: true,
-          Limit: 0,
+          Limit: 0
         },
         function (response) {
           expect(response.Error).to.be.null;
@@ -80,7 +80,7 @@ describe('Simple Task', function() {
         {
           Token: token,
           ShowCompleted: true,
-          Limit: 10,
+          Limit: 10
         },
         function (response) {
           expect(response.Error).to.be.null;
