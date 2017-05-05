@@ -25,11 +25,11 @@ describe('User', function() {
 
       return httpHelper.chaiHttpPost(
         '/user/create',
-        payload,
-        function (response) {
-          expect(response.Error).to.be.null;
-        }
-      );
+        payload
+      )
+      .then(function (response) {
+        expect(response.Error).to.be.null;
+      });
     });
 
     it('Refuses to create a user if the user already exists', function() {
@@ -41,18 +41,20 @@ describe('User', function() {
 
       return httpHelper.chaiHttpPost(
         '/user/create',
-        payload,
-        function (response) {
+        payload
+        )
+        .then(function (response) {
           expect(response.Error).to.be.null;
 
           return httpHelper.chaiHttpPost(
             '/user/create',
-            payload,
-            function (response) {
-              expect(response.Error).to.not.be.null;
-              expect(response.Error.ErrorCode).to.equal("100202");
-          });
-        });
+            payload
+          );
+        })
+        .then(function (response) {
+          expect(response.Error).to.not.be.null;
+          expect(response.Error.ErrorCode).to.equal("100202");
+      });
     });
   });
 
@@ -70,8 +72,9 @@ describe('User', function() {
     it('Rejects logon with incorrect email', function() {
       return httpHelper.chaiHttpPost(
         '/user/create',
-        createUserPayload,
-        function (response) {
+        createUserPayload
+        )
+        .then(function (response) {
           expect(response.Error).to.be.null;
 
           return httpHelper.chaiHttpPost(
@@ -79,19 +82,21 @@ describe('User', function() {
             {
               EmailAddress: "iamnotcorrect@evelyn.com",
               Password: "asdf"
-            },
-            function (response) {
-              expect(response.Error).to.not.be.null;
-              expect(response.Error.ErrorCode).to.equal("100203");
-            });
+            }
+          );
+        })
+        .then(function (response) {
+          expect(response.Error).to.not.be.null;
+          expect(response.Error.ErrorCode).to.equal("100203");
         });
     });
 
     it('Rejects logon with incorrect password', function() {
       return httpHelper.chaiHttpPost(
         '/user/create',
-        createUserPayload,
-        function (response) {
+        createUserPayload
+        )
+        .then(function (response) {
           expect(response.Error).to.be.null;
 
           return httpHelper.chaiHttpPost(
@@ -99,19 +104,21 @@ describe('User', function() {
             {
               EmailAddress: "iamcorrect@evelyn.com",
               Password: "wrongpassword"
-            },
-            function (response) {
-              expect(response.Error).to.not.be.null;
-              expect(response.Error.ErrorCode).to.equal("100203");
-            });
+            }
+          );
+        })
+        .then(function (response) {
+          expect(response.Error).to.not.be.null;
+          expect(response.Error.ErrorCode).to.equal("100203");
         });
     });
 
     it('Accepts correct logon and gives back a session token', function() {
       return httpHelper.chaiHttpPost(
         '/user/create',
-        createUserPayload,
-        function (response) {
+        createUserPayload
+        )
+        .then(function (response) {
           expect(response.Error).to.be.null;
 
           return httpHelper.chaiHttpPost(
@@ -119,11 +126,12 @@ describe('User', function() {
             {
               EmailAddress: "iamcorrect@evelyn.com",
               Password: "asdf"
-            },
-            function (response) {
-              expect(response.Error).to.be.null;
-              expect(response.Token).to.be.ok;
-            });
+            }
+          );
+        })
+        .then(function (response) {
+          expect(response.Error).to.be.null;
+          expect(response.Token).to.be.ok;
         });
     });
   });

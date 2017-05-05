@@ -11,10 +11,12 @@ describe('Simple Task', function() {
   var token = null;
 
   before(function () {
-    return httpHelper.chaiHttpPostPurgeDatabase().then(function () {
-        return httpHelper.createUserAndLogon().then(function (_token) {
-            token = _token;
-          });
+    return httpHelper.chaiHttpPostPurgeDatabase()
+      .then(function () {
+        return httpHelper.createUserAndLogon();
+      })
+      .then(function (_token) {
+          token = _token;
       });
   });
 
@@ -26,11 +28,11 @@ describe('Simple Task', function() {
         Title: "Test Task",
         Description: "Descriptive",
         DueDate: date
-      },
-      function (response) {
-        expect(response.Error).to.be.null;
       }
-    );
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+    });
   });
 
   // TODO asserts for the tests below aren't checking enough.
@@ -43,11 +45,11 @@ describe('Simple Task', function() {
           Token: token,
           ShowCompleted: false,
           Limit: 0
-        },
-        function (response) {
-          expect(response.Error).to.be.null;
         }
-      );
+      )
+      .then(function (response) {
+        expect(response.Error).to.be.null;
+      });
     });
 
     it('Lookup - Limit, No Completed', function() {
@@ -57,11 +59,11 @@ describe('Simple Task', function() {
           Token: token,
           ShowCompleted: false,
           Limit: 10
-        },
-        function (response) {
-          expect(response.Error).to.be.null;
         }
-      );
+      )
+      .then(function (response) {
+        expect(response.Error).to.be.null;
+      });
     });
 
     it('Lookup - No Limit, Inc Completed', function() {
@@ -71,11 +73,11 @@ describe('Simple Task', function() {
           Token: token,
           ShowCompleted: true,
           Limit: 0
-        },
-        function (response) {
-          expect(response.Error).to.be.null;
         }
-      );
+      )
+      .then(function (response) {
+        expect(response.Error).to.be.null;
+      });
     });
 
     it('Lookup - Limit, Inc Completed', function() {
@@ -85,11 +87,11 @@ describe('Simple Task', function() {
           Token: token,
           ShowCompleted: true,
           Limit: 10
-        },
-        function (response) {
-          expect(response.Error).to.be.null;
         }
-      );
+      )
+      .then(function (response) {
+        expect(response.Error).to.be.null;
+      });
     });
   });
 });

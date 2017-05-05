@@ -14,13 +14,16 @@ function createTodoList(token, title) {
       {
         Token: token,
         Title: title
-      },
-      function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TodoListId).to.not.be.null;
-        resolve(response);
       }
-    );
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+      expect(response.TodoListId).to.not.be.null;
+      resolve(response);
+    })
+    .catch(function (e) {
+      reject(e);
+    });
   });
 }
 
@@ -32,12 +35,15 @@ function addItem(token, todo_list_id, item) {
         Token: token,
         TodoListId: todo_list_id,
         TodoListItem: item
-      },
-      function (response) {
-        expect(response.Error).to.be.null;
-        resolve(response);
       }
-    );
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+      resolve(response);
+    })
+    .catch(function (e) {
+      reject(e);
+    });
   });
 }
 
@@ -45,12 +51,15 @@ function updateItem(request) {
   return new Promise(function (resolve, reject) {
     httpHelper.chaiHttpPost(
       '/todolist/updateitem',
-      request,
-      function (response) {
-        expect(response.Error).to.be.null;
-        resolve(response);
-      }
-    );
+      request
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+      resolve(response);
+    })
+    .catch(function (e) {
+      reject(e);
+    });
   });
 }
 
@@ -60,12 +69,15 @@ function lookupPreviews(token) {
       '/todolist/lookuplists',
       {
         Token: token
-      },
-      function (response) {
-        expect(response.Error).to.be.null;
-        resolve(response);
       }
-    );
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+      resolve(response);
+    })
+    .catch(function (e) {
+      reject(e);
+    });
   });
 }
 
@@ -76,12 +88,15 @@ function lookupList(token, todo_list_id) {
       {
         Token: token,
         TodoListId: todo_list_id
-      },
-      function (response) {
-        expect(response.Error).to.be.null;
-        resolve(response);
       }
-    );
+    )
+    .then(function (response) {
+      expect(response.Error).to.be.null;
+      resolve(response);
+    })
+    .catch(function (e) {
+      reject(e);
+    });
   });
 }
 
@@ -89,10 +104,12 @@ describe('Todo List', function() {
   var token = null;
 
   before(function () {
-    return httpHelper.chaiHttpPostPurgeDatabase().then(function () {
-        return httpHelper.createUserAndLogon().then(function (_token) {
-            token = _token;
-          });
+    return httpHelper.chaiHttpPostPurgeDatabase()
+      .then(function () {
+        return httpHelper.createUserAndLogon();
+      })
+      .then(function (_token) {
+          token = _token;
       });
   });
 
@@ -105,22 +122,28 @@ describe('Todo List', function() {
   });
 
   it('Add List Item', function() {
-    return createTodoList(token, "Add List Item").then(function (response) {
-      return addItem(token, response.TodoListId, {
-        Text: "Eggs",
-        IsDone: false
+    return createTodoList(token, "Add List Item")
+      .then(function (response) {
+        return addItem(token, response.TodoListId, {
+          Text: "Eggs",
+          IsDone: false
+        });
       });
-    });
   });
 
   it('Mark item done', function() {
-    return createTodoList(token, "Mark item done").then(function (response) {
-      var todo_list_id = response.TodoListId;
+    var todo_list_id = null;
 
-      return addItem(token, todo_list_id, {
-        Text: "Eggs",
-        IsDone: false
-      }).then(function (response) {
+    return createTodoList(token, "Mark item done")
+      .then(function (response) {
+        todo_list_id = response.TodoListId;
+
+        return addItem(token, todo_list_id, {
+          Text: "Eggs",
+          IsDone: false
+        });
+      })
+      .then(function (response) {
         return updateItem({
           Token: token,
           TodoListId: todo_list_id,
@@ -128,46 +151,54 @@ describe('Todo List', function() {
           IsDone: true
         });
       });
-    });
   });
 
   describe("Lookup", function () {
     it('Lookup previews', function() {
-      return createTodoList(token, "Lookup previews 1").then(function (response) {
-        var todo_list_id_1 = response.TodoListId;
-        return createTodoList(token, "Lookup previews 2").then(function (response) {
-          var todo_list_id_2 = response.TodoListId;
+      var todo_list_id_1 = null;
+      var todo_list_id_2 = null;
 
-          return lookupPreviews(token).then(function (response) {
-            expect(response.Error).to.be.null;
-            expect(response.TodoLists).to.have.length(2);
+      return createTodoList(token, "Lookup previews 1")
+        .then(function (response) {
+          todo_list_id_1 = response.TodoListId;
+          return createTodoList(token, "Lookup previews 2");
+        })
+        .then(function (response) {
+          todo_list_id_2 = response.TodoListId;
 
-            var todo_lists = response.TodoLists;
-            expect(todo_lists[0]).to.have.property('Title')
-              .that.is.a('string')
-              .that.equals("Lookup previews 1");
+          return lookupPreviews(token);
+        })
+        .then(function (response) {
+          expect(response.Error).to.be.null;
+          expect(response.TodoLists).to.have.length(2);
 
-            expect(todo_lists[0]).to.have.property('TodoListId')
-              .that.is.a('string')
-              .that.equals(todo_list_id_1);
+          var todo_lists = response.TodoLists;
+          expect(todo_lists[0]).to.have.property('Title')
+            .that.is.a('string')
+            .that.equals("Lookup previews 1");
 
-            expect(todo_lists[1]).to.have.property('Title')
-              .that.is.a('string')
-              .that.equals("Lookup previews 2");
+          expect(todo_lists[0]).to.have.property('TodoListId')
+            .that.is.a('string')
+            .that.equals(todo_list_id_1);
 
-            expect(todo_lists[1]).to.have.property('TodoListId')
-              .that.is.a('string')
-              .that.equals(todo_list_id_2);
-          });
+          expect(todo_lists[1]).to.have.property('Title')
+            .that.is.a('string')
+            .that.equals("Lookup previews 2");
+
+          expect(todo_lists[1]).to.have.property('TodoListId')
+            .that.is.a('string')
+            .that.equals(todo_list_id_2);
         });
-      });
     });
 
     it('Lookup a todo list', function() {
-      return createTodoList(token, "Lookup a todo list").then(function (response) {
-        var todo_list_id = response.TodoListId;
+      return createTodoList(token, "Lookup a todo list")
+        .then(function (response) {
+          var todo_list_id = response.TodoListId;
 
-        return lookupList(token, todo_list_id).then(function (response) {
+          return lookupList(token, todo_list_id);
+        })
+        .then(function (response) {
           expect(response.Error).to.be.null;
           expect(response.TodoList).to.not.be.null;
 
@@ -176,7 +207,6 @@ describe('Todo List', function() {
           expect(_.isArray(todo_list.TodoListItems)).to.be.true;
           expect(todo_list.TodoListItems.length).to.equal(0);
         });
-      });
     });
   });
 });

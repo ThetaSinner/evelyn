@@ -14,7 +14,7 @@ function wrapChaiHttpError(err) {
     message += JSON.stringify(err.actual) + "\r\n";
   }
 
-  return Error(message);
+  return new Error(message);
 }
 
 module.exports = {
