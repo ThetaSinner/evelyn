@@ -11,6 +11,14 @@ var httpErrorHelper = require('./chai-http-error-helper.js');
 chai.use(chaiHttp);
 var expect = chai.expect;
 
+function hang(ms, forward) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      resolve(forward);
+    }, ms);
+  });
+}
+
 function chaiHttpPost(action, payload) {
   // For some reason .send() seems to sometimes send an empty payload
   // if you give it an object, which is documented to be allowed...
@@ -88,6 +96,9 @@ function createUserAndLogon() {
       Password: "asdf"
     }
   )
+  .then(function (response) {
+    return hang(500, response);
+  })
   .then(function (response) {
     expect(response.Error).to.be.null;
 
