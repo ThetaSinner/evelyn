@@ -52,7 +52,11 @@ function chaiHttpPostPurgeDatabase() {
         TargetType: 'database',
         Target: ''
       }
-    ).then(function (response) {
+    )
+    .then(function (response) {
+      return hang(500, response);
+    })
+    .then(function (response) {
       if (_.isObject(response.Error)) {
         console.log('Purge database error', response.Error.ErrorCode, response.Error.ErrorMessage);
       }
@@ -74,7 +78,11 @@ function chaiHttpPostPurgeDatabaseArea(target) {
         TargetType: 'database_area',
         Target: target
       }
-    ).then(function (response) {
+    )
+    .then(function (response) {
+      return hang(500, response);
+    })
+    .then(function (response) {
       if (_.isObject(response.Error)) {
         console.log('Purge database area error', response.Error.ErrorCode, response.Error.ErrorMessage);
       }
