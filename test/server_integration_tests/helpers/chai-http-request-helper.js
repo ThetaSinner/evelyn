@@ -1,5 +1,6 @@
 var chai = require('chai');
 var chaiHttp = require('chai-http');
+var Promise = require('promise-polyfill');
 var _ = require('lodash');
 
 var httpErrorHelper = require('./chai-http-error-helper.js');
