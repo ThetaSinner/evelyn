@@ -1,13 +1,18 @@
+sudo: required
 language: rust
-cache: cargo
-services:
-  - mongodb
+cache: cargo # Compile chache doesn't work because my rust files are not in a standard folder as such.
 before_install:
   # Install Node.js
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-get install -y nodejs
 before_script:
-  - sleep 15 # Mongo may not respond immediatly
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+  # Note update this for the ubuntu version (current 12.04)
+  - echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+  - sudo apt-get update
+  - sudo apt-get install -y mongodb-org
+  - sudo service mongod start
+  - sleep 15 #mongo may not be responded directly. See http://docs.travis-ci.com/user/database-setup/#MongoDB
   - mongo --version
 script:
   - cd $TRAVIS_BUILD_DIR/backend && ./scripts/run_tests.sh
