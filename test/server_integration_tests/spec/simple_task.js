@@ -1,7 +1,7 @@
 if (!global.Promise) {
   global.Promise = require('bluebird');
 }
-
+var moment = require('moment');
 var expect = require('chai').expect;
 
 var httpHelper = require('../helpers/chai-http-request-helper.js');
@@ -169,8 +169,7 @@ describe('Simple Task', function() {
     });
 
     it('Changes duedate', function() {
-      var newDate = new Date();
-      newDate.setDate(newDate.getDate() + 1);
+      var newDate = moment().add(1, 'days').toISOString();
 
       return httpHelper.chaiHttpPost(
         '/simpletask/update',
@@ -179,7 +178,7 @@ describe('Simple Task', function() {
           TaskId: simpletask.taskId,
           NewTitle: simpletask.title,
           NewDescription: simpletask.fescription,
-          NewDueDate: newDate.toISOString(),
+          NewDueDate: newDate,
           NewCompleted: simpletask.completed,
         }
       ).then(
