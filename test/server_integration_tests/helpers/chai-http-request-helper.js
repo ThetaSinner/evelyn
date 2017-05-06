@@ -100,24 +100,6 @@ function createUserAndLogon() {
     }
   )
   .then(function (response) {
-    return new Promise(function (resolve, reject) {
-      MongoClient.connect('mongodb://localhost:27017/evelyn', function (err, db) {
-        expect(err).to.be.null;
-        console.log("Connected to mongo from createUserAndLogon");
-
-        var collection = db.collection('user');
-        collection.find({}).toArray(function (err, docs) {
-          expect(err).to.be.null;
-
-          console.log("User data", docs);
-
-          db.close();
-          resolve(response);
-        });
-      });
-    });
-  })
-  .then(function (response) {
     expect(response.Error).to.be.null;
 
     return chaiHttpPost(
