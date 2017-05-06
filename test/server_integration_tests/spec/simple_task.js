@@ -4,10 +4,39 @@ if (!global.Promise) {
 
 var chai = require('chai');
 var expect = chai.expect;
-var httpHelper = require('../helpers/chai-http-request-helper.js');
 var moment = require('moment');
 var chaiSubset = require('chai-subset');
+
+var httpHelper = require('../helpers/chai-http-request-helper.js');
+
 chai.use(chaiSubset);
+
+function createTasks(starter_task, number_to_create) {
+  return httpHelper.chaiHttpPost(
+    '/simpletask/create',
+    starter_task
+  ).then(function (response) {
+    expect(response.Error).to.be.null;
+
+    if (number_to_create <= 1) {
+      return Promise.resolve(response);
+    }
+    else {
+      return createTasks(starter_task, number_to_create - 1);
+    }
+  });
+}
+
+function lookupTasks(token) {
+  return httpHelper.chaiHttpPost(
+    '/simpletask/lookup',
+    {
+      Token: token,
+      Limit: 0,
+      ShowCompleted: false
+    }
+  );
+}
 
 describe('Simple Task', function() {
   var date = new Date ().toISOString();
@@ -38,7 +67,6 @@ describe('Simple Task', function() {
     });
   });
 
-  // TODO asserts for the tests below aren't checking enough.
   describe("Lookup", function () {
     before(function () {
       var task_id;
@@ -51,81 +79,40 @@ describe('Simple Task', function() {
 
       // Lookup fetches multiple tasks, create multiple tasks to test
       // TODO write recursive function to generate this
-      return httpHelper.chaiHttpPost('/simpletask/create', simpletask)
+      return httpHelper.chaiHttpPostPurgeDatabase()
       .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        task_id = response.TaskId;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
+        return createTasks(simpletask, 12)
       })
       .then(function (response) {
         expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
+
+        return lookupTasks(token);
       })
       .then(function (response) {
+        console.log(response);
         expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
-        return httpHelper.chaiHttpPost('/simpletask/create', simpletask);
-      })
-      .then(function (response) {
-        expect(response.Error).to.be.null;
-        expect(response.TaskId).to.not.be.null;
+
+        expect(response.SimpleTasks).to.be.an.array;
+        expect(response.SimpleTasks).to.have.lengthOf(12);
+        // TODO note server bug here, should be TaskId.
+        expect(response.SimpleTasks[0]).to.have.property('taskId').that.is.a('string');
+
         return httpHelper.chaiHttpPost(
           '/simpletask/update',
           {
             Token: token,
-            TaskId: task_id,
+            TaskId: response.SimpleTasks[0].taskId,
             NewTitle: simpletask.Title,
             NewDescription: simpletask.Description,
             NewDueDate: simpletask.DueDate,
             NewCompleted: true
           }
-        )})
-        .then(function (response) {
-          expect(response.Error).to.be.null;
-        });
+        );
+      })
+      .then(function (response) {
+        expect(response.Error).to.be.null;
       });
+    });
 
       it('Fetches unlimited unfinished tasks', function() {
         return httpHelper.chaiHttpPost(
