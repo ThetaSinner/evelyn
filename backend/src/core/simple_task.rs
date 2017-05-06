@@ -43,6 +43,7 @@ pub fn create_simple_task(model: model::simple_task::CreateSimpleTaskModel, sess
       Some(e) => Err(EvelynCoreError::FailedToCreateSimpleTask(e)),
       None => Ok(
         model::simple_task::CreateSimpleTaskResponseModel {
+            task_id : Some(format!("{}", task_id)),
             error: None,
         })
     }

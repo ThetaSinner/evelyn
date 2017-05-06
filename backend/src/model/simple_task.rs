@@ -33,6 +33,9 @@ pub struct CreateSimpleTaskModel {
 
 #[derive(Serialize, Deserialize)]
 pub struct CreateSimpleTaskResponseModel {
+    #[serde(rename="TaskId")]
+    pub task_id: Option<String>,
+
     #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }

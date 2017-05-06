@@ -38,6 +38,7 @@ pub fn create_simple_task_processor(router_input: RouterInput, processor_data: A
             Err(e) => {
                 RouterOutput{
                     response_body: serde_json::to_string(&model::simple_task::CreateSimpleTaskResponseModel {
+                        task_id: None,
                         error: Some(From::from(EvelynServiceError::FailedToCreateSimpleTask(e))),
                     }).unwrap()
                 }
@@ -46,6 +47,7 @@ pub fn create_simple_task_processor(router_input: RouterInput, processor_data: A
       },
       Err(e) => {
         let response = model::simple_task::CreateSimpleTaskResponseModel {
+            task_id: None,
             error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
         };
 
