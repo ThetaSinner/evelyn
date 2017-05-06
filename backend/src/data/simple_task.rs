@@ -86,6 +86,9 @@ pub fn update_simple_task(client : &Client, simple_task_update_model: model::sim
     if simple_task_update_model.due_date.is_some() {
         update_query.insert("due_date", Bson::String(simple_task_update_model.due_date.unwrap()));
     }
+    if simple_task_update_model.completed.is_some() {
+        update_query.insert("completed", Bson::Boolean(simple_task_update_model.completed.unwrap()));
+    }
 
     let mut set_update_query = Document::new();
     set_update_query.insert("$set", update_query);
