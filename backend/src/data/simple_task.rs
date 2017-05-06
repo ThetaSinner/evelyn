@@ -84,7 +84,7 @@ pub fn update_simple_task(client : &Client, simple_task_update_model: model::sim
         update_query.insert("description", Bson::String(simple_task_update_model.description.unwrap()));
     }
     if simple_task_update_model.due_date.is_some() {
-        update_query.insert("due_date", Bson::String(simple_task_update_model.due_date.unwrap()));
+        update_query.insert("dueDate", Bson::String(simple_task_update_model.due_date.unwrap()));
     }
     if simple_task_update_model.completed.is_some() {
         update_query.insert("completed", Bson::Boolean(simple_task_update_model.completed.unwrap()));

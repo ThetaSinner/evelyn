@@ -39,7 +39,6 @@ describe('Simple Task', function() {
   });
 
   // TODO asserts for the tests below aren't checking enough.
-
   describe("Lookup", function () {
     before(function () {
       var task_id;
@@ -315,7 +314,7 @@ describe('Simple Task', function() {
           expect(response.SimpleTasks).to.be.an.array;
           expect(response.SimpleTasks).to.have.length.of.at.least(1);
           // TODO Dates don't seem to update
-          // expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, dueDate: newDate}]);
+          expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, dueDate: newDate}]);
         });
       });
 
