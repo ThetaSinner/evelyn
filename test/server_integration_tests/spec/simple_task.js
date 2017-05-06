@@ -313,7 +313,6 @@ describe('Simple Task', function() {
           expect(response.Error).to.be.null;
           expect(response.SimpleTasks).to.be.an.array;
           expect(response.SimpleTasks).to.have.length.of.at.least(1);
-          // TODO Dates don't seem to update
           expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, dueDate: newDate}]);
         });
       });
