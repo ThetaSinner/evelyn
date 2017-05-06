@@ -170,7 +170,7 @@ describe('Todo List', function() {
         })
         .then(function (response) {
           expect(response.Error).to.be.null;
-          expect(response.TodoLists).to.have.length(2);
+          expect(response.TodoLists).to.have.lengthOf(2);
 
           var todo_lists = response.TodoLists;
           expect(todo_lists[0]).to.have.property('Title')
@@ -204,8 +204,8 @@ describe('Todo List', function() {
 
           var todo_list = response.TodoList;
           expect(todo_list.Title).to.be.a('string').that.equals('Lookup a todo list');
-          expect(_.isArray(todo_list.TodoListItems)).to.be.true;
-          expect(todo_list.TodoListItems.length).to.equal(0);
+          expect(todo_list.TodoListItems).to.be.an.array;
+          expect(todo_list.TodoListItems).to.have.lengthOf(0);
         });
     });
   });
