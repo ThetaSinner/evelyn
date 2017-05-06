@@ -6,6 +6,9 @@ before_install:
   # Install Node.js
   - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   - sudo apt-get install -y nodejs
+before_script:
+  - sleep 15 # Mongo may not respond immediatly
+  - mongo --version
 script:
   - cd $TRAVIS_BUILD_DIR/backend && ./scripts/run_tests.sh
   - cd $TRAVIS_BUILD_DIR/test/server_integration_tests/ && ./run_tests.sh
