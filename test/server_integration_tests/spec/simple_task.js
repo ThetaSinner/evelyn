@@ -52,7 +52,7 @@ describe('Simple Task', function() {
     });
   });
 
-  it('Create', function() {
+  it('Creates a task', function() {
     return httpHelper.chaiHttpPost(
       '/simpletask/create',
       {
@@ -64,6 +64,7 @@ describe('Simple Task', function() {
     )
     .then(function (response) {
       expect(response.Error).to.be.null;
+      expect(response.TaskId).to.be.okay;
     });
   });
 
@@ -78,7 +79,6 @@ describe('Simple Task', function() {
       };
 
       // Lookup fetches multiple tasks, create multiple tasks to test
-      // TODO write recursive function to generate this
       return httpHelper.chaiHttpPostPurgeDatabase()
       .then(function (response) {
         return createTasks(simpletask, 12)
@@ -89,7 +89,6 @@ describe('Simple Task', function() {
         return lookupTasks(token);
       })
       .then(function (response) {
-        console.log(response);
         expect(response.Error).to.be.null;
 
         expect(response.SimpleTasks).to.be.an.array;
