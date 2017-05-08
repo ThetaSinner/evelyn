@@ -23,6 +23,7 @@ use core::token_service::TokenService;
 mod macros;
 
 pub mod user;
+pub mod user_group;
 pub mod simple_task;
 pub mod todo_list;
 pub mod calendar;
@@ -41,6 +42,8 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/user/create", user::create_user_processor);
     router.add_rule("/user/logon", user::logon_user_processor);
+
+    router.add_rule("/usergroup/create", user_group::create_user_group_processor);
 
     router.add_rule("/simpletask/create", simple_task::create_simple_task_processor);
     router.add_rule("/simpletask/lookup", simple_task::lookup_simple_task_processor);

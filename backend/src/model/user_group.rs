@@ -14,44 +14,48 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod simple_task;
-pub mod todo_list;
-pub mod calendar;
-pub mod server_admin;
-
-use std::error::Error;
-
-use core::error_messages;
+use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
-pub struct ErrorResponseModel {
+pub struct CreateUserGroupRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+
+    #[serde(rename="name")]
+    pub name: String,
+
+    #[serde(rename="description")]
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CreateUserGroupResponseModel {
+    #[serde(rename="UserGroupId")]
+    pub user_group_id: Option<String>,
+
     #[serde(rename="Error")]
-    pub error: ErrorModel,
+    pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ErrorModel {
-    #[serde(rename="ErrorCode")]
-    pub error_code: String,
+pub struct UserGroupMemberModel {
 
-    #[serde(rename="ErrorMessage")]
-    pub error_message: String,
 }
 
-impl From<error_messages::EvelynServiceError> for ErrorModel {
-    fn from(error: error_messages::EvelynServiceError) -> Self {
-        ErrorModel {
-            error_code: format!("{}", error),
-            error_message: String::from(error.description()),
-        }
-    }
-}
+#[derive(Serialize, Deserialize)]
+pub struct UserGroupModel {
+    #[serde(rename="userGroupId")]
+    pub user_group_id: String,
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SessionTokenModel {
-    pub user_id: String,
+    #[serde(rename="createdByUserId")]
+    pub created_by_user_id: String,
 
-    pub server_session_token: String,
+    #[serde(rename="name")]
+    pub name: String,
+
+    #[serde(rename="description")]
+    pub description: String,
+
+    #[serde(rename="members")]
+    pub members: Vec<UserGroupMemberModel>,
 }

@@ -14,9 +14,13 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#[macro_use]
+mod data_macros;
+
 pub mod conf;
 pub mod user;
 pub mod simple_task;
 pub mod todo_list;
 pub mod calendar;
 pub mod server_admin;
+pub mod user_group;

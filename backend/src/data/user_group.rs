@@ -14,11 +14,15 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod token_service;
-pub mod simple_task;
-pub mod todo_list;
-pub mod error_messages;
-pub mod calendar;
-pub mod server_admin;
+use bson;
+use mongodb::db::ThreadedDatabase;
+
+use model::user_group as user_group_model;
+use core::error_messages::{EvelynDatabaseError, EvelynBaseError};
+use mongodb::{Client, ThreadedClient};
+
+pub fn insert_user_group(client : &Client, user_group_model: &user_group_model::UserGroupModel) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("usergroup");
+
+    insert_model!(collection, user_group_model, EvelynDatabaseError::InsertUserGroup)
+}

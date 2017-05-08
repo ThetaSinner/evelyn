@@ -99,6 +99,9 @@ pub enum EvelynServiceError {
     LogonUser(EvelynCoreError),
     FailedToLogonUser(EvelynCoreError),
 
+    // User group
+    CreateUserGroup(EvelynCoreError),
+
     // Simple Task
     FailedToCreateSimpleTask(EvelynCoreError),
     FailedToUpdateSimpleTask(EvelynCoreError),
@@ -135,6 +138,9 @@ EvelynErrorDisplay!{
     {LogonUser, "100203", "Invalid logon"},
     {FailedToLogonUser, "100204", "Failed to logon user"},
 
+    // User group
+    {CreateUserGroup, "100601", "Failed to create user group"},
+
     // Simple Task
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
     {FailedToUpdateSimpleTask, "100302", "Failed to update simple task"},
@@ -164,6 +170,9 @@ pub enum EvelynCoreError {
     InvalidLogon(EvelynBaseError),
     FailedToLogonUser(EvelynDatabaseError),
 
+    // User group
+    FailedToCreateUserGroup(EvelynDatabaseError),
+
     // Simple Task`
     FailedToCreateSimpleTask(EvelynDatabaseError),
     FailedToUpdateSimpleTask(EvelynDatabaseError),
@@ -187,19 +196,22 @@ EvelynErrorDisplay!{
     {FailedToPurgeDatabase, "Failed to purge database {}"},
     {FailedToPurgeDatabaseArea, "Failed to purge database area {}"},
 
-    //User
+    // User
     {WillNotCreateUserBecauseUserAlreadyExists, "Will not create the requested user because that user already exists. {}"},
     {CannotCheckIfUserExistsSoWillNotCreateNewUser, "Cannot check if the user exists so a new user will not be ceated: {}"},
     {FailedToCreateUser, "Failed to create user: {}"},
     {InvalidLogon, "Invalid logon {}"},
     {FailedToLogonUser, "Failed to logon user: {}"},
 
+    // User Group
+    {FailedToCreateUserGroup, "Failed to create user group: {}"},
+
     // Simple Task
     {FailedToCreateSimpleTask, "Failed to create task: {}"},
     {FailedToUpdateSimpleTask, "Failed to update task: {}"},
     {FailedToLookupSimpleTask, "Failed to lookup task: {}"},
 
-    //Todo List
+    // Todo List
     {FailedToCreateTodoList, "Failed to create todo list: {}"},
     {FailedToAddItemToTodoList, "Failed to add item to todo list: {}"},
     {FailedToLookupTodoLists, "Failed to lookup todo lists: {}"},
@@ -221,6 +233,9 @@ pub enum EvelynDatabaseError {
     // User
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
+
+    // User group
+    InsertUserGroup(MongoDbError),
 
     // Simple Task
     InsertSimpleTask(MongoDbError),
@@ -251,6 +266,9 @@ EvelynErrorDisplay!{
     // User
     {InsertUser, "Failed to create record for new user\n {}"},
     {LookupUser, "Failed to lookup user: {}"},
+
+    // User group
+    {InsertUserGroup, "Failed to create user group: {}"},
 
     // Simple Task
     {InsertSimpleTask, "Failed to create new simple task: {}"},

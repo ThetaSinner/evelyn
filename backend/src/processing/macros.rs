@@ -30,3 +30,27 @@ macro_rules! validate_session {
         session_token_model
     }};
 }
+
+#[macro_export]
+macro_rules! service_error_to_model {
+    ($service_error:expr) => {{
+        Some(From::from($service_error))
+    }};
+}
+
+#[macro_export]
+macro_rules! model_to_router_output {
+    ($model:expr) => {{
+        RouterOutput {
+            response_body: serde_json::to_string(&$model).unwrap()
+        }
+    }};
+}
+
+#[macro_export]
+macro_rules! decode_router_input_to_model {
+    ($target_model:path, $router_input:expr) => {{
+        let request_model_decoded: Result<$target_model,_> = serde_json::from_str(&$router_input.request_body);
+        request_model_decoded
+    }};
+}

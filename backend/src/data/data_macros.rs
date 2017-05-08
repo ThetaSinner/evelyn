@@ -14,11 +14,19 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod token_service;
-pub mod simple_task;
-pub mod todo_list;
-pub mod error_messages;
-pub mod calendar;
-pub mod server_admin;
+#[macro_export]
+macro_rules! insert_model {
+    ($collection:expr, $model:expr, $database_error:expr) => {{
+        let bson_model = bson::to_bson(&$model).unwrap();
+
+        if let bson::Bson::Document(document) = bson_model {
+          match $collection.insert_one(document, None) {
+              Ok(_) => None,
+              Err(e) => Some($database_error(e))
+          }
+        }
+        else {
+          Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+        }
+    }}
+}
