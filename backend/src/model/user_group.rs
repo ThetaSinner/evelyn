@@ -21,10 +21,10 @@ pub struct CreateUserGroupRequestModel {
     #[serde(rename="Token")]
     pub token: String,
 
-    #[serde(rename="name")]
+    #[serde(rename="Name")]
     pub name: String,
 
-    #[serde(rename="description")]
+    #[serde(rename="Description")]
     pub description: String,
 }
 
@@ -58,4 +58,43 @@ pub struct UserGroupModel {
 
     #[serde(rename="members")]
     pub members: Vec<UserGroupMemberModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupUserGroupsRequestModel {
+    #[serde(rename="Token")]
+    pub token: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UserGroupsExternalModel {
+    #[serde(rename="UserGroupId")]
+    pub user_group_id: String,
+
+    #[serde(rename="Name")]
+    pub name: String,
+
+    #[serde(rename="Description")]
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LookupUserGroupsResponseModel {
+    #[serde(rename="UserGroups")]
+    pub user_groups: Vec<UserGroupsExternalModel>,
+
+    #[serde(rename="Error")]
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct UserGroupsModel {
+    #[serde(rename="userGroupId")]
+    pub user_group_id: String,
+
+    #[serde(rename="name")]
+    pub name: String,
+
+    #[serde(rename="description")]
+    pub description: String,
 }

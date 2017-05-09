@@ -101,6 +101,7 @@ pub enum EvelynServiceError {
 
     // User group
     CreateUserGroup(EvelynCoreError),
+    LookupUserGroups(EvelynCoreError),
 
     // Simple Task
     FailedToCreateSimpleTask(EvelynCoreError),
@@ -140,6 +141,7 @@ EvelynErrorDisplay!{
 
     // User group
     {CreateUserGroup, "100601", "Failed to create user group"},
+    {LookupUserGroups, "100602", "Failed to lookup user groups"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
@@ -172,6 +174,7 @@ pub enum EvelynCoreError {
 
     // User group
     FailedToCreateUserGroup(EvelynDatabaseError),
+    FailedToLookupUserGroups(EvelynDatabaseError),
 
     // Simple Task`
     FailedToCreateSimpleTask(EvelynDatabaseError),
@@ -205,6 +208,7 @@ EvelynErrorDisplay!{
 
     // User Group
     {FailedToCreateUserGroup, "Failed to create user group: {}"},
+    {FailedToLookupUserGroups, "Failed to lookup user groups: {}"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "Failed to create task: {}"},
@@ -236,6 +240,7 @@ pub enum EvelynDatabaseError {
 
     // User group
     InsertUserGroup(MongoDbError),
+    LookupUserGroups(MongoDbError),
 
     // Simple Task
     InsertSimpleTask(MongoDbError),
@@ -269,6 +274,7 @@ EvelynErrorDisplay!{
 
     // User group
     {InsertUserGroup, "Failed to create user group: {}"},
+    {LookupUserGroups, "Failed to lookup user groups: {}"},
 
     // Simple Task
     {InsertSimpleTask, "Failed to create new simple task: {}"},
