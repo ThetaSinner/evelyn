@@ -41,7 +41,7 @@ pub fn lookup_simple_tasks(client : &Client, simple_task_lookup_model: &model::s
     let collection = client.db("evelyn").collection("simpletask");
 
     let ref user_id = simple_task_lookup_model.user_id;
-    let query = doc!{"userId" => user_id};
+    let query = doc!{"UserId" => user_id};
 
     let cursor = collection.find(Some(query), None);
 
@@ -73,21 +73,21 @@ pub fn update_simple_task(client : &Client, simple_task_update_model: model::sim
 
     let ref user_id = simple_task_update_model.user_id;
     let ref task_id = simple_task_update_model.task_id;
-    let filter = doc!("userId" => user_id, "taskId" => task_id);
+    let filter = doc!("UserId" => user_id, "TaskId" => task_id);
 
     let mut update_query = Document::new();
 
     if simple_task_update_model.title.is_some() {
-        update_query.insert("title", Bson::String(simple_task_update_model.title.unwrap()));
+        update_query.insert("Title", Bson::String(simple_task_update_model.title.unwrap()));
     }
     if simple_task_update_model.description.is_some() {
-        update_query.insert("description", Bson::String(simple_task_update_model.description.unwrap()));
+        update_query.insert("Description", Bson::String(simple_task_update_model.description.unwrap()));
     }
     if simple_task_update_model.due_date.is_some() {
-        update_query.insert("dueDate", Bson::String(simple_task_update_model.due_date.unwrap()));
+        update_query.insert("DueDate", Bson::String(simple_task_update_model.due_date.unwrap()));
     }
     if simple_task_update_model.completed.is_some() {
-        update_query.insert("completed", Bson::Boolean(simple_task_update_model.completed.unwrap()));
+        update_query.insert("Completed", Bson::Boolean(simple_task_update_model.completed.unwrap()));
     }
 
     let mut set_update_query = Document::new();
