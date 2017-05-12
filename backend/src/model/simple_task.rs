@@ -33,7 +33,7 @@ pub struct CreateSimpleTaskResponseModel {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct SimpleTaskModel {
     pub user_id: String,
     pub task_id: String,
