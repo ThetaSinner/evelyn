@@ -55,7 +55,7 @@ pub struct LookupSimpleTaskRequestModel {
 #[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,
-    pub tasks: Vec<SimpleTaskModel>,
+    pub simple_tasks: Vec<SimpleTaskModel>,
 }
 
 #[derive(Serialize, Deserialize)]

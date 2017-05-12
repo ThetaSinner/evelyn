@@ -70,7 +70,7 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
             Err(e) => {
                 RouterOutput{
                     response_body: serde_json::to_string(&model::simple_task::LookupSimpleTaskResponseModel {
-                        tasks: Vec::new(),
+                        simple_tasks: Vec::new(),
                         error: Some(From::from(EvelynServiceError::FailedToLookupSimpleTask(e))),
                     }).unwrap()
                 }
@@ -79,7 +79,7 @@ pub fn lookup_simple_task_processor(router_input: RouterInput, processor_data: A
       },
       Err(e) => {
         let response = model::simple_task::LookupSimpleTaskResponseModel {
-            tasks: Vec::new(),
+            simple_tasks: Vec::new(),
             error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
         };
 
