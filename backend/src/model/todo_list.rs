@@ -17,196 +17,146 @@
 use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateTodoListRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="Title")]
     pub title: String,
-
-    #[serde(rename="TodoListItems")]
     pub todo_list_items: Option<Vec<TodoListItemExternalModel>>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateTodoListResponseModel {
-    #[serde(rename="TodoListId")]
     pub todo_list_id: Option<String>,
-
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct TodoListItemExternalModel {
-    #[serde(rename="Text")]
     pub text: String,
-
-    #[serde(rename="IsDone")]
     pub is_done: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct TodoListExternalModel {
-    #[serde(rename="Title")]
     pub title: String,
-
-    #[serde(rename="TodoListItems")]
     pub todo_list_items: Vec<TodoListItemExternalModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TodoListItemModel {
-    #[serde(rename="text")]
     pub text: String,
-
-    #[serde(rename="isDone")]
     pub is_done: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TodoListModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="todoListId")]
     pub todo_list_id: String,
-
-    #[serde(rename="title")]
     pub title: String,
-
-    #[serde(rename="todoListItems")]
     pub todo_list_items: Vec<TodoListItemModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct AddItemTodoListRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="TodoListId")]
     pub todo_list_id: String,
-
-    #[serde(rename="TodoListItem")]
     pub todo_list_item: TodoListItemExternalModel,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct AddItemTodoListResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AddItemTodoListModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="todoListId")]
     pub todo_list_id: String,
-
-    #[serde(rename="todoListItem")]
     pub todo_list_item: TodoListItemModel,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListsRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct TodoListsExternalModel {
-    #[serde(rename="Title")]
     pub title: String,
-
-    #[serde(rename="TodoListId")]
     pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListsResponseModel {
-    #[serde(rename="TodoLists")]
     pub todo_lists: Option<Vec<TodoListsExternalModel>>,
-
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListsModel {
-    #[serde(rename="userId")]
     pub user_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TodoListsModel {
-    #[serde(rename="title")]
     pub title: String,
-
-    #[serde(rename="todoListId")]
     pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="TodoListId")]
     pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LookupTodoListModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="todoListId")]
     pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListResponseModel {
-    #[serde(rename="TodoList")]
     pub todo_list: Option<TodoListExternalModel>,
-
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UpdateItemTodoListRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="TodoListId")]
     pub todo_list_id: String,
-
-    #[serde(rename="ItemIndex")]
     pub item_index: i32,
-
-    #[serde(rename="IsDone")]
     pub is_done: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UpdateItemTodoListResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateTodoListItemModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="todoListId")]
     pub todo_list_id: String,
-
-    #[serde(rename="itemIndex")]
     pub item_index: i32,
-
-    #[serde(rename="isDone")]
     pub is_done: bool,
 }

@@ -17,127 +17,79 @@
 use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateSimpleTaskModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="Title")]
     pub title: String,
-
-    #[serde(rename="Description")]
     pub description: String,
-
-    #[serde(rename="DueDate")]
     pub due_date: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateSimpleTaskResponseModel {
-    #[serde(rename="TaskId")]
     pub task_id: Option<String>,
-
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SimpleTaskModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="taskId")]
     pub task_id: String,
-
-    #[serde(rename="title")]
     pub title: String,
-
-    #[serde(rename="description")]
     pub description: String,
-
-    #[serde(rename="dueDate")]
     pub due_date: String,
-
-    #[serde(rename="completed")]
     pub completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="Limit")]
     pub limit: u32,
-
-    #[serde(rename="ShowCompleted")]
     pub show_completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
-
-    #[serde(rename="SimpleTasks")]
     pub tasks: Vec<SimpleTaskModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct SimpleTaskLookupModel {
-    #[serde(rename="UserId")]
     pub user_id: String,
-
-    #[serde(rename="Limit")]
     pub limit: u32,
-
-    #[serde(rename="ShowCompleted")]
     pub show_completed: bool,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UpdateSimpleTaskRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="TaskId")]
     pub task_id: String,
-
-    #[serde(rename="NewTitle")]
     pub new_title: Option<String>,
-
-    #[serde(rename="NewDescription")]
     pub new_description: Option<String>,
-
-    #[serde(rename="NewDueDate")]
     pub new_due_date: Option<String>,
-
-    #[serde(rename="NewCompleted")]
     pub new_completed: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UpdateSimpleTaskResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct SimpleTaskUpdateModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="taskId")]
     pub task_id: String,
-
-    #[serde(rename="title")]
     pub title: Option<String>,
-
-    #[serde(rename="description")]
     pub description: Option<String>,
-
-    #[serde(rename="dueDate")]
     pub due_date: Option<String>,
-
-    #[serde(rename="completed")]
     pub completed: Option<bool>,
 }

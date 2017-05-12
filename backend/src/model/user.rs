@@ -17,49 +17,37 @@
 use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateUserModel {
-    #[serde(rename="UserName")]
     pub user_name: String,
-
-    #[serde(rename="EmailAddress")]
     pub email_address: String,
-
-    #[serde(rename="Password")]
     pub password: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CreateUserResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LogonUserModel {
-    #[serde(rename="EmailAddress")]
     pub email_address: String,
-
-    #[serde(rename="Password")]
     pub password: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LogonUserResponseModel {
-    #[serde(rename="Token")]
     pub token: Option<String>,
-
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserModel {
-  #[serde(rename="userName")]
   pub user_name: String,
-
-  #[serde(rename="emailAddress")]
   pub email_address: String,
-
-  #[serde(rename="password")]
   pub password: String,
 }

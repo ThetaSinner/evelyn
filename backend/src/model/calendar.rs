@@ -17,58 +17,40 @@
 use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CalendarAddEventRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="EventBegin")]
     pub event_begin: String,
-
-    #[serde(rename="EventEnd")]
     pub event_end: String,
-
-    #[serde(rename="Title")]
     pub title: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CalendarAddEventResponseModel {
-    #[serde(rename="Error")]
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CalendarEventModel {
-    #[serde(rename="userId")]
     pub user_id: String,
-
-    #[serde(rename="eventId")]
     pub event_id: String,
-
-    #[serde(rename="eventBegin")]
     pub event_begin: String,
-
-    #[serde(rename="eventEnd")]
     pub event_end: String,
-
-    #[serde(rename="title")]
     pub title: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CalendarLookupRequestModel {
-    #[serde(rename="Token")]
     pub token: String,
-
-    #[serde(rename="TimeRangeBegin")]
     pub time_range_begin: String,
-
-    #[serde(rename="TimeRangeEnd")]
     pub time_range_end: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct CalendarLookupResponseModel {
-    #[serde(rename="Error")]
     pub error: ErrorModel,
 }
