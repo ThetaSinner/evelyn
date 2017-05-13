@@ -74,3 +74,28 @@ pub fn lookup_user_groups(processor_data: Arc<ProcessorData>) -> Result<model::u
       }
   }
 }
+
+pub fn lookup_user_group(
+    model: model::user_group::LookupUserGroupRequestModel,
+    processor_data: Arc<ProcessorData>)
+    -> Result<model::user_group::LookupUserGroupResponseModel, EvelynCoreError> {
+  let data_store = processor_data.data_store.clone();
+
+  match data::user_group::lookup_user_group(&data_store, model.user_group_id) {
+      Ok(result) => {
+          Ok(model::user_group::LookupUserGroupResponseModel {
+              user_group: Some(model::user_group::UserGroupExternalModel {
+                  name: result.name,
+                  description: result.description,
+                  members: result.members.into_iter().map(|x| model::user_group::UserGroupMemberExternalModel {
+                      user_id: x.user_id,
+                  }).collect()
+              }),
+              error: None,
+          })
+      },
+      Err(e) => {
+          Err(EvelynCoreError::FailedToLookupUserGroup(e))
+      }
+  }
+}

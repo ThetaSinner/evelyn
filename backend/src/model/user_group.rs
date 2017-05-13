@@ -32,9 +32,9 @@ pub struct CreateUserGroupResponseModel {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct UserGroupMemberModel {
-
+    pub user_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -74,4 +74,32 @@ pub struct UserGroupsModel {
     pub user_group_id: String,
     pub name: String,
     pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupUserGroupRequestModel {
+    pub token: String,
+    pub user_group_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupUserGroupResponseModel {
+    pub user_group: Option<UserGroupExternalModel>,
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserGroupExternalModel {
+    pub name: String,
+    pub description: String,
+    pub members: Vec<UserGroupMemberExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserGroupMemberExternalModel {
+    pub user_id: String,
 }

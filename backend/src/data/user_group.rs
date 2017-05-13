@@ -62,3 +62,23 @@ pub fn lookup_user_groups(client : &Client) -> Result<Vec<user_group_model::User
         }
     }
 }
+
+pub fn lookup_user_group(client : &Client, user_group_id: String) -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("usergroup");
+
+    let filter = doc!("userGroupId" => user_group_id);
+
+    match collection.find_one(Some(filter), None) {
+        Ok(result) => {
+            if let Some(result) = result {
+                Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
+            }
+            else {
+                Err(EvelynDatabaseError::UserGroupNotFound(EvelynBaseError::NothingElse))
+            }
+        },
+        Err(e) => {
+            Err(EvelynDatabaseError::LookupUserGroup(e))
+        }
+    }
+}
