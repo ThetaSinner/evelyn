@@ -35,7 +35,7 @@ pub fn create_todo_list(model: model::todo_list::CreateTodoListRequestModel, ses
 
   if let Some(todo_list_items) = model.todo_list_items {
       for i in todo_list_items {
-          todo_list_model.todo_list_items.push(model::todo_list::TodoListItemModel {
+          todo_list_model.todo_list_items.push(model::todo_list::item::TodoListItemModel {
               text: i.text,
               is_done: i.is_done,
           });
@@ -56,11 +56,11 @@ pub fn create_todo_list(model: model::todo_list::CreateTodoListRequestModel, ses
   }
 }
 
-pub fn add_item_to_todo_list(model: model::todo_list::AddItemTodoListRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
-  let todo_list_model = model::todo_list::AddItemTodoListModel {
+pub fn add_item_to_todo_list(model: model::todo_list::item::AddItemTodoListRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
+  let todo_list_model = model::todo_list::item::AddItemTodoListModel {
     user_id: session_token_model.user_id,
     todo_list_id: model.todo_list_id,
-    todo_list_item: model::todo_list::TodoListItemModel {
+    todo_list_item: model::todo_list::item::TodoListItemModel {
         text: model.todo_list_item.text,
         is_done: model.todo_list_item.is_done,
     },
@@ -118,7 +118,7 @@ pub fn lookup_todo_list(model: model::todo_list::LookupTodoListRequestModel, ses
           };
 
           for i in result.todo_list_items {
-              todo_list_model.todo_list_items.push(model::todo_list::TodoListItemExternalModel {
+              todo_list_model.todo_list_items.push(model::todo_list::item::TodoListItemExternalModel {
                   text: i.text,
                   is_done: i.is_done,
               });
@@ -135,8 +135,8 @@ pub fn lookup_todo_list(model: model::todo_list::LookupTodoListRequestModel, ses
   }
 }
 
-pub fn update_todo_list_item(model: model::todo_list::UpdateItemTodoListRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
-  let update_todo_list_item_model = model::todo_list::UpdateTodoListItemModel {
+pub fn update_todo_list_item(model: model::todo_list::item::UpdateItemTodoListRequestModel, session_token_model: model::SessionTokenModel, processor_data: Arc<ProcessorData>) -> Option<EvelynCoreError> {
+  let update_todo_list_item_model = model::todo_list::item::UpdateTodoListItemModel {
     user_id: session_token_model.user_id,
     todo_list_id: model.todo_list_id,
     item_index: model.item_index,

@@ -14,14 +14,46 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+pub mod item;
+
 use model::ErrorModel;
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TodoListModel {
+    pub user_id: String,
+    pub todo_list_id: String,
+    pub title: String,
+    pub todo_list_items: Vec<item::TodoListItemModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct TodoListExternalModel {
+    pub title: String,
+    pub todo_list_items: Vec<item::TodoListItemExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TodoListsModel {
+    pub title: String,
+    pub todo_list_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct TodoListsExternalModel {
+    pub title: String,
+    pub todo_list_id: String,
+}
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateTodoListRequestModel {
     pub token: String,
     pub title: String,
-    pub todo_list_items: Option<Vec<TodoListItemExternalModel>>,
+    pub todo_list_items: Option<Vec<item::TodoListItemExternalModel>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -33,67 +65,8 @@ pub struct CreateTodoListResponseModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct TodoListItemExternalModel {
-    pub text: String,
-    pub is_done: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct TodoListExternalModel {
-    pub title: String,
-    pub todo_list_items: Vec<TodoListItemExternalModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TodoListItemModel {
-    pub text: String,
-    pub is_done: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TodoListModel {
-    pub user_id: String,
-    pub todo_list_id: String,
-    pub title: String,
-    pub todo_list_items: Vec<TodoListItemModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct AddItemTodoListRequestModel {
-    pub token: String,
-    pub todo_list_id: String,
-    pub todo_list_item: TodoListItemExternalModel,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct AddItemTodoListResponseModel {
-    pub error: Option<ErrorModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AddItemTodoListModel {
-    pub user_id: String,
-    pub todo_list_id: String,
-    pub todo_list_item: TodoListItemModel,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListsRequestModel {
     pub token: String,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct TodoListsExternalModel {
-    pub title: String,
-    pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -107,13 +80,6 @@ pub struct LookupTodoListsResponseModel {
 #[serde(rename_all = "PascalCase")]
 pub struct LookupTodoListsModel {
     pub user_id: String,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TodoListsModel {
-    pub title: String,
-    pub todo_list_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -135,28 +101,4 @@ pub struct LookupTodoListModel {
 pub struct LookupTodoListResponseModel {
     pub todo_list: Option<TodoListExternalModel>,
     pub error: Option<ErrorModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdateItemTodoListRequestModel {
-    pub token: String,
-    pub todo_list_id: String,
-    pub item_index: i32,
-    pub is_done: bool,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct UpdateItemTodoListResponseModel {
-    pub error: Option<ErrorModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateTodoListItemModel {
-    pub user_id: String,
-    pub todo_list_id: String,
-    pub item_index: i32,
-    pub is_done: bool,
 }

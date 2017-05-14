@@ -58,7 +58,7 @@ pub fn create_todo_list_processor(router_input: RouterInput, processor_data: Arc
 }
 
 pub fn add_item_todo_list_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
-  let request_model_decoded: Result<model::todo_list::AddItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+  let request_model_decoded: Result<model::todo_list::item::AddItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
 
   match request_model_decoded {
     Ok(request_model) => {
@@ -67,14 +67,14 @@ pub fn add_item_todo_list_processor(router_input: RouterInput, processor_data: A
         match todo_list::add_item_to_todo_list(request_model, session_token_model, processor_data) {
             Some(e) => {
                 RouterOutput{
-                    response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+                    response_body: serde_json::to_string(&model::todo_list::item::AddItemTodoListResponseModel {
                         error: Some(From::from(EvelynServiceError::AddItemToTodoList(e))),
                     }).unwrap()
                 }
             },
             None => {
                 RouterOutput{
-                    response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+                    response_body: serde_json::to_string(&model::todo_list::item::AddItemTodoListResponseModel {
                         error: None,
                     }).unwrap()
                 }
@@ -84,7 +84,7 @@ pub fn add_item_todo_list_processor(router_input: RouterInput, processor_data: A
     Err(e) => {
         let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
         RouterOutput {
-            response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+            response_body: serde_json::to_string(&model::todo_list::item::AddItemTodoListResponseModel {
                 error: Some(model),
             }).unwrap()
         }
@@ -116,7 +116,7 @@ pub fn lookup_todo_lists_processor(router_input: RouterInput, processor_data: Ar
     Err(e) => {
         let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
         RouterOutput {
-            response_body: serde_json::to_string(&model::todo_list::AddItemTodoListResponseModel {
+            response_body: serde_json::to_string(&model::todo_list::item::AddItemTodoListResponseModel {
                 error: Some(model),
             }).unwrap()
         }
@@ -158,7 +158,7 @@ pub fn lookup_todo_list_processor(router_input: RouterInput, processor_data: Arc
 }
 
 pub fn update_item_todo_list_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
-  let request_model_decoded: Result<model::todo_list::UpdateItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
+  let request_model_decoded: Result<model::todo_list::item::UpdateItemTodoListRequestModel,_> = serde_json::from_str(&router_input.request_body);
 
   match request_model_decoded {
     Ok(request_model) => {
@@ -167,14 +167,14 @@ pub fn update_item_todo_list_processor(router_input: RouterInput, processor_data
         match todo_list::update_todo_list_item(request_model, session_token_model, processor_data) {
             None => {
                 RouterOutput{
-                    response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+                    response_body: serde_json::to_string(&model::todo_list::item::UpdateItemTodoListResponseModel {
                         error: None,
                     }).unwrap()
                 }
             },
             Some(e) => {
                 RouterOutput{
-                    response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+                    response_body: serde_json::to_string(&model::todo_list::item::UpdateItemTodoListResponseModel {
                         error: Some(From::from(EvelynServiceError::UpdateTodoListItem(e))),
                     }).unwrap()
                 }
@@ -184,7 +184,7 @@ pub fn update_item_todo_list_processor(router_input: RouterInput, processor_data
     Err(e) => {
         let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
         RouterOutput {
-            response_body: serde_json::to_string(&model::todo_list::UpdateItemTodoListResponseModel {
+            response_body: serde_json::to_string(&model::todo_list::item::UpdateItemTodoListResponseModel {
                 error: Some(model),
             }).unwrap()
         }

@@ -39,7 +39,7 @@ pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_l
     }
 }
 
-pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::AddItemTodoListModel) -> Option<EvelynDatabaseError> {
+pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::item::AddItemTodoListModel) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = add_item_todo_list_model.user_id;
@@ -124,7 +124,7 @@ pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_l
     }
 }
 
-pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::UpdateTodoListItemModel) -> Option<EvelynDatabaseError> {
+pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::item::UpdateTodoListItemModel) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = update_todo_list_item.user_id;
