@@ -2,3 +2,5 @@
 @import 'foundation';
 
 @include foundation-everything;
+
+@include '../components/simpletask/simple_task.scss';
