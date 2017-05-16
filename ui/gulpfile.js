@@ -197,3 +197,5 @@ gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'c
   gulp.watch(['src/*'], ['copy-main']);
   gulp.watch(['../shared/partials/**'], ['copy-partials']);
 });
+
+// TODO index html will not be copied. create a copy task for it.
