@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 
+const _ = require('lodash');
 const sass = require('gulp-sass');
 const addsrc = require('gulp-add-src');
 const autoprefixer = require('gulp-autoprefixer');
@@ -8,21 +9,22 @@ const babel = require("gulp-babel");
 const sourcemaps = require("gulp-sourcemaps");
 const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
-const browserify = require('browserify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const uglify = require('gulp-uglify');
 const gutil = require('gulp-util');
-const streamify = require('gulp-streamify')
+const streamify = require('gulp-streamify');
 
-function ResourceLocator(output_path_prefix, use_dev_resources) {
+function ResourceLocator(output_path_prefix, is_use_dev_resources) {
   this.input_path_prefix = 'src/';
   this.output_path_prefix = output_path_prefix;
+  this.is_use_dev_resources = is_use_dev_resources;
 
   this.srcPaths = {
+    index: 'index.html',
     scss: 'scss/main.scss',
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
-    js: [],
+    js: 'components/**/*.js',
     vendoredJs: [
       'vendored/js/jquery-3.2.1.js',
       'vendored/js/lodash-4.17.4.js',
@@ -32,9 +34,16 @@ function ResourceLocator(output_path_prefix, use_dev_resources) {
       'vendored/js/backbone-1.3.3.js',
       '../node_modules/foundation-sites/dist/js/foundation.js',
     ],
+    foundationIconFonts: [
+      'vendored/foundation-icon-fonts-3/foundation-icons.eot',
+      'vendored/foundation-icon-fonts-3/foundation-icons.ttf',
+      'vendored/foundation-icon-fonts-3/foundation-icons.woff'
+    ],
+    foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
+    htmlPartials: 'components/**/*.partial.html',
   };
 
-  if (use_dev_resources) {
+  if (is_use_dev_resources) {
     this.srcPaths.vendoredJs = [
       'vendored/js/jquery-3.2.1-dev.js',
       'vendored/js/lodash-4.17.4-dev.js',
@@ -42,27 +51,57 @@ function ResourceLocator(output_path_prefix, use_dev_resources) {
       'vendored/js/angular-route-1.6.4-dev.js',
       'vendored/js/underscore-1.8.3-dev.js',
       'vendored/js/backbone-1.3.3-dev.js',
-      'node_modules/foundation-sites/dist/js/foundation.js',
+      '../node_modules/foundation-sites/dist/js/foundation.js',
     ];
   }
+
+  this.outPaths = {
+    css: 'css',
+    js: 'js',
+    index: '',
+    htmlPartials: 'partials',
+  };
+
+  this.outResourceNames = {
+    css: 'app.css',
+    js: 'app.js',
+    vendoredJs: 'lib.js',
+  };
 }
 
-ResourceLocator.prototype.getSourcePath = function(identifier) {
-  // TODO identifier is a key into this.srcPaths and should return the value, or array of values
-  // from srcPaths with this.input_path_prefix prepended.
+ResourceLocator.prototype.getSourcePaths = function(identifier) {
+  _this = this;
+
+  if (!this.srcPaths.hasOwnProperty(identifier)) {
+    throw new Error('Cannot get source path for identifier [' + identifier + ']');
+  }
+
+  return _.map(_.castArray(this.srcPaths[identifier]), function (item) {
+    return _this.input_path_prefix + item;
+  });
 };
 
 ResourceLocator.prototype.getOutputPath = function(identifier) {
-  // TODO see outPaths below and move them into this class. Prefix with
-  // this.output_path_prefix
+  if (!this.outPaths.hasOwnProperty(identifier)) {
+    throw new Error('Cannot get output path for identifier [' + identifier + ']');
+  }
+
+  return this.output_path_prefix + this.outPaths[identifier];
 };
 
-var resourceLocator = new ResourceLocator('app/', true);
+ResourceLocator.prototype.getOutputResourceName = function(identifier) {
+  if (!this.outResourceNames.hasOwnProperty(identifier)) {
+    throw new Error('Cannot get output resource name for identifier [' + identifier + ']');
+  }
 
-const outPaths = {
-  css: 'app/css',
-  js: 'app/js',
+  return this.outResourceNames[identifier];
 };
+
+ResourceLocator.prototype.isUseDevResources = function() {
+  return this.is_use_dev_resources;
+};
+
+var resourceLocator = new ResourceLocator('./app/', true);
 
 const sassCompileSettings = {
   includePaths: [
@@ -76,126 +115,115 @@ const autoPrefixerSettings = {
   cascade: false,
 };
 
-/**
+/*
  * This is the main styles task. It compiles all scss and concatenates the output
  * with any other css files which are specified.
  */
-// TODO rename task?
-gulp.task('sass', function() {
-  // TODO use resource locator
-  return gulp.src(srcPaths.sass)
+gulp.task('css', function() {
+  var scssSources = resourceLocator.getSourcePaths('scss');
+  var cssSoures = resourceLocator.getSourcePaths('css');
+
+  var outputResourceName = resourceLocator.getOutputResourceName('css');
+  var outputPath = resourceLocator.getOutputPath('css');
+
+  return gulp.src(scssSources)
       //.pipe(sourcemaps.init())
       .pipe(sass(sassCompileSettings).on('error', sass.logError))
-
-      // TODO use resource locator
-      .pipe(addsrc.append(srcPaths.css))
-
-      .pipe(concat('app.css')) // Concatenate all streamed files into app.css
+      .pipe(addsrc.append(cssSoures))
+      .pipe(concat(outputResourceName))
       .pipe(autoprefixer(autoPrefixerSettings))
       .pipe(pixrem())
       .pipe(cssnano())
       //.pipe(sourcemaps.write())
-      // TODO use resource locator
-      .pipe(gulp.dest(outPaths.css));
+      .pipe(gulp.dest(outputPath));
 });
-
-/*
-const babelSettings = {
-  presets: ["babel-preset-react", "babel-preset-es2015"].map(require.resolve),
-};
-
-gulp.task('babel', function() {
-  return gulp.src(srcPaths.nodeJs)
-      .pipe(sourcemaps.init())
-        .pipe(babel(babelSettings))
-        .pipe(concat('app-node-part.js'))
-      .pipe(sourcemaps.write("./"))
-      .pipe(gulp.dest(outPaths.js));
-});
-
-gulp.task('browserify', ['babel'], function () {
-  var b = browserify({
-    entries: './app/js/app-node-part.js',
-    debug: true
-  });
-
-  return b.bundle()
-    .pipe(source('app-node-part.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-        //.pipe(uglify())
-        .on('error', gutil.log)
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('app/js/'));
-});
-*/
 
 /*
  * Load all project javascript files.
  */
-// TODO This includes loading from the src/components folder
 gulp.task('javascript', function () {
-  // TODO use resource locator
-  return gulp.src(srcPaths.js)
-    .pipe(concat('app.js'))
-    // TODO use resource locator
-    .pipe(gulp.dest(outPaths.js));
+  var sources = resourceLocator.getSourcePaths('js');
+
+  var outputResourceName = resourceLocator.getOutputResourceName('js');
+  var outputPath = resourceLocator.getOutputPath('js');
+
+  var task = gulp.src(sources)
+    .pipe(sourcemaps.init())
+    .pipe(concat(outputResourceName));
+
+  if (!resourceLocator.isUseDevResources()) {
+    task = task.pipe(uglify());
+  }
+
+  return task
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(outputPath));
 });
 
 /*
  * Load all third party javascript files.
  */
-// TODO rename task
-gulp.task('lib', function() {
-  // TODO use resource locator
-  return gulp.src(srcPaths.vendoredJs)
+gulp.task('vendored-javascript', function() {
+  var sources = resourceLocator.getSourcePaths('vendoredJs');
+
+  var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
+  var outputPath = resourceLocator.getOutputPath('js');
+
+  return gulp.src(sources)
     .pipe(sourcemaps.init())
-      .pipe(concat('lib.js'))
-      //.pipe(uglify())
+    .pipe(concat(outputResourceName))
     .pipe(sourcemaps.write('./'))
-    // TODO use resource locator
-    .pipe(gulp.dest(outPaths.js));
+    .pipe(gulp.dest(outputPath));
 });
 
-// TODO this used to copy the electron files into the app to make it runnable with electron.
-// This task needs to be replaced with something quite different so just ignore for now.
-gulp.task('copy-main', function() {
-  return gulp.src('src/*').pipe(gulp.dest('app/'));
+/*
+ * Copy the index html file.
+ */
+gulp.task('copy-index', function() {
+  var source = resourceLocator.getSourcePaths('index');
+  var outputPath = resourceLocator.getOutputPath('index');
+
+  return gulp.src(source)
+    .pipe(gulp.dest(outputPath));
 });
 
-gulp.task('copy-font-icons', function() {
-  // TODO use resource locator
-  return gulp.src([
-    '../shared/vendored/foundation-icon-fonts-3/foundation-icons.eot',
-    '../shared/vendored/foundation-icon-fonts-3/foundation-icons.ttf',
-    '../shared/vendored/foundation-icon-fonts-3/foundation-icons.woff'
-  ]).pipe(gulp.dest('app/css')); // TODO use resource locator
-});
-
-gulp.task('copy-font-icons-svgs', function() {
-  // TODO use resource locator
-  return gulp.src('../shared/vendored/foundation-icon-fonts-3/svgs/*').pipe(gulp.dest('app/css/svgs'));
-});
-
-// TODO Should copy partials from src/components.
-// which is different from what it currently does, so probably just redo me :)
+/*
+ * Copy html partials.
+ */
 gulp.task('copy-partials', function() {
-  return gulp.src('../shared/partials/**').pipe(gulp.dest('app/partials'));
+  var source = resourceLocator.getSourcePaths('htmlPartials');
+  var outputPath = resourceLocator.getOutputPath('htmlPartials');
+
+  return gulp.src(source)
+    .pipe(gulp.dest(outputPath));
 });
 
-// TODO as the above starts to be worked on this is the place to test it.
-// probably remove the watches until you get it working once.
-gulp.task('default', ['sass', 'javascript', 'browserify', 'lib', 'copy-main', 'copy-partials', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
-  // TODO use resource locator
-  // TODO use resource locator
-  // TODO use resource locator
-  // TODO use resource locator
-  gulp.watch([srcPaths.sass, srcPaths.css], ['sass']);
-  gulp.watch([srcPaths.js], ['javascript']);
-  gulp.watch([srcPaths.nodeJs], ['browserify']);
-  gulp.watch([srcPaths.vendoredJs], ['lib']);
-  gulp.watch(['src/*'], ['copy-main']);
-  gulp.watch(['../shared/partials/**'], ['copy-partials']);
+/*
+ * Copy foundation icon fonts.
+ */
+gulp.task('copy-font-icons', function() {
+  var sources = resourceLocator.getSourcePaths('foundationIconFonts');
+  var outputPath = resourceLocator.getOutputPath('css');
+
+  return gulp.src(sources)
+    .pipe(gulp.dest(outputPath));
 });
 
-// TODO index html will not be copied. create a copy task for it.
+/*
+ * Copy foundation icon font svgs.
+ */
+gulp.task('copy-font-icons-svgs', function() {
+  var sources = resourceLocator.getSourcePaths('foundationIconSvgs');
+  var outputPath = resourceLocator.getOutputPath('css');
+
+  return gulp.src(sources)
+    .pipe(gulp.dest(outputPath + '/svgs'));
+});
+
+gulp.task('default', ['copy-index', 'copy-partials', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
+  gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
+  gulp.watch(resourceLocator.getSourcePaths('htmlPartials'), ['copy-partials']);
+  gulp.watch(_.concat(resourceLocator.getSourcePaths('scss'), resourceLocator.getSourcePaths('css')), ['css']);
+  gulp.watch(resourceLocator.getSourcePaths('js'), ['javascript']);
+  gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['lib']);
+});

@@ -5,4 +5,4 @@ node_modules
 registry-cache
 .idea/
 
-ui/desktop/app
+ui/app
