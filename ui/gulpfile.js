@@ -26,13 +26,13 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
     js: 'components/**/*.js',
     vendoredJs: [
-      'vendored/js/jquery-3.2.1.js',
-      'vendored/js/lodash-4.17.4.js',
-      'vendored/js/angular-1.6.4.js',
-      'vendored/js/angular-route-1.6.4.js',
-      'vendored/js/underscore-1.8.3.js',
-      'vendored/js/backbone-1.3.3.js',
-      '../node_modules/foundation-sites/dist/js/foundation.js',
+      'vendored/js/jquery-3.2.1.min.js',
+      'vendored/js/lodash-4.17.4.min.js',
+      'vendored/js/angular-1.6.4.min.js',
+      'vendored/js/angular-route-1.6.4.min.js',
+      'vendored/js/underscore-1.8.3.min.js',
+      'vendored/js/backbone-1.3.3.min.js',
+      '../node_modules/foundation-sites/dist/js/foundation.min.js',
     ],
     foundationIconFonts: [
       'vendored/foundation-icon-fonts-3/foundation-icons.eot',
@@ -44,15 +44,10 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
   };
 
   if (is_use_dev_resources) {
-    this.srcPaths.vendoredJs = [
-      'vendored/js/jquery-3.2.1-dev.js',
-      'vendored/js/lodash-4.17.4-dev.js',
-      'vendored/js/angular-1.6.4-dev.js',
-      'vendored/js/angular-route-1.6.4-dev.js',
-      'vendored/js/underscore-1.8.3-dev.js',
-      'vendored/js/backbone-1.3.3-dev.js',
-      '../node_modules/foundation-sites/dist/js/foundation.js',
-    ];
+  	_.forEach(this.srcPaths.vendoredJs, function (item, index, collection) {
+  		item = _.replace(item, /(.*)\.min(\.js)/i, "$1$2");
+  		console.log(item);
+  	});
   }
 
   this.outPaths = {
