@@ -22,7 +22,11 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
 
   this.srcPaths = {
     index: 'index.html',
-    scss: 'scss/main.scss',
+    scss_entrypoint: 'scss/main.scss',
+    scss_watches: [
+      'vendored/scss/_foundation_settings.scss',
+      'components/simpletask/simple_task.scss',
+    ],
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
     js: [
       'components/**/*.js',
@@ -47,6 +51,8 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
     htmlPartials: 'components/**/*.partial.html',
   };
+
+  this.srcPaths.scss_watches = _.concat(this.srcPaths.scss_watches, this.srcPaths.scss_entrypoint);
 
   if (is_use_dev_resources) {
   	this.srcPaths.vendoredJs = _.map(this.srcPaths.vendoredJs, function (item) {
@@ -119,8 +125,10 @@ const autoPrefixerSettings = {
  * with any other css files which are specified.
  */
 gulp.task('css', function() {
-  var scssSources = resourceLocator.getSourcePaths('scss');
+  var scssSources = resourceLocator.getSourcePaths('scss_entrypoint');
   var cssSoures = resourceLocator.getSourcePaths('css');
+
+  console.log(resourceLocator.getSourcePaths('scss_watches'));
 
   var outputResourceName = resourceLocator.getOutputResourceName('css');
   var outputPath = resourceLocator.getOutputPath('css');
@@ -224,8 +232,7 @@ gulp.task('copy-font-icons-svgs', function() {
 gulp.task('default', ['copy-index', 'copy-partials', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
   gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
   gulp.watch(resourceLocator.getSourcePaths('htmlPartials'), ['copy-partials']);
-  // TODO the imported scss files are not watched (components).
-  gulp.watch(_.concat(resourceLocator.getSourcePaths('scss'), resourceLocator.getSourcePaths('css')), ['css']);
+  gulp.watch(_.concat(resourceLocator.getSourcePaths('scss_watches'), resourceLocator.getSourcePaths('css')), ['css']);
   gulp.watch(resourceLocator.getSourcePaths('js'), ['javascript']);
   gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
 });
