@@ -227,5 +227,5 @@ gulp.task('default', ['copy-index', 'copy-partials', 'css', 'javascript', 'vendo
   // TODO the imported scss files are not watched (components).
   gulp.watch(_.concat(resourceLocator.getSourcePaths('scss'), resourceLocator.getSourcePaths('css')), ['css']);
   gulp.watch(resourceLocator.getSourcePaths('js'), ['javascript']);
-  gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['lib']);
+  gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
 });
