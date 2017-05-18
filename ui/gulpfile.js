@@ -24,7 +24,12 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     index: 'index.html',
     scss: 'scss/main.scss',
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
-    js: 'components/**/*.js',
+    js: [
+      'components/**/*.js',
+      'javascript/evelyn-desktop.js',
+      'javascript/controllers/*.js',
+      'javascript/services/*.js',
+    ],
     vendoredJs: [
       'vendored/js/jquery-3.2.1.min.js',
       'vendored/js/lodash-4.17.4.min.js',
@@ -44,9 +49,8 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
   };
 
   if (is_use_dev_resources) {
-  	_.forEach(this.srcPaths.vendoredJs, function (item, index, collection) {
-  		item = _.replace(item, /(.*)\.min(\.js)/i, "$1$2");
-  		console.log(item);
+  	this.srcPaths.vendoredJs = _.map(this.srcPaths.vendoredJs, function (item) {
+  		return _.replace(item, /(.*)\.min(\.js)/i, "$1$2");
   	});
   }
 
@@ -164,6 +168,8 @@ gulp.task('vendored-javascript', function() {
   var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
   var outputPath = resourceLocator.getOutputPath('js');
 
+  console.log(sources);
+
   return gulp.src(sources)
     .pipe(sourcemaps.init())
     .pipe(concat(outputResourceName))
@@ -218,6 +224,7 @@ gulp.task('copy-font-icons-svgs', function() {
 gulp.task('default', ['copy-index', 'copy-partials', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
   gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
   gulp.watch(resourceLocator.getSourcePaths('htmlPartials'), ['copy-partials']);
+  // TODO the imported scss files are not watched (components).
   gulp.watch(_.concat(resourceLocator.getSourcePaths('scss'), resourceLocator.getSourcePaths('css')), ['css']);
   gulp.watch(resourceLocator.getSourcePaths('js'), ['javascript']);
   gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['lib']);
