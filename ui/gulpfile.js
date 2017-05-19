@@ -1,19 +1,19 @@
 var gulp = require('gulp');
 
 const _ = require('lodash');
-const sass = require('gulp-sass');
 const addsrc = require('gulp-add-src');
 const autoprefixer = require('gulp-autoprefixer');
-const pixrem = require('gulp-pixrem');
 const babel = require("gulp-babel");
-const sourcemaps = require("gulp-sourcemaps");
+const buffer = require('vinyl-buffer');
 const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
-const source = require('vinyl-source-stream');
-const buffer = require('vinyl-buffer');
-const uglify = require('gulp-uglify');
 const gutil = require('gulp-util');
+const pixrem = require('gulp-pixrem');
+const sass = require('gulp-sass');
+const source = require('vinyl-source-stream');
+const sourcemaps = require("gulp-sourcemaps");
 const streamify = require('gulp-streamify');
+const uglify = require('gulp-uglify');
 
 function ResourceLocator(output_path_prefix, is_use_dev_resources) {
   this.input_path_prefix = 'src/';
