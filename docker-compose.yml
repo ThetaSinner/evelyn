@@ -29,5 +29,10 @@ services:
     depends_on:
       - mongodb
     command: bash -c "cargo run -j8"
+  grunt:
+    image: subxaero/gulp:latest
+    build: ./ui
+    volumes:
+      - ./ui:/source
 volumes:
   mongo_vol:
