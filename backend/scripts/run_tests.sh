@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cargo build
+cargo build -j8
 
 # If cargo build fails then just exit, don't try to run tests.
 if [ $? -ne 0 ]; then
@@ -13,7 +13,7 @@ fi
 server_pid=$!
 
 # Run the tests.
-cargo test
+cargo test -j8
 
 # Keep the exit code from cargo test.
 test_exit_code=$?
