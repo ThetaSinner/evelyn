@@ -25,7 +25,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     scss_entrypoint: 'scss/main.scss',
     scss_watches: [
       'vendored/scss/_foundation_settings.scss',
-      'components/simpletask/simple_task.scss',
+      'components/**/*.scss',
     ],
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
     js: [
