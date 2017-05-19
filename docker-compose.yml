@@ -29,7 +29,7 @@ services:
     depends_on:
       - mongodb
     command: bash -c "cargo run -j8"
-  grunt:
+  gulp:
     image: subxaero/gulp:latest
     build: ./ui
     volumes:
