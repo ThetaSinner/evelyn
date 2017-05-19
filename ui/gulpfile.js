@@ -25,6 +25,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     scss_entrypoint: 'scss/main.scss',
     scss_watches: [
       'vendored/scss/_foundation_settings.scss',
+        'scss/**/*.scss',
       'components/**/*.scss',
     ],
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
@@ -51,8 +52,6 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
     htmlPartials: 'components/**/*.partial.html',
   };
-
-  this.srcPaths.scss_watches = _.concat(this.srcPaths.scss_watches, this.srcPaths.scss_entrypoint);
 
   if (is_use_dev_resources) {
   	this.srcPaths.vendoredJs = _.map(this.srcPaths.vendoredJs, function (item) {
