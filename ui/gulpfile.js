@@ -8,6 +8,7 @@ const buffer = require('vinyl-buffer');
 const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
 const gutil = require('gulp-util');
+const fileinclude = require("gulp-file-include");
 const pixrem = require('gulp-pixrem');
 const sass = require('gulp-sass');
 const source = require('vinyl-source-stream');
@@ -25,7 +26,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     scss_entrypoint: 'scss/main.scss',
     scss_watches: [
       'vendored/scss/_foundation_settings.scss',
-        'scss/**/*.scss',
+      'scss/**/*.scss',
       'components/**/*.scss',
     ],
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
@@ -127,8 +128,6 @@ gulp.task('css', function() {
   var scssSources = resourceLocator.getSourcePaths('scss_entrypoint');
   var cssSoures = resourceLocator.getSourcePaths('css');
 
-  console.log(resourceLocator.getSourcePaths('scss_watches'));
-
   var outputResourceName = resourceLocator.getOutputResourceName('css');
   var outputPath = resourceLocator.getOutputPath('css');
 
@@ -155,7 +154,15 @@ gulp.task('javascript', function () {
 
   var task = gulp.src(sources)
     .pipe(sourcemaps.init())
-    .pipe(concat(outputResourceName));
+    .pipe(concat(outputResourceName))
+    .pipe(fileinclude({
+      basepath: '@file',
+      filters: {
+        cleanHtml: function (x) {
+          return x.replace(/\r?\n|\r/g, '');
+        }
+      }
+    }));
 
   if (!resourceLocator.isUseDevResources()) {
     task = task.pipe(uglify());
@@ -174,8 +181,6 @@ gulp.task('vendored-javascript', function() {
 
   var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
   var outputPath = resourceLocator.getOutputPath('js');
-
-  console.log(sources);
 
   return gulp.src(sources)
     .pipe(sourcemaps.init())
