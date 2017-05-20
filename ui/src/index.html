@@ -56,14 +56,15 @@
     <script>if (window.module) module = window.module;</script>
 
     <script>
-      function doNotify() {
-        let myNotification = new Notification('Title', {
-          body: 'Lorem Ipsum Dolor Sit Amet'
+      function doNotify(title, body) {
+        new Notification(title, {
+          body: body
         });
       }
 
       $(document).ready(function () {
           $(document).foundation();
+          doNotify("New Commit", "Add Fix");
       });
     </script>
   </body>
