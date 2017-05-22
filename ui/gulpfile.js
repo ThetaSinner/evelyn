@@ -200,16 +200,6 @@ gulp.task('copy-index', function() {
     .pipe(gulp.dest(outputPath));
 });
 
-/*
- * Copy html partials.
- */
-gulp.task('copy-partials', function() {
-  var source = resourceLocator.getSourcePaths('htmlPartials');
-  var outputPath = resourceLocator.getOutputPath('htmlPartials');
-
-  return gulp.src(source)
-    .pipe(gulp.dest(outputPath));
-});
 
 /*
  * Copy foundation icon fonts.
@@ -233,10 +223,17 @@ gulp.task('copy-font-icons-svgs', function() {
     .pipe(gulp.dest(outputPath + '/svgs'));
 });
 
-gulp.task('default', ['copy-index', 'copy-partials', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function() {
+gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function () {
   gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
-  gulp.watch(resourceLocator.getSourcePaths('htmlPartials'), ['copy-partials']);
-  gulp.watch(_.concat(resourceLocator.getSourcePaths('scss_watches'), resourceLocator.getSourcePaths('css')), ['css']);
-  gulp.watch(resourceLocator.getSourcePaths('js'), ['javascript']);
-  gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
+  gulp.watch(
+        _.concat(
+            resourceLocator.getSourcePaths('scss_watches'),
+            resourceLocator.getSourcePaths('css')
+        ), ['css']);
+    gulp.watch(
+        _.concat(
+            resourceLocator.getSourcePaths('js'),
+            resourceLocator.getSourcePaths('htmlPartials')
+        ), ['javascript']);
+    gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
 });
