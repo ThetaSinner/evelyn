@@ -1,5 +1,9 @@
 sudo: required
 language: rust
+notifications:
+  slack:
+    rooms:
+      - ephyrasoftware:0w1iQEPaCO9Z1RN3flaEV7qK#evelyn
 cache:
   - $HOME/.cargo
   - $TRAVIS_BUILD_DIR/backend/target
