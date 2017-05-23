@@ -9,6 +9,7 @@ const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
 const gutil = require('gulp-util');
 const fileinclude = require("gulp-file-include");
+const order = require('gulp-order');
 const pixrem = require('gulp-pixrem');
 const print = require('gulp-print');
 // .pipe(print())   ->  outputs each file in stream
@@ -157,6 +158,14 @@ gulp.task('javascript', function () {
 
   var task = gulp.src(sources)
     .pipe(sourcemaps.init())
+    .pipe(order([
+        "components/**/*model.js",
+        "components/**/*collection.js",
+        "components/**/*view.js",
+        "javascript/modules/*.js",
+        "javascript/services/*.js",
+        "javascript/controllers/*.js",
+    ], {base: resourceLocator.input_path_prefix}))
     .pipe(concat(outputResourceName))
     .pipe(fileinclude({
       basepath: '@file',
