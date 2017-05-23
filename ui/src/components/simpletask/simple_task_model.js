@@ -1,8 +1,7 @@
-var SimpleTaskModel = Backbone.Model.extend({
+var SimpleTask = Backbone.Model.extend({
     defaults: {
-        title: "_title",
+        title: '_task',
         description: "_description",
-        dueDate: "_due_date",
-        completed: false
+        dueDate: new Date().toISOString()
     }
 });

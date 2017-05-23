@@ -1,18 +1,8 @@
 var SimpleTaskView = Backbone.View.extend({
-    el: '#simple_task_view',
-
-    template: _.template('@@include(cleanHtml("simpletask/simple_task_create.partial.html"))', {variable: "data"}),
-
-    initialize: function () {
-        this.render();
-    },
+    template: _.template('@@include(cleanHtml("simpletask/simple_task_view.partial.html"))', {variable: "data"}),
 
     render: function () {
-        this.$el.html(this.template({
-            title: this.model.get('title'),
-            description: this.model.get('description'),
-            dueDate: this.model.get('dueDate'),
-            completed: this.model.get('completed')
-        }));
-    },
+        this.$el.html(this.template(this.model.toJSON()));
+        return this;
+    }
 });
