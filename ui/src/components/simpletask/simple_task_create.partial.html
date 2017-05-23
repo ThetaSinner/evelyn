@@ -1,4 +1,19 @@
-<h1>some text</h1>
-<p>a paragraph</p>
-<br/>
-<p>another paragraph</p>
+<div class="row">
+    <div class="large-12 columns">
+        <label>
+            Title
+            <input name="Title" placeholder="Title" type="text" value="<%= data.title %>">
+        </label>
+        <label>
+            Description
+            <textarea name="Description" type="text" placeholder="Description" rows="5">
+                <%= data.description %>
+            </textarea>
+        </label>
+        <label>
+            Due Date
+            <input class="date-input" name="DueDate" placeholder="01/01/1970" type="text" value="<%= data.dueDate %>">
+        </label>
+        <input class="button" value="Create" type="submit">
+    </div>
+</div>
