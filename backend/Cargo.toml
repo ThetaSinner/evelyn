@@ -3,9 +3,9 @@
 name = "evelyn"
 version = "0.0.1"
 authors = [
-  "ThetaSinner <greatdjonfire@hotmail.co.uk>",
-  "SubXaero <dylcla@me.com>"
-  ]
+"ThetaSinner <greatdjonfire@hotmail.co.uk>",
+"SubXaero <dylcla@me.com>"
+]
 
 [dependencies]
 log = "0.*"

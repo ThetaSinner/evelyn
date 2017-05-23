@@ -3,11 +3,11 @@ var TodoListView = Backbone.View.extend({
 
     template: _.template($("#todo_list_template_definition").text(), {variable: "data"}),
 
-    initialize: function() {
+    initialize: function () {
         this.render();
     },
 
-    render: function() {
+    render: function () {
         this.$el.html(this.template({
             title: this.model.get('title'),
             todo_items: this.model.get('todo_items'),

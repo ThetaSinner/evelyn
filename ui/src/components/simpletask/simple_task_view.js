@@ -3,15 +3,15 @@ var SimpleTaskView = Backbone.View.extend({
 
     template: _.template('@@include(cleanHtml("simpletask/simple_task_create.partial.html"))', {variable: "data"}),
 
-    initialize: function() {
+    initialize: function () {
         this.render();
     },
 
-    render: function() {
+    render: function () {
         this.$el.html(this.template({
-            title : this.model.get('title'),
-            description : this.model.get('description'),
-            dueDate : this.model.get('dueDate'),
+            title: this.model.get('title'),
+            description: this.model.get('description'),
+            dueDate: this.model.get('dueDate'),
             completed: this.model.get('completed')
         }));
     },

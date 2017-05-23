@@ -17,7 +17,7 @@
     <script src="js/foundation.js" type="text/javascript"></script>
 
     <script src="js/foundation-datepicker.js" type="text/javascript"></script>
-
+    
     <script src="js/moment-with-locales.js" type="text/javascript"></script>
 
     <script id="simple_task_template_definition" type="text/template">
@@ -26,506 +26,506 @@
             <p><%= data.description %></p>
             <p><%= data.dueDate %></p>
             <label>Completed:
-              <% if (data.completed) {%>
-                <input type="checkbox" checked disabled>
-              <% } else {%>
-              <input type="checkbox" disabled>
-              <% } %>
-            </label>
-        </div>
-    </script>
+                <% if (data.completed) {%>
+                    <input type="checkbox" checked disabled>
+                    <% } else {%>
+                        <input type="checkbox" disabled>
+                        <% } %>
+                    </label>
+                </div>
+            </script>
 
-    <script id="todo_list_preview_template_definition" type="text/template">
-        <div class="callout">
-            <h5><%= data.Title %></h5>
-            <p><%= data.TodoListId %></p>
-            <button class="button">activate</button>
-        </div>
-    </script>
+            <script id="todo_list_preview_template_definition" type="text/template">
+                <div class="callout">
+                    <h5><%= data.Title %></h5>
+                    <p><%= data.TodoListId %></p>
+                    <button class="button">activate</button>
+                </div>
+            </script>
 
-    <script id="todo_list_template_definition" type="text/template">
-        <div class="callout">
-            <h5><%= data.title %></h5>
+            <script id="todo_list_template_definition" type="text/template">
+                <div class="callout">
+                    <h5><%= data.title %></h5>
 
-            <div>
-              <% _.each(data.todo_items, function (i) { %>
-                <label>
-                  <input type="checkbox" class="done-checkbox" <% if (i.is_done) { %> <%= checked="checked" %> <%}%>  />
-                  <%= i.text %>
-                </label>
-              <% }); %>
-            </div>
-            <label>New item
-              <input type="text" class="new-todo-item" placeholder="something to do" />
-              <button class="add button">+</button>
-            </label>
-        </div>
-    </script>
+                    <div>
+                        <% _.each(data.todo_items, function (i) { %>
+                            <label>
+                                <input type="checkbox" class="done-checkbox" <% if (i.is_done) { %> <%= checked="checked" %> <%}%>  />
+                                <%= i.text %>
+                            </label>
+                            <% }); %>
+                        </div>
+                        <label>New item
+                            <input type="text" class="new-todo-item" placeholder="something to do" />
+                            <button class="add button">+</button>
+                        </label>
+                    </div>
+                </script>
 
-    <script>
-        // TODO this needs to be a user setting, ideally collected at create user and
-        // with some option to update later.
-        var date_format = "dd/mm/yyyy hh:ii";
-        // TODO derive this from the above.
-        var moment_date_format = "DD/MM/YYYY HH:mm";
+                <script>
+                // TODO this needs to be a user setting, ideally collected at create user and
+                // with some option to update later.
+                var date_format = "dd/mm/yyyy hh:ii";
+                // TODO derive this from the above.
+                var moment_date_format = "DD/MM/YYYY HH:mm";
 
-        var templates = {};
+                var templates = {};
 
-        var todoListHandle = null;
+                var todoListHandle = null;
 
-        var evelynServerBridge = new EvelynServerBridge();
+                var evelynServerBridge = new EvelynServerBridge();
 
-        var TodoListModel = Backbone.Model.extend({
-          defaults: {
-            title: "_title",
-            todo_list_id: "_todo_list_id",
-          },
-        });
+                var TodoListModel = Backbone.Model.extend({
+                    defaults: {
+                        title: "_title",
+                        todo_list_id: "_todo_list_id",
+                    },
+                });
 
-        var TodoListView = Backbone.View.extend({
-          el: '#active_todo_list',
+                var TodoListView = Backbone.View.extend({
+                    el: '#active_todo_list',
 
-          template: _.template($("#todo_list_template_definition").text(), {variable: "data"}),
+                    template: _.template($("#todo_list_template_definition").text(), {variable: "data"}),
 
-          events: {
-            'click .add': 'addItem',
-            'change .done-checkbox': 'markItemDone',
-          },
+                    events: {
+                        'click .add': 'addItem',
+                        'change .done-checkbox': 'markItemDone',
+                    },
 
-          initialize: function() {
-            this.render();
-          },
+                    initialize: function() {
+                        this.render();
+                    },
 
-          render: function() {
-            this.$el.html(this.template({
-              title: this.model.get('title'),
-              todo_items: this.model.get('todo_items'),
-            }));
-          },
+                    render: function() {
+                        this.$el.html(this.template({
+                            title: this.model.get('title'),
+                            todo_items: this.model.get('todo_items'),
+                        }));
+                    },
 
-          addItem: function() {
-            var item = this.$el.find("input[class='new-todo-item']").val();
+                    addItem: function() {
+                        var item = this.$el.find("input[class='new-todo-item']").val();
 
-            evelynServerBridge.send_to_server("/todolist/additem", {
-              TodoListId: this.model.get('todo_list_id'),
-              TodoListItem: {
-                Text: item,
-                IsDone: false,
-              },
-            }, render_response_payload);
+                        evelynServerBridge.send_to_server("/todolist/additem", {
+                            TodoListId: this.model.get('todo_list_id'),
+                            TodoListItem: {
+                                Text: item,
+                                IsDone: false,
+                            },
+                        }, render_response_payload);
 
-            // TODO this renders even if the save fails.
-            this.model.set({
-                todo_items : this.model.get("todo_items").concat({
-                  text: item,
-                  is_done: false,
-                }),
-            });
-
-            this.render();
-          },
-
-          markItemDone: function(e) {
-            var checkBox = $(e.target);
-            var itemIndex = checkBox.parent().index();
-
-            evelynServerBridge.send_to_server("/todolist/updateitem", {
-              TodoListId: this.model.get("todo_list_id"),
-              ItemIndex: itemIndex,
-              IsDone: checkBox.prop("checked"),
-            }, render_response_payload);
-          },
-
-          switchModel: function(m) {
-            this.model.set(m);
-            this.render();
-          },
-        });
-
-        function render_simple_task(data) {
-            if (!templates.simple_task_template) {
-                templates.simple_task_template = _.template($("#simple_task_template_definition").text(), {variable: "data"});
-            }
-
-            return templates.simple_task_template(data);
-        }
-
-        function render_todo_list_preview(data) {
-            if (!templates.todo_list_preview_template) {
-                templates.todo_list_preview_template = _.template($("#todo_list_preview_template_definition").text(), {variable: "data"});
-            }
-
-            return templates.todo_list_preview_template(data);
-        }
-
-        function render_response_payload(response) {
-          console.log(response);
-
-          $("#json-response").val(JSON.stringify(response, null, 4));
-
-          if (response.hasOwnProperty("Error") && response.Error !== null) {
-              var status_label = $("#status-label");
-              status_label.removeClass("success");
-              status_label.addClass("alert");
-              status_label.text(response.Error.ErrorCode);
-          }
-          else {
-              var status_label = $("#status-label");
-              status_label.removeClass("alert");
-              status_label.addClass("success");
-              status_label.text("Success");
-          }
-        }
-
-        function serialize_form(form_selector) {
-          return _.object(_.map(form_selector.serializeArray(), function(item) {
-            // {name: "name", value: "data"}
-
-            if (item.value === "on") {
-              return [item.name, true];
-            }
-            else if (item.value == "false") {
-              return [item.name, false];
-            }
-            else if (!isNaN(item.value)) { //check if value is convertible to number
-              return [item.name, Number(item.value)];
-            }
-            else {
-              return [item.name, item.value];
-            }
-          }));
-        };
-
-        function EvelynServerBridge() {
-          this.baseUrl = "http://localhost:8080";
-        }
-
-        EvelynServerBridge.prototype.make_url_from_action = function(action) {
-          return this.baseUrl + action;
-        };
-
-        EvelynServerBridge.prototype.process_response = function(response) {
-            if (response.hasOwnProperty("Token") && response.Token !== null) {
-                localStorage.token = response.Token;
-            }
-
-            if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
-                var target = $("#target_for_simple_tasks");
-                target.empty();
-                var tasks = response.SimpleTasks;
-                for (var i = 0; i < tasks.length; i++) {
-                    tasks[i]['dueDate'] = moment(tasks[i]['dueDate']).format(moment_date_format);
-
-                    target.append(render_simple_task(tasks[i]));
-                }
-            }
-
-            if (response.hasOwnProperty("TodoLists") && response.TodoLists !== null && response.TodoLists.length !== null) {
-                var target = $("#target_for_todo_list_previews");
-                target.empty();
-                var todoLists = response.TodoLists;
-                for (var i = 0; i < todoLists.length; i++) {
-                    target.append(render_todo_list_preview(todoLists[i]));
-
-                    target.find("div:last-child > button").on("click", todoLists[i], function (event) {
-                      function callback(response) {
-                        console.log(response);
-                        render_response_payload(response);
-                        // TODO handle errors.
-                        todoListViewHandle.switchModel({
-                          title: event.data.Title,
-                          todo_list_id: event.data.TodoListId,
-                          todo_items: _.map(response.TodoList.TodoListItems, function (i) {
-                            return {text: i.Text, is_done: i.IsDone};
-                          }),
+                        // TODO this renders even if the save fails.
+                        this.model.set({
+                            todo_items : this.model.get("todo_items").concat({
+                                text: item,
+                                is_done: false,
+                            }),
                         });
-                      }
 
-                      evelynServerBridge.send_to_server("/todolist/lookuplist", {
-                        TodoListId: event.data.TodoListId,
-                      }, callback);
+                        this.render();
+                    },
+
+                    markItemDone: function(e) {
+                        var checkBox = $(e.target);
+                        var itemIndex = checkBox.parent().index();
+
+                        evelynServerBridge.send_to_server("/todolist/updateitem", {
+                            TodoListId: this.model.get("todo_list_id"),
+                            ItemIndex: itemIndex,
+                            IsDone: checkBox.prop("checked"),
+                        }, render_response_payload);
+                    },
+
+                    switchModel: function(m) {
+                        this.model.set(m);
+                        this.render();
+                    },
+                });
+
+                function render_simple_task(data) {
+                    if (!templates.simple_task_template) {
+                        templates.simple_task_template = _.template($("#simple_task_template_definition").text(), {variable: "data"});
+                    }
+
+                    return templates.simple_task_template(data);
+                }
+
+                function render_todo_list_preview(data) {
+                    if (!templates.todo_list_preview_template) {
+                        templates.todo_list_preview_template = _.template($("#todo_list_preview_template_definition").text(), {variable: "data"});
+                    }
+
+                    return templates.todo_list_preview_template(data);
+                }
+
+                function render_response_payload(response) {
+                    console.log(response);
+
+                    $("#json-response").val(JSON.stringify(response, null, 4));
+
+                    if (response.hasOwnProperty("Error") && response.Error !== null) {
+                        var status_label = $("#status-label");
+                        status_label.removeClass("success");
+                        status_label.addClass("alert");
+                        status_label.text(response.Error.ErrorCode);
+                    }
+                    else {
+                        var status_label = $("#status-label");
+                        status_label.removeClass("alert");
+                        status_label.addClass("success");
+                        status_label.text("Success");
+                    }
+                }
+
+                function serialize_form(form_selector) {
+                    return _.object(_.map(form_selector.serializeArray(), function(item) {
+                        // {name: "name", value: "data"}
+
+                        if (item.value === "on") {
+                            return [item.name, true];
+                        }
+                        else if (item.value == "false") {
+                            return [item.name, false];
+                        }
+                        else if (!isNaN(item.value)) { //check if value is convertible to number
+                            return [item.name, Number(item.value)];
+                        }
+                        else {
+                            return [item.name, item.value];
+                        }
+                    }));
+                };
+
+                function EvelynServerBridge() {
+                    this.baseUrl = "http://localhost:8080";
+                }
+
+                EvelynServerBridge.prototype.make_url_from_action = function(action) {
+                    return this.baseUrl + action;
+                };
+
+                EvelynServerBridge.prototype.process_response = function(response) {
+                    if (response.hasOwnProperty("Token") && response.Token !== null) {
+                        localStorage.token = response.Token;
+                    }
+
+                    if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
+                        var target = $("#target_for_simple_tasks");
+                        target.empty();
+                        var tasks = response.SimpleTasks;
+                        for (var i = 0; i < tasks.length; i++) {
+                            tasks[i]['dueDate'] = moment(tasks[i]['dueDate']).format(moment_date_format);
+
+                            target.append(render_simple_task(tasks[i]));
+                        }
+                    }
+
+                    if (response.hasOwnProperty("TodoLists") && response.TodoLists !== null && response.TodoLists.length !== null) {
+                        var target = $("#target_for_todo_list_previews");
+                        target.empty();
+                        var todoLists = response.TodoLists;
+                        for (var i = 0; i < todoLists.length; i++) {
+                            target.append(render_todo_list_preview(todoLists[i]));
+
+                            target.find("div:last-child > button").on("click", todoLists[i], function (event) {
+                                function callback(response) {
+                                    console.log(response);
+                                    render_response_payload(response);
+                                    // TODO handle errors.
+                                    todoListViewHandle.switchModel({
+                                        title: event.data.Title,
+                                        todo_list_id: event.data.TodoListId,
+                                        todo_items: _.map(response.TodoList.TodoListItems, function (i) {
+                                            return {text: i.Text, is_done: i.IsDone};
+                                        }),
+                                    });
+                                }
+
+                                evelynServerBridge.send_to_server("/todolist/lookuplist", {
+                                    TodoListId: event.data.TodoListId,
+                                }, callback);
+                            });
+                        }
+                    }
+                };
+
+                EvelynServerBridge.prototype.process_request = function(request) {
+                    if (localStorage.token) {
+                        request.Token = localStorage.token;
+                    }
+
+                    for (var attr in request) {
+                        if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
+                            request[attr] = moment(request[attr], moment_date_format).toISOString();
+                        }
+                    }
+
+                    return request;
+                };
+
+                EvelynServerBridge.prototype.send_to_server = function(action, payload, callback) {
+                    var url = this.make_url_from_action(action);
+                    var processed_payload = this.process_request(payload);
+                    var _this = this;
+                    $.ajax({
+                        method: "POST",
+                        url: url,
+                        data: JSON.stringify(processed_payload),
+                        dataType: "json",
+                        // The first request may be slow because a data connection must be opened on the server
+                        // but after that, such a long timeout is a problem...
+                        timeout: 3000,
+                        success: function (response) {
+                            console.log("Response from evelyn", response);
+
+                            _this.process_response(response);
+
+                            callback(response);
+                        },
+                        error: function(jqxhr, text_status, error) {
+                            if (text_status === "timeout") {
+                                render_response_payload({
+                                    Error: {
+                                        ErrorCode: 0,
+                                        ErrorMessage: "Evelyn service not available.",
+                                    }
+                                });
+                            }
+                            else {
+                                console.log(jqxhr);
+                                render_response_payload({
+                                    Error: {
+                                        ErrorCode: 0,
+                                        ErrorMessage: "Unhandled error occured in Evelyn bridge [" + text_status + "]",
+                                    }
+                                });
+                            }
+                        },
                     });
                 }
-            }
-        };
 
-        EvelynServerBridge.prototype.process_request = function(request) {
-            if (localStorage.token) {
-                request.Token = localStorage.token;
-            }
+                function add_submit_hook(form_id) {
+                    $(form_id).on("submit", function (event) {
+                        event.preventDefault();
 
-            for (var attr in request) {
-                if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-                    request[attr] = moment(request[attr], moment_date_format).toISOString();
+                        var form_selector = $(this);
+                        var form_submit_data = serialize_form(form_selector);
+
+                        evelynServerBridge.send_to_server(form_selector.attr("action"), form_submit_data, render_response_payload);
+                    });
                 }
-            }
 
-            return request;
-        };
+                function add_submit_hook_for_manual_form(form_id) {
+                    $(form_id).on("submit", function (event) {
+                        event.preventDefault();
 
-        EvelynServerBridge.prototype.send_to_server = function(action, payload, callback) {
-          var url = this.make_url_from_action(action);
-          var processed_payload = this.process_request(payload);
-          var _this = this;
-          $.ajax({
-            method: "POST",
-            url: url,
-            data: JSON.stringify(processed_payload),
-            dataType: "json",
-            // The first request may be slow because a data connection must be opened on the server
-            // but after that, such a long timeout is a problem...
-            timeout: 3000,
-            success: function (response) {
-                console.log("Response from evelyn", response);
+                        var form_selector = $(this);
+                        var form_submit_data = serialize_form(form_selector);
 
-                _this.process_response(response);
+                        var payload = null;
+                        try {
+                            payload = JSON.parse(form_submit_data.Payload);
+                        }
+                        catch (e) {
+                            render_response_payload({
+                                Error: {
+                                    ErrorCode: 0,
+                                    ErrorMessage: "Invalid JSON [" + e + "]",
+                                }
+                            });
 
-                callback(response);
-            },
-            error: function(jqxhr, text_status, error) {
-              if (text_status === "timeout") {
-                render_response_payload({
-                  Error: {
-                    ErrorCode: 0,
-                    ErrorMessage: "Evelyn service not available.",
-                  }
-                });
-              }
-              else {
-                console.log(jqxhr);
-                render_response_payload({
-                  Error: {
-                    ErrorCode: 0,
-                    ErrorMessage: "Unhandled error occured in Evelyn bridge [" + text_status + "]",
-                  }
-                });
-              }
-            },
-          });
-        }
+                            return;
+                        }
 
-        function add_submit_hook(form_id) {
-            $(form_id).on("submit", function (event) {
-                event.preventDefault();
-
-                var form_selector = $(this);
-                var form_submit_data = serialize_form(form_selector);
-
-                evelynServerBridge.send_to_server(form_selector.attr("action"), form_submit_data, render_response_payload);
-            });
-        }
-
-        function add_submit_hook_for_manual_form(form_id) {
-            $(form_id).on("submit", function (event) {
-                event.preventDefault();
-
-                var form_selector = $(this);
-                var form_submit_data = serialize_form(form_selector);
-
-                var payload = null;
-                try {
-                  payload = JSON.parse(form_submit_data.Payload);
+                        evelynServerBridge.send_to_server(form_submit_data.Action, payload, render_response_payload);
+                    });
                 }
-                catch (e) {
-                  render_response_payload({
-                    Error: {
-                      ErrorCode: 0,
-                      ErrorMessage: "Invalid JSON [" + e + "]",
+
+                $(document).ready(function () {
+                    if (typeof(Storage) === "undefined") {
+                        $("body").text("Local storage not available in this environment, cannot function correctly.");
+                        return;
                     }
-                  });
 
-                  return;
-                }
+                    $(document).foundation();
 
-                evelynServerBridge.send_to_server(form_submit_data.Action, payload, render_response_payload);
-            });
-        }
+                    $(".date-input").fdatepicker({
+                        initialDate: moment().hour(12).minute(0).add(1, 'days').format(moment_date_format),
+                        format: date_format,
+                        disableDblClickSelection: true,
+                        leftArrow: '<<',
+                        rightArrow: '>>',
+                        closeIcon: 'X',
+                        closeButton: true,
+                        pickTime: true,
+                    });
 
-        $(document).ready(function () {
-            if (typeof(Storage) === "undefined") {
-                $("body").text("Local storage not available in this environment, cannot function correctly.");
-                return;
-            }
+                    add_submit_hook("#form_create_user");
+                    add_submit_hook("#form_logon_user");
+                    add_submit_hook("#form_create_simple_task");
+                    add_submit_hook("#form_lookup_simple_tasks");
+                    add_submit_hook("#form_create_todo_list");
+                    add_submit_hook("#form_lookup_todo_lists");
 
-            $(document).foundation();
+                    add_submit_hook_for_manual_form("#form_manual_json_request");
 
-            $(".date-input").fdatepicker({
-                initialDate: moment().hour(12).minute(0).add(1, 'days').format(moment_date_format),
-                format: date_format,
-                disableDblClickSelection: true,
-                leftArrow: '<<',
-                rightArrow: '>>',
-                closeIcon: 'X',
-                closeButton: true,
-                pickTime: true,
-            });
+                    todoListViewHandle = new TodoListView({model: new TodoListModel()});
+                });
+                </script>
+            </head>
+            <body>
+                <div id="notification-area">
+                    <textarea id="json-response" rows="5"></textarea>
+                    <div class=" row column">
+                        <span>Last request status: <span id="status-label" class="label">None</span></span>
+                    </div>
+                </div>
+                <br>
 
-            add_submit_hook("#form_create_user");
-            add_submit_hook("#form_logon_user");
-            add_submit_hook("#form_create_simple_task");
-            add_submit_hook("#form_lookup_simple_tasks");
-            add_submit_hook("#form_create_todo_list");
-            add_submit_hook("#form_lookup_todo_lists");
+                <ul class="tabs" data-tabs id="control-tabs">
+                    <li class="tabs-title"><a href="#panel0">Manual</a></li>
+                    <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Login / Register</a></li>
+                    <li class="tabs-title"><a href="#panel2">Create Task</a></li>
+                    <li class="tabs-title"><a href="#panel3">Lookup Tasks</a></li>
+                    <li class="tabs-title"><a href="#panel4">Todo List</a></li>
+                </ul>
 
-            add_submit_hook_for_manual_form("#form_manual_json_request");
+                <div class="tabs-content" data-tabs-content="control-tabs">
+                    <div class="tabs-panel" id="panel0">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div class="tile-container">
+                                    <h5>Manual</h5>
+                                    <form id="form_manual_json_request">
+                                        <label class="tile-label">Action
+                                            <input name="Action" type="text" placeholder="/feature/actionname">
+                                        </label>
+                                        <label class="tile-label">Payload
+                                            <textarea name="Payload" type="text" placeholder="{}" rows="5"></textarea>
+                                        </label>
 
-            todoListViewHandle = new TodoListView({model: new TodoListModel()});
-        });
-    </script>
-</head>
-<body>
-<div id="notification-area">
-    <textarea id="json-response" rows="5"></textarea>
-    <div class=" row column">
-        <span>Last request status: <span id="status-label" class="label">None</span></span>
-    </div>
-</div>
-<br>
+                                        <input type="submit" class="button" value="Send"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tabs-panel is-active" id="panel1">
+                        <div class="row">
+                            <div class="large-6 columns">
+                                <div class=tile-container>
+                                    <h5>Create user</h5>
+                                    <form id="form_create_user" action="/user/create" method="post">
+                                        <label class="tile-label">User Name
+                                            <input name="UserName" type="text" placeholder="User Name">
+                                        </label>
+                                        <label class="tile-label">E-Mail Address
+                                            <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                                        </label>
+                                        <label class="tile-label">Password
+                                            <input name="Password" type="text" placeholder="Password">
+                                        </label>
 
-<ul class="tabs" data-tabs id="control-tabs">
-  <li class="tabs-title"><a href="#panel0">Manual</a></li>
-  <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Login / Register</a></li>
-  <li class="tabs-title"><a href="#panel2">Create Task</a></li>
-  <li class="tabs-title"><a href="#panel3">Lookup Tasks</a></li>
-  <li class="tabs-title"><a href="#panel4">Todo List</a></li>
-</ul>
+                                        <input type="submit" class="button" value="Create"/>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="large-6 columns">
+                                <div class="tile-container">
+                                    <h5>Logon user</h5>
+                                    <form id="form_logon_user" action="/user/logon" method="post">
+                                        <label class="tile-label">E-Mail Address
+                                            <input name="EmailAddress" type="text" placeholder="E-Mail Address">
+                                        </label>
+                                        <label class="tile-label">Password
+                                            <input name="Password" type="text" placeholder="Password">
+                                        </label>
 
-<div class="tabs-content" data-tabs-content="control-tabs">
-  <div class="tabs-panel" id="panel0">
-    <div class="row">
-        <div class="large-12 columns">
-            <div class="tile-container">
-                <h5>Manual</h5>
-                <form id="form_manual_json_request">
-                    <label class="tile-label">Action
-                        <input name="Action" type="text" placeholder="/feature/actionname">
-                    </label>
-                    <label class="tile-label">Payload
-                        <textarea name="Payload" type="text" placeholder="{}" rows="5"></textarea>
-                    </label>
+                                        <input type="submit" class="button" value="Logon"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tabs-panel" id="panel2">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div class="tile-container">
+                                    <h5>Create Simple task</h5>
+                                    <form id="form_create_simple_task" action="/simpletask/create" method="post">
+                                        <label class="tile-label">Title
+                                            <input name="Title" type="text" placeholder="Title">
+                                        </label>
+                                        <label class="tile-label">Description
+                                            <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
+                                        </label>
+                                        <label class="tile-label">Due Date
+                                            <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
+                                        </label>
 
-                    <input type="submit" class="button" value="Send"/>
-                </form>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="tabs-panel is-active" id="panel1">
-    <div class="row">
-        <div class="large-6 columns">
-            <div class=tile-container>
-                <h5>Create user</h5>
-                <form id="form_create_user" action="/user/create" method="post">
-                    <label class="tile-label">User Name
-                        <input name="UserName" type="text" placeholder="User Name">
-                    </label>
-                    <label class="tile-label">E-Mail Address
-                        <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-                    </label>
-                    <label class="tile-label">Password
-                        <input name="Password" type="text" placeholder="Password">
-                    </label>
+                                        <input type="submit" class="button" value="Create"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tabs-panel" id="panel3">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div class="tile-container">
+                                    <h5>Lookup simple tasks</h5>
+                                    <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
+                                        <input type="submit" class="button" value="Lookup"/>
+                                        <label>
+                                            Show Completed
+                                            <input type="hidden" name="ShowCompleted" value="false" />
+                                            <input type="checkbox" name="ShowCompleted"/>
+                                        </label>
+                                        <label>
+                                            Limit
+                                            <input type="number" min="0" value="0" name="Limit"/>
+                                        </label>
+                                    </form>
 
-                    <input type="submit" class="button" value="Create"/>
-                </form>
-              </div>
-        </div>
-        <div class="large-6 columns">
-            <div class="tile-container">
-                <h5>Logon user</h5>
-                <form id="form_logon_user" action="/user/logon" method="post">
-                    <label class="tile-label">E-Mail Address
-                        <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-                    </label>
-                    <label class="tile-label">Password
-                        <input name="Password" type="text" placeholder="Password">
-                    </label>
+                                    <div id="target_for_simple_tasks"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tabs-panel" id="panel4">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div class="tile-container">
+                                    <h5>Create todo list</h5>
+                                    <form id="form_create_todo_list" action="/todolist/create" method="post">
+                                        <label class="tile-label">Title
+                                            <input name="Title" type="text" placeholder="Title">
+                                        </label>
+                                        <input type="submit" class="button" value="Create"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
-                    <input type="submit" class="button" value="Logon"/>
-                </form>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="tabs-panel" id="panel2">
-    <div class="row">
-        <div class="large-12 columns">
-            <div class="tile-container">
-                <h5>Create Simple task</h5>
-                <form id="form_create_simple_task" action="/simpletask/create" method="post">
-                    <label class="tile-label">Title
-                        <input name="Title" type="text" placeholder="Title">
-                    </label>
-                    <label class="tile-label">Description
-                        <textarea name="Description" type="text" placeholder="Description" rows="5"></textarea>
-                    </label>
-                    <label class="tile-label">Due Date
-                        <input class="date-input" name="DueDate" type="text" placeholder="01/01/1970">
-                    </label>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div class="tile-container">
+                                    <h5>Lookup todo lists</h5>
+                                    <form id="form_lookup_todo_lists" action="/todolist/lookuplists" method="post">
+                                        <input type="submit" class="button" value="Lookup"/>
+                                    </form>
+                                </div>
 
-                    <input type="submit" class="button" value="Create"/>
-                </form>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="tabs-panel" id="panel3">
-    <div class="row">
-        <div class="large-12 columns">
-            <div class="tile-container">
-                <h5>Lookup simple tasks</h5>
-                <form id="form_lookup_simple_tasks" action="/simpletask/lookup" method="post">
-                    <input type="submit" class="button" value="Lookup"/>
-                    <label>
-                        Show Completed
-                        <input type="hidden" name="ShowCompleted" value="false" />
-                        <input type="checkbox" name="ShowCompleted"/>
-                    </label>
-                    <label>
-                        Limit
-                        <input type="number" min="0" value="0" name="Limit"/>
-                    </label>
-                </form>
+                                <div id="target_for_todo_list_previews"></div>
+                            </div>
+                        </div>
 
-                <div id="target_for_simple_tasks"></div>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div class="tabs-panel" id="panel4">
-    <div class="row">
-        <div class="large-12 columns">
-            <div class="tile-container">
-                <h5>Create todo list</h5>
-                <form id="form_create_todo_list" action="/todolist/create" method="post">
-                    <label class="tile-label">Title
-                        <input name="Title" type="text" placeholder="Title">
-                    </label>
-                    <input type="submit" class="button" value="Create"/>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="large-12 columns">
-            <div class="tile-container">
-                <h5>Lookup todo lists</h5>
-                <form id="form_lookup_todo_lists" action="/todolist/lookuplists" method="post">
-                    <input type="submit" class="button" value="Lookup"/>
-                </form>
-            </div>
-
-            <div id="target_for_todo_list_previews"></div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="large-12 columns">
-            <div id="active_todo_list" class="tile-container"></div>
-        </div>
-    </div>
-  </div>
-</div>
-</body>
-</html>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <div id="active_todo_list" class="tile-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>

@@ -1,31 +1,32 @@
-/// Evelyn: Your personal assistant, project manager and calendar
-/// Copyright (C) 2017 Gregory Jensen
-///
-/// This program is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Evelyn: Your personal assistant, project manager and calendar
+// Copyright (C) 2017 Gregory Jensen
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use std::sync::Arc;
-
-use serde_json;
-
-use server::routing::{RouterInput, RouterOutput};
+use core::error_messages::{EvelynBaseError, EvelynServiceError};
+use core::server_admin;
 use model;
 use processing;
-use core::server_admin;
-use core::error_messages::{EvelynServiceError, EvelynBaseError};
+use serde_json;
+use server::routing::{RouterInput, RouterOutput};
+use std::sync::Arc;
 
-pub fn purge_processor(router_input: RouterInput, processor_data: Arc<processing::ProcessorData>) -> RouterOutput {
-    let request_model_de: Result<model::server_admin::PurgeRequestModel,_> = serde_json::from_str(&router_input.request_body);
+pub fn purge_processor(router_input: RouterInput,
+                       processor_data: Arc<processing::ProcessorData>)
+                       -> RouterOutput {
+    let request_model_de: Result<model::server_admin::PurgeRequestModel, _> =
+        serde_json::from_str(&router_input.request_body);
 
     // TODO check token, but need some way to mark users as privileged.
 
@@ -35,7 +36,7 @@ pub fn purge_processor(router_input: RouterInput, processor_data: Arc<processing
                 "database" => {
                     match server_admin::purge_database(processor_data) {
                         None => None,
-                        Some(e) => Some(EvelynServiceError::FailedToPurge(e))
+                        Some(e) => Some(EvelynServiceError::FailedToPurge(e)),
                     }
                 },
                 "database_area" => {
@@ -44,29 +45,37 @@ pub fn purge_processor(router_input: RouterInput, processor_data: Arc<processing
                         Some(e) => Some(EvelynServiceError::FailedToPurge(e)),
                     }
                 },
-                _ => {
-                    Some(EvelynServiceError::InvalidPurgeTargetType(EvelynBaseError::NothingElse))
-                }
+                _ => Some(EvelynServiceError::InvalidPurgeTargetType(EvelynBaseError::NothingElse)),
             };
 
             match error {
-                None => RouterOutput{response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {error: None}).unwrap()},
-                Some(e) => {
-                    RouterOutput{
-                        response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {
-                            error: Some(From::from(e))
-                        }).unwrap()
+                None => {
+                    RouterOutput {
+                        response_body:
+                            serde_json::to_string(&model::server_admin::PurgeResponseModel {
+                                                      error: None,
+                                                  })
+                                    .unwrap(),
                     }
-                }
+                },
+                Some(e) => {
+                    RouterOutput {
+                        response_body:
+                            serde_json::to_string(&model::server_admin::PurgeResponseModel {
+                                                      error: Some(From::from(e)),
+                                                  })
+                                    .unwrap(),
+                    }
+                },
             }
 
         },
         Err(e) => {
             let response = model::server_admin::PurgeResponseModel {
-                error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
+                error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
             };
 
-            RouterOutput{response_body: serde_json::to_string(&response).unwrap()}
-        }
+            RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+        },
     }
 }

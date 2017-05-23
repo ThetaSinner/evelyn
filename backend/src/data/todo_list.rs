@@ -1,45 +1,45 @@
-/// Evelyn: Your personal assistant, project manager and calendar
-/// Copyright (C) 2017 Gregory Jensen
-///
-/// This program is free software: you can redistribute it and/or modify
-/// it under the terms of the GNU General Public License as published by
-/// the Free Software Foundation, either version 3 of the License, or
-/// (at your option) any later version.
-///
-/// This program is distributed in the hope that it will be useful,
-/// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-/// GNU General Public License for more details.
-///
-/// You should have received a copy of the GNU General Public License
-/// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Evelyn: Your personal assistant, project manager and calendar
+// Copyright (C) 2017 Gregory Jensen
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
 use bson::{Bson, Document};
-use mongodb::db::ThreadedDatabase;
-use mongodb::coll::options::FindOptions;
-
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model;
-use core::error_messages::{EvelynDatabaseError, EvelynBaseError};
 use mongodb::{Client, ThreadedClient};
+use mongodb::coll::options::FindOptions;
+use mongodb::db::ThreadedDatabase;
 
-pub fn insert_todo_list(client : &Client, create_todo_list_model: &model::todo_list::TodoListModel) -> Option<EvelynDatabaseError> {
+pub fn insert_todo_list(client: &Client,
+                        create_todo_list_model: &model::todo_list::TodoListModel)
+                        -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let bson_todo_list_model = bson::to_bson(&create_todo_list_model).unwrap();
 
     if let bson::Bson::Document(document) = bson_todo_list_model {
-      match collection.insert_one(document, None) {
-          Ok(_) => None,
-          Err(e) => Some(EvelynDatabaseError::InsertTodoList(e))
-      }
-    }
-    else {
-      Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+        match collection.insert_one(document, None) {
+            Ok(_) => None,
+            Err(e) => Some(EvelynDatabaseError::InsertTodoList(e)),
+        }
+    } else {
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 
-pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::item::AddItemTodoListModel) -> Option<EvelynDatabaseError> {
+pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::item::AddItemTodoListModel) -> Option<EvelynDatabaseError>{
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = add_item_todo_list_model.user_id;
@@ -47,7 +47,8 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
     let filter = doc!("userId" => user_id, "todoListId" => todo_list_id);
 
     let mut update_query = Document::new();
-    let bson_todo_list_item_model = bson::to_bson(&add_item_todo_list_model.todo_list_item).unwrap();
+    let bson_todo_list_item_model = bson::to_bson(&add_item_todo_list_model.todo_list_item)
+        .unwrap();
     if let bson::Bson::Document(document) = bson_todo_list_item_model {
         update_query.insert("todoListItems", document);
 
@@ -56,17 +57,16 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
 
         match collection.update_one(filter, push_update_query, None) {
             Ok(_) => None,
-            Err(e) => {
-                Some(EvelynDatabaseError::AddItemToTodoList(e))
-            }
+            Err(e) => Some(EvelynDatabaseError::AddItemToTodoList(e)),
         }
-    }
-    else {
+    } else {
         Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
 
-pub fn lookup_todo_lists(client : &Client, lookup_todo_lists_model: &model::todo_list::LookupTodoListsModel) -> Result<Vec<model::todo_list::TodoListsModel>, EvelynDatabaseError> {
+pub fn lookup_todo_lists(client: &Client,
+                         lookup_todo_lists_model: &model::todo_list::LookupTodoListsModel)
+                         -> Result<Vec<model::todo_list::TodoListsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = lookup_todo_lists_model.user_id;
@@ -84,25 +84,25 @@ pub fn lookup_todo_lists(client : &Client, lookup_todo_lists_model: &model::todo
 
     match cursor {
         Ok(cursor) => {
-            Ok(cursor.map(|x| {
+            Ok(cursor
+                   .map(|x| {
                 match x {
-                    Ok(x) => {
-                        bson::from_bson(bson::Bson::Document(x)).unwrap()
-                    },
+                    Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
                     Err(e) => {
                         println!("Database error in lookup todo lists {}", e);
                         panic!() // need a better way to handle this ideally.
-                    }
+                    },
                 }
-            }).collect())
+            })
+                   .collect())
         },
-        Err(e) => {
-            Err(EvelynDatabaseError::LookupTodoLists(e))
-        }
+        Err(e) => Err(EvelynDatabaseError::LookupTodoLists(e)),
     }
 }
 
-pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_list::LookupTodoListModel) -> Result<model::todo_list::TodoListModel, EvelynDatabaseError> {
+pub fn lookup_todo_list(client: &Client,
+                        lookup_todo_list_model: &model::todo_list::LookupTodoListModel)
+                        -> Result<model::todo_list::TodoListModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = lookup_todo_list_model.user_id;
@@ -113,18 +113,15 @@ pub fn lookup_todo_list(client : &Client, lookup_todo_list_model: &model::todo_l
         Ok(result) => {
             if let Some(result) = result {
                 Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
-            }
-            else {
+            } else {
                 Err(EvelynDatabaseError::TodoListNotFound(EvelynBaseError::NothingElse))
             }
         },
-        Err(e) => {
-            Err(EvelynDatabaseError::LookupTodoList(e))
-        }
+        Err(e) => Err(EvelynDatabaseError::LookupTodoList(e)),
     }
 }
 
-pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::item::UpdateTodoListItemModel) -> Option<EvelynDatabaseError> {
+pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::item::UpdateTodoListItemModel) -> Option<EvelynDatabaseError>{
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = update_todo_list_item.user_id;
@@ -132,17 +129,14 @@ pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::to
     let match_query = doc!{"userId" => user_id, "todoListId" => todo_list_id};
 
     let mut update_query = Document::new();
-    update_query.insert(format!("todoListItems.{}.isDone", update_todo_list_item.item_index), update_todo_list_item.is_done);
+    update_query.insert(format!("todoListItems.{}.isDone", update_todo_list_item.item_index),
+                        update_todo_list_item.is_done);
 
     let mut set_update_query = Document::new();
     set_update_query.insert("$set", update_query);
 
     match collection.update_one(match_query, set_update_query, None) {
-        Ok(_) => {
-            None
-        },
-        Err(e) => {
-            Some(EvelynDatabaseError::UpdateTodoListItem(e))
-        }
+        Ok(_) => None,
+        Err(e) => Some(EvelynDatabaseError::UpdateTodoListItem(e)),
     }
 }
