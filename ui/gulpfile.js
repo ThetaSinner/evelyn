@@ -136,12 +136,12 @@ gulp.task('css', function() {
       //.pipe(sourcemaps.init())
       .pipe(sass(sassCompileSettings).on('error', sass.logError))
       .pipe(addsrc.append(cssSources))
-      .pipe(changed())
       .pipe(concat(outputResourceName))
       .pipe(autoprefixer(autoPrefixerSettings))
       .pipe(pixrem())
       .pipe(cssnano())
       //.pipe(sourcemaps.write())
+      .pipe(changed())
       .pipe(gulp.dest(outputPath));
 });
 
@@ -156,7 +156,6 @@ gulp.task('javascript', function () {
 
   var task = gulp.src(sources)
     .pipe(sourcemaps.init())
-    .pipe(changed())
     .pipe(concat(outputResourceName))
     .pipe(fileinclude({
       basepath: '@file',
@@ -173,23 +172,24 @@ gulp.task('javascript', function () {
 
   return task
     .pipe(sourcemaps.write('./'))
+    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
 /*
  * Load all third party javascript files.
  */
-gulp.task('vendored-javascript', function() {
+gulp.task('vendored-javascript', function () {
   var sources = resourceLocator.getSourcePaths('vendoredJs');
 
   var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
   var outputPath = resourceLocator.getOutputPath('js');
 
   return gulp.src(sources)
-    .pipe(changed())
     .pipe(sourcemaps.init())
     .pipe(concat(outputResourceName))
     .pipe(sourcemaps.write('./'))
+    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
