@@ -5,7 +5,6 @@ const addsrc = require('gulp-add-src');
 const autoprefixer = require('gulp-autoprefixer');
 const babel = require("gulp-babel");
 const buffer = require('vinyl-buffer');
-const changed = require("gulp-changed-in-place");
 const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
 const gutil = require('gulp-util');
@@ -141,7 +140,6 @@ gulp.task('css', function() {
       .pipe(pixrem())
       .pipe(cssnano())
       //.pipe(sourcemaps.write())
-      .pipe(changed())
       .pipe(gulp.dest(outputPath));
 });
 
@@ -172,7 +170,6 @@ gulp.task('javascript', function () {
 
   return task
     .pipe(sourcemaps.write('./'))
-    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
@@ -189,7 +186,6 @@ gulp.task('vendored-javascript', function () {
     .pipe(sourcemaps.init())
     .pipe(concat(outputResourceName))
     .pipe(sourcemaps.write('./'))
-    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
@@ -201,7 +197,6 @@ gulp.task('copy-index', function () {
   var outputPath = resourceLocator.getOutputPath('index');
 
   return gulp.src(source)
-    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
@@ -214,7 +209,6 @@ gulp.task('copy-font-icons', function () {
   var outputPath = resourceLocator.getOutputPath('css');
 
   return gulp.src(sources)
-    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
@@ -226,7 +220,6 @@ gulp.task('copy-font-icons-svgs', function () {
   var outputPath = resourceLocator.getOutputPath('css');
 
   return gulp.src(sources)
-    .pipe(changed())
     .pipe(gulp.dest(outputPath + '/svgs'));
 });
 
