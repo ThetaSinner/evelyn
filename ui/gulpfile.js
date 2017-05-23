@@ -5,6 +5,7 @@ const addsrc = require('gulp-add-src');
 const autoprefixer = require('gulp-autoprefixer');
 const babel = require("gulp-babel");
 const buffer = require('vinyl-buffer');
+const changed = require("gulp-changed-in-place");
 const concat = require("gulp-concat");
 const cssnano = require('gulp-cssnano');
 const gutil = require('gulp-util');
@@ -135,6 +136,7 @@ gulp.task('css', function() {
       //.pipe(sourcemaps.init())
       .pipe(sass(sassCompileSettings).on('error', sass.logError))
       .pipe(addsrc.append(cssSources))
+      .pipe(changed())
       .pipe(concat(outputResourceName))
       .pipe(autoprefixer(autoPrefixerSettings))
       .pipe(pixrem())
@@ -154,6 +156,7 @@ gulp.task('javascript', function () {
 
   var task = gulp.src(sources)
     .pipe(sourcemaps.init())
+    .pipe(changed())
     .pipe(concat(outputResourceName))
     .pipe(fileinclude({
       basepath: '@file',
@@ -183,6 +186,7 @@ gulp.task('vendored-javascript', function() {
   var outputPath = resourceLocator.getOutputPath('js');
 
   return gulp.src(sources)
+    .pipe(changed())
     .pipe(sourcemaps.init())
     .pipe(concat(outputResourceName))
     .pipe(sourcemaps.write('./'))
@@ -192,11 +196,12 @@ gulp.task('vendored-javascript', function() {
 /*
  * Copy the index html file.
  */
-gulp.task('copy-index', function() {
+gulp.task('copy-index', function () {
   var source = resourceLocator.getSourcePaths('index');
   var outputPath = resourceLocator.getOutputPath('index');
 
   return gulp.src(source)
+    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
@@ -204,22 +209,24 @@ gulp.task('copy-index', function() {
 /*
  * Copy foundation icon fonts.
  */
-gulp.task('copy-font-icons', function() {
+gulp.task('copy-font-icons', function () {
   var sources = resourceLocator.getSourcePaths('foundationIconFonts');
   var outputPath = resourceLocator.getOutputPath('css');
 
   return gulp.src(sources)
+    .pipe(changed())
     .pipe(gulp.dest(outputPath));
 });
 
 /*
  * Copy foundation icon font svgs.
  */
-gulp.task('copy-font-icons-svgs', function() {
+gulp.task('copy-font-icons-svgs', function () {
   var sources = resourceLocator.getSourcePaths('foundationIconSvgs');
   var outputPath = resourceLocator.getOutputPath('css');
 
   return gulp.src(sources)
+    .pipe(changed())
     .pipe(gulp.dest(outputPath + '/svgs'));
 });
 
