@@ -10,6 +10,9 @@ const cssnano = require('gulp-cssnano');
 const gutil = require('gulp-util');
 const fileinclude = require("gulp-file-include");
 const pixrem = require('gulp-pixrem');
+const print = require('gulp-print');
+// .pipe(print())   ->  outputs each file in stream
+// .pipe(print(function (filepath) { return "File: " + filepath; })) -> outputs each file prepended with "File: "
 const sass = require('gulp-sass');
 const source = require('vinyl-source-stream');
 const sourcemaps = require("gulp-sourcemaps");
