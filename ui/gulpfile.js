@@ -33,7 +33,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
     css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
     js: [
       'components/**/*.js',
-      'javascript/evelyn-desktop.js',
+      'javascript/modules/*.js',
       'javascript/controllers/*.js',
       'javascript/services/*.js',
     ],
