@@ -126,7 +126,7 @@ const autoPrefixerSettings = {
  */
 gulp.task('css', function() {
   var scssSources = resourceLocator.getSourcePaths('scss_entrypoint');
-  var cssSoures = resourceLocator.getSourcePaths('css');
+  var cssSources = resourceLocator.getSourcePaths('css');
 
   var outputResourceName = resourceLocator.getOutputResourceName('css');
   var outputPath = resourceLocator.getOutputPath('css');
@@ -134,7 +134,7 @@ gulp.task('css', function() {
   return gulp.src(scssSources)
       //.pipe(sourcemaps.init())
       .pipe(sass(sassCompileSettings).on('error', sass.logError))
-      .pipe(addsrc.append(cssSoures))
+      .pipe(addsrc.append(cssSources))
       .pipe(concat(outputResourceName))
       .pipe(autoprefixer(autoPrefixerSettings))
       .pipe(pixrem())
