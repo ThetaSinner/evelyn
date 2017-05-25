@@ -31,7 +31,9 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/angular-route-1.6.4.min.js',
             'vendored/js/underscore-1.8.3.min.js',
             'vendored/js/backbone-1.3.3.min.js',
+            'vendored/js/moment-2.18.1.js',
             '../node_modules/foundation-sites/dist/js/foundation.min.js',
+            'vendored/js/foundation-datepicker.js',
         ],
         foundationIconFonts: [
             'vendored/foundation-icon-fonts-3/foundation-icons.eot',
