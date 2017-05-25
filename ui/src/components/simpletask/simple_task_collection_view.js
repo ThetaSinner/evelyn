@@ -2,6 +2,7 @@ var SimpleTaskCollectionView = Backbone.View.extend({
     el : "#simple_task_view",
 
     initialize : function () {
+        this.listenTo( this.collection, 'add', this.render);
         this.render();
     },
 
