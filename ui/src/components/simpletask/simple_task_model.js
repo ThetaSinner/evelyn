@@ -1,4 +1,4 @@
-var SimpleTask = Backbone.Model.extend({
+var SimpleTaskModel = Backbone.Model.extend({
     defaults: {
         title: '_task',
         description: "_description",
