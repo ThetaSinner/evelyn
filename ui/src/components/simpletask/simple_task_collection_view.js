@@ -6,6 +6,7 @@ var SimpleTaskCollectionView = Backbone.View.extend({
     },
 
     render: function () {
+        this.$el.empty();
         this.collection.each(function (person) {
             var simpleTaskView = new SimpleTaskView({model: person});
             this.$el.append(simpleTaskView.render().el); // calling render method manually..
