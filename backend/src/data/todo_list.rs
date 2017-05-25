@@ -22,9 +22,10 @@ use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
-pub fn insert_todo_list(client: &Client,
-                        create_todo_list_model: &model::todo_list::TodoListModel)
-                        -> Option<EvelynDatabaseError> {
+pub fn insert_todo_list(
+    client: &Client,
+    create_todo_list_model: &model::todo_list::TodoListModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let bson_todo_list_model = bson::to_bson(&create_todo_list_model).unwrap();
@@ -39,7 +40,10 @@ pub fn insert_todo_list(client: &Client,
     }
 }
 
-pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model::todo_list::item::AddItemTodoListModel) -> Option<EvelynDatabaseError>{
+pub fn add_item_to_todo_list(
+    client: &Client,
+    add_item_todo_list_model: &model::todo_list::item::AddItemTodoListModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = add_item_todo_list_model.user_id;
@@ -47,8 +51,7 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
     let filter = doc!("userId" => user_id, "todoListId" => todo_list_id);
 
     let mut update_query = Document::new();
-    let bson_todo_list_item_model = bson::to_bson(&add_item_todo_list_model.todo_list_item)
-        .unwrap();
+    let bson_todo_list_item_model = bson::to_bson(&add_item_todo_list_model.todo_list_item).unwrap();
     if let bson::Bson::Document(document) = bson_todo_list_item_model {
         update_query.insert("todoListItems", document);
 
@@ -64,9 +67,10 @@ pub fn add_item_to_todo_list(client : &Client, add_item_todo_list_model: &model:
     }
 }
 
-pub fn lookup_todo_lists(client: &Client,
-                         lookup_todo_lists_model: &model::todo_list::LookupTodoListsModel)
-                         -> Result<Vec<model::todo_list::TodoListsModel>, EvelynDatabaseError> {
+pub fn lookup_todo_lists(
+    client: &Client,
+    lookup_todo_lists_model: &model::todo_list::LookupTodoListsModel,
+) -> Result<Vec<model::todo_list::TodoListsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = lookup_todo_lists_model.user_id;
@@ -100,9 +104,10 @@ pub fn lookup_todo_lists(client: &Client,
     }
 }
 
-pub fn lookup_todo_list(client: &Client,
-                        lookup_todo_list_model: &model::todo_list::LookupTodoListModel)
-                        -> Result<model::todo_list::TodoListModel, EvelynDatabaseError> {
+pub fn lookup_todo_list(
+    client: &Client,
+    lookup_todo_list_model: &model::todo_list::LookupTodoListModel,
+) -> Result<model::todo_list::TodoListModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = lookup_todo_list_model.user_id;
@@ -121,7 +126,10 @@ pub fn lookup_todo_list(client: &Client,
     }
 }
 
-pub fn update_todo_list_item(client : &Client, update_todo_list_item: &model::todo_list::item::UpdateTodoListItemModel) -> Option<EvelynDatabaseError>{
+pub fn update_todo_list_item(
+    client: &Client,
+    update_todo_list_item: &model::todo_list::item::UpdateTodoListItemModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("todolist");
 
     let ref user_id = update_todo_list_item.user_id;

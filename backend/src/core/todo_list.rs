@@ -21,11 +21,11 @@ use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub fn create_todo_list
-    (model: model::todo_list::CreateTodoListRequestModel,
-     session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::todo_list::CreateTodoListResponseModel, EvelynCoreError> {
+pub fn create_todo_list(
+    model: model::todo_list::CreateTodoListRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::todo_list::CreateTodoListResponseModel, EvelynCoreError> {
     let todo_list_id = Uuid::new_v4();
 
     let mut todo_list_model = model::todo_list::TodoListModel {
@@ -59,10 +59,11 @@ pub fn create_todo_list
     }
 }
 
-pub fn add_item_to_todo_list(model: model::todo_list::item::AddItemTodoListRequestModel,
-                             session_token_model: model::SessionTokenModel,
-                             processor_data: Arc<ProcessorData>)
-                             -> Option<EvelynCoreError> {
+pub fn add_item_to_todo_list(
+    model: model::todo_list::item::AddItemTodoListRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let todo_list_model = model::todo_list::item::AddItemTodoListModel {
         user_id: session_token_model.user_id,
         todo_list_id: model.todo_list_id,
@@ -82,12 +83,13 @@ pub fn add_item_to_todo_list(model: model::todo_list::item::AddItemTodoListReque
     }
 }
 
-pub fn lookup_todo_lists
-    (session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::todo_list::LookupTodoListsResponseModel, EvelynCoreError> {
-    let lookup_todo_lists_model =
-        model::todo_list::LookupTodoListsModel { user_id: session_token_model.user_id };
+pub fn lookup_todo_lists(
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::todo_list::LookupTodoListsResponseModel, EvelynCoreError> {
+    let lookup_todo_lists_model = model::todo_list::LookupTodoListsModel {
+        user_id: session_token_model.user_id,
+    };
 
     let data_store = processor_data.data_store.clone();
 
@@ -112,11 +114,11 @@ pub fn lookup_todo_lists
     }
 }
 
-pub fn lookup_todo_list
-    (model: model::todo_list::LookupTodoListRequestModel,
-     session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::todo_list::LookupTodoListResponseModel, EvelynCoreError> {
+pub fn lookup_todo_list(
+    model: model::todo_list::LookupTodoListRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::todo_list::LookupTodoListResponseModel, EvelynCoreError> {
     let lookup_todo_list_model = model::todo_list::LookupTodoListModel {
         user_id: session_token_model.user_id,
         todo_list_id: model.todo_list_id,
@@ -149,10 +151,11 @@ pub fn lookup_todo_list
     }
 }
 
-pub fn update_todo_list_item(model: model::todo_list::item::UpdateItemTodoListRequestModel,
-                             session_token_model: model::SessionTokenModel,
-                             processor_data: Arc<ProcessorData>)
-                             -> Option<EvelynCoreError> {
+pub fn update_todo_list_item(
+    model: model::todo_list::item::UpdateItemTodoListRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let update_todo_list_item_model = model::todo_list::item::UpdateTodoListItemModel {
         user_id: session_token_model.user_id,
         todo_list_id: model.todo_list_id,

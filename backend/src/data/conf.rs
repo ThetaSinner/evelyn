@@ -25,7 +25,8 @@ impl Conf {
         let mut c = config::Config::new();
         c.set_default("port", "8080").unwrap();
         c.set_default("host", "localhost").unwrap();
-        c.set_default("db_connection_string", "mongodb://localhost:27017").unwrap();
+        c.set_default("db_connection_string", "mongodb://localhost:27017")
+            .unwrap();
         c.set_default("use_ssl", "true").unwrap();
 
         println!("Reading config from evelyn.json");
@@ -34,7 +35,9 @@ impl Conf {
             Err(e) => println!("Failed to load config {:?}", e),
         };
 
-        Conf { internal: c }
+        Conf {
+            internal: c,
+        }
     }
 
     pub fn get_port(&self) -> i64 {

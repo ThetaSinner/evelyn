@@ -21,11 +21,11 @@ use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub fn create_user_group
-    (model: model::user_group::CreateUserGroupRequestModel,
-     session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::user_group::CreateUserGroupResponseModel, EvelynCoreError> {
+pub fn create_user_group(
+    model: model::user_group::CreateUserGroupRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::user_group::CreateUserGroupResponseModel, EvelynCoreError> {
     let user_group_id = Uuid::new_v4();
 
     let user_group_model = model::user_group::UserGroupModel {
@@ -49,9 +49,7 @@ pub fn create_user_group
     }
 }
 
-pub fn lookup_user_groups
-    (processor_data: Arc<ProcessorData>)
-     -> Result<model::user_group::LookupUserGroupsResponseModel, EvelynCoreError> {
+pub fn lookup_user_groups(processor_data: Arc<ProcessorData>) -> Result<model::user_group::LookupUserGroupsResponseModel, EvelynCoreError> {
     let data_store = processor_data.data_store.clone();
 
     match data::user_group::lookup_user_groups(&data_store) {
@@ -76,10 +74,10 @@ pub fn lookup_user_groups
     }
 }
 
-pub fn lookup_user_group
-    (model: model::user_group::LookupUserGroupRequestModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::user_group::LookupUserGroupResponseModel, EvelynCoreError> {
+pub fn lookup_user_group(
+    model: model::user_group::LookupUserGroupRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::user_group::LookupUserGroupResponseModel, EvelynCoreError> {
     let data_store = processor_data.data_store.clone();
 
     match data::user_group::lookup_user_group(&data_store, model.user_group_id) {
@@ -92,8 +90,10 @@ pub fn lookup_user_group
                                             .members
                                             .into_iter()
                                             .map(|x| {
-                model::user_group::UserGroupMemberExternalModel { user_id: x.user_id }
-            })
+                                                     model::user_group::UserGroupMemberExternalModel {
+                                                         user_id: x.user_id,
+                                                     }
+                                                 })
                                             .collect(),
                                     }),
                    error: None,

@@ -24,11 +24,11 @@ use std::cmp::Ordering;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub fn create_simple_task
-    (model: model::simple_task::CreateSimpleTaskModel,
-     session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
+pub fn create_simple_task(
+    model: model::simple_task::CreateSimpleTaskModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
     let task_id = Uuid::new_v4();
 
     let simple_task_model = model::simple_task::SimpleTaskModel {
@@ -53,11 +53,11 @@ pub fn create_simple_task
     }
 }
 
-pub fn lookup_simple_tasks
-    (model: model::simple_task::LookupSimpleTaskRequestModel,
-     session_token_model: model::SessionTokenModel,
-     processor_data: Arc<ProcessorData>)
-     -> Result<model::simple_task::LookupSimpleTaskResponseModel, EvelynCoreError> {
+pub fn lookup_simple_tasks(
+    model: model::simple_task::LookupSimpleTaskRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::simple_task::LookupSimpleTaskResponseModel, EvelynCoreError> {
     let simple_task_lookup_model = model::simple_task::SimpleTaskLookupModel {
         user_id: session_token_model.user_id,
         limit: model.limit,
@@ -108,10 +108,11 @@ pub fn lookup_simple_tasks
     }
 }
 
-pub fn update_simple_task(model: model::simple_task::UpdateSimpleTaskRequestModel,
-                          session_token_model: model::SessionTokenModel,
-                          processor_data: Arc<ProcessorData>)
-                          -> Option<EvelynCoreError> {
+pub fn update_simple_task(
+    model: model::simple_task::UpdateSimpleTaskRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let simple_task_update_model = model::simple_task::SimpleTaskUpdateModel {
         user_id: session_token_model.user_id,
         task_id: model.task_id,

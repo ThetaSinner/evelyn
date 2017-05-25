@@ -28,9 +28,10 @@ pub fn purge_database(processor_data: Arc<ProcessorData>) -> Option<EvelynCoreEr
     }
 }
 
-pub fn purge_database_area(target: &String,
-                           processor_data: Arc<ProcessorData>)
-                           -> Option<EvelynCoreError> {
+pub fn purge_database_area(
+    target: &String,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let ds = processor_data.data_store.clone();
 
     match data::server_admin::purge_collection(target, &ds) {

@@ -22,43 +22,47 @@ use serde_json;
 use server::routing::{RouterInput, RouterOutput};
 use std::sync::Arc;
 
-pub fn create_user_processor(router_input: RouterInput,
-                             processor_data: Arc<processing::ProcessorData>)
-                             -> RouterOutput {
-    let request_model_decoded: Result<model::user::CreateUserModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn create_user_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_decoded: Result<model::user::CreateUserModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_decoded {
         Ok(request_model) => {
             match user::create_user(request_model, processor_data) {
                 None => {
                     RouterOutput {
-                        response_body:
-                            serde_json::to_string(&model::user::CreateUserResponseModel {
-                                                      error: None,
-                                                  })
-                                    .unwrap(),
+                        response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+                                                                 error: None,
+                                                             })
+                                .unwrap(),
                     }
                 },
                 Some(e) => {
                     match e {
                         EvelynCoreError::WillNotCreateUserBecauseUserAlreadyExists(EvelynBaseError::NothingElse) => {
-                        RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
-                            error: Some(From::from(EvelynServiceError::UserAlreadyExists(e)))
-                        }).unwrap()}
-                    },
+                            RouterOutput {
+                                response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+                                                                         error: Some(From::from(EvelynServiceError::UserAlreadyExists(e))),
+                                                                     })
+                                        .unwrap(),
+                            }
+                        },
                         _ => {
-                        RouterOutput{response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
-                            error: Some(From::from(EvelynServiceError::CreateUser(e)))
-                        }).unwrap()}
-                    },
+                            RouterOutput {
+                                response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
+                                                                         error: Some(From::from(EvelynServiceError::CreateUser(e))),
+                                                                     })
+                                        .unwrap(),
+                            }
+                        },
                     }
                 },
             }
         },
         Err(e) => {
-            let model: model::ErrorModel =
-                From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+            let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
             RouterOutput {
                 response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                                                          error: Some(model),
@@ -69,41 +73,52 @@ pub fn create_user_processor(router_input: RouterInput,
     }
 }
 
-pub fn logon_user_processor(router_input: RouterInput,
-                            processor_data: Arc<processing::ProcessorData>)
-                            -> RouterOutput {
-    let request_model_de: Result<model::user::LogonUserModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn logon_user_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::user::LogonUserModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
             match user::logon_user(request_model, processor_data) {
                 Ok(response) => {
-                    RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+                    RouterOutput {
+                        response_body: serde_json::to_string(&response).unwrap(),
+                    }
                 },
                 Err(e) => {
                     match e {
                         EvelynCoreError::InvalidLogon(EvelynBaseError::NothingElse) => {
-                        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
-                            token: None,
-                            error: Some(From::from(EvelynServiceError::LogonUser(e)))
-                        }).unwrap()}
-                    },
+                            RouterOutput {
+                                response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
+                                                                         token: None,
+                                                                         error: Some(From::from(EvelynServiceError::LogonUser(e))),
+                                                                     })
+                                        .unwrap(),
+                            }
+                        },
                         _ => {
-                        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
-                            token: None,
-                            error: Some(From::from(EvelynServiceError::FailedToLogonUser(e)))
-                        }).unwrap()}
-                    },
+                            RouterOutput {
+                                response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
+                                                                         token: None,
+                                                                         error: Some(From::from(EvelynServiceError::FailedToLogonUser(e))),
+                                                                     })
+                                        .unwrap(),
+                            }
+                        },
                     }
                 },
             }
         },
         Err(e) => {
-        RouterOutput{response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
-            token: None,
-            error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)))
-        }).unwrap()}
-      },
+            RouterOutput {
+                response_body: serde_json::to_string(&model::user::LogonUserResponseModel {
+                                                         token: None,
+                                                         error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
+                                                     })
+                        .unwrap(),
+            }
+        },
     }
 }

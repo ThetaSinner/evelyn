@@ -35,26 +35,33 @@ pub struct Router {
 
 impl Router {
     pub fn new() -> Self {
-        Router { rules: HashMap::new() }
+        Router {
+            rules: HashMap::new(),
+        }
     }
 
-    pub fn add_rule(&mut self,
-                    route: &str,
-                    processor: fn(RouterInput, Arc<ProcessorData>) -> RouterOutput) {
+    pub fn add_rule(
+        &mut self,
+        route: &str,
+        processor: fn(RouterInput, Arc<ProcessorData>) -> RouterOutput,
+    ) {
         self.rules.insert(route.to_string(), processor);
     }
 
-    pub fn route(&self,
-                 route: &str,
-                 router_input: RouterInput,
-                 processor_data: Arc<ProcessorData>)
-                 -> Option<RouterOutput> {
+    pub fn route(
+        &self,
+        route: &str,
+        router_input: RouterInput,
+        processor_data: Arc<ProcessorData>,
+    ) -> Option<RouterOutput> {
         let processor_opt = self.rules.get(route);
         match processor_opt {
             Some(processor) => Some(processor(router_input, processor_data)),
             None => {
                 let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::ReqestForActionWhichEvelynDoesNotKnowHowToDo(error_messages::EvelynBaseError::NothingElse));
-                Some(RouterOutput { response_body: serde_json::to_string(&model).unwrap() })
+                Some(RouterOutput {
+                         response_body: serde_json::to_string(&model).unwrap(),
+                     })
             },
         }
     }

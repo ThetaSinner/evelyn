@@ -20,9 +20,10 @@ use model::user::{CreateUserModel, LogonUserModel, LogonUserResponseModel, UserM
 use processing::ProcessorData;
 use std::sync::Arc;
 
-pub fn create_user(model: CreateUserModel,
-                   processor_data: Arc<ProcessorData>)
-                   -> Option<EvelynCoreError> {
+pub fn create_user(
+    model: CreateUserModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let user_model = UserModel {
         user_name: model.user_name,
         email_address: model.email_address,
@@ -49,9 +50,10 @@ pub fn create_user(model: CreateUserModel,
     }
 }
 
-pub fn logon_user(model: LogonUserModel,
-                  processor_data: Arc<ProcessorData>)
-                  -> Result<LogonUserResponseModel, EvelynCoreError> {
+pub fn logon_user(
+    model: LogonUserModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<LogonUserResponseModel, EvelynCoreError> {
     let ds = processor_data.data_store.clone();
 
     match data::user::find_user(&ds, &model.email_address) {
@@ -59,10 +61,9 @@ pub fn logon_user(model: LogonUserModel,
             if user.is_some() {
                 let user = user.unwrap();
                 if user.password == model.password {
-                    let token =
-                        processor_data
-                            .token_service
-                            .create_session_token(&processor_data.server_session_token, &user);
+                    let token = processor_data
+                        .token_service
+                        .create_session_token(&processor_data.server_session_token, &user);
 
                     Ok(LogonUserResponseModel {
                            token: Some(token),

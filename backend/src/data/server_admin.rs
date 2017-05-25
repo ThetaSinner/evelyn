@@ -27,7 +27,10 @@ pub fn purge_database(client: &Client) -> Option<EvelynDatabaseError> {
     }
 }
 
-pub fn purge_collection(target: &String, client: &Client) -> Option<EvelynDatabaseError> {
+pub fn purge_collection(
+    target: &String,
+    client: &Client,
+) -> Option<EvelynDatabaseError> {
     let db = client.db("evelyn");
 
     match db.drop_collection(target) {

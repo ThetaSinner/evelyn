@@ -22,9 +22,10 @@ use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
-pub fn insert_user_group(client: &Client,
-                         user_group_model: &user_group_model::UserGroupModel)
-                         -> Option<EvelynDatabaseError> {
+pub fn insert_user_group(
+    client: &Client,
+    user_group_model: &user_group_model::UserGroupModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
     insert_model!(collection,
@@ -32,9 +33,7 @@ pub fn insert_user_group(client: &Client,
                   EvelynDatabaseError::InsertUserGroup)
 }
 
-pub fn lookup_user_groups
-    (client: &Client)
-     -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
+pub fn lookup_user_groups(client: &Client) -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
     let mut find_options = FindOptions::new();
@@ -66,9 +65,10 @@ pub fn lookup_user_groups
     }
 }
 
-pub fn lookup_user_group(client: &Client,
-                         user_group_id: String)
-                         -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
+pub fn lookup_user_group(
+    client: &Client,
+    user_group_id: String,
+) -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
     let filter = doc!("userGroupId" => user_group_id);

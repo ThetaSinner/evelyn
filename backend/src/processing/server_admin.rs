@@ -22,11 +22,11 @@ use serde_json;
 use server::routing::{RouterInput, RouterOutput};
 use std::sync::Arc;
 
-pub fn purge_processor(router_input: RouterInput,
-                       processor_data: Arc<processing::ProcessorData>)
-                       -> RouterOutput {
-    let request_model_de: Result<model::server_admin::PurgeRequestModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn purge_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::server_admin::PurgeRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     // TODO check token, but need some way to mark users as privileged.
 
@@ -51,20 +51,18 @@ pub fn purge_processor(router_input: RouterInput,
             match error {
                 None => {
                     RouterOutput {
-                        response_body:
-                            serde_json::to_string(&model::server_admin::PurgeResponseModel {
-                                                      error: None,
-                                                  })
-                                    .unwrap(),
+                        response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {
+                                                                 error: None,
+                                                             })
+                                .unwrap(),
                     }
                 },
                 Some(e) => {
                     RouterOutput {
-                        response_body:
-                            serde_json::to_string(&model::server_admin::PurgeResponseModel {
-                                                      error: Some(From::from(e)),
-                                                  })
-                                    .unwrap(),
+                        response_body: serde_json::to_string(&model::server_admin::PurgeResponseModel {
+                                                                 error: Some(From::from(e)),
+                                                             })
+                                .unwrap(),
                     }
                 },
             }
@@ -75,7 +73,9 @@ pub fn purge_processor(router_input: RouterInput,
                 error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
             };
 
-            RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+            RouterOutput {
+                response_body: serde_json::to_string(&response).unwrap(),
+            }
         },
     }
 }

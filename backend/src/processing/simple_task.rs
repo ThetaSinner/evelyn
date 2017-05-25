@@ -22,30 +22,31 @@ use serde_json;
 use server::routing::{RouterInput, RouterOutput};
 use std::sync::Arc;
 
-pub fn create_simple_task_processor(router_input: RouterInput,
-                                    processor_data: Arc<processing::ProcessorData>)
-                                    -> RouterOutput {
-    let request_model_de: Result<model::simple_task::CreateSimpleTaskModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn create_simple_task_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::simple_task::CreateSimpleTaskModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
-            match simple_task::create_simple_task(request_model,
-                                                  session_token_model,
-                                                  processor_data) {
+            match simple_task::create_simple_task(request_model, session_token_model, processor_data) {
                 Ok(response) => {
-                    RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+                    RouterOutput {
+                        response_body: serde_json::to_string(&response).unwrap(),
+                    }
                 },
                 Err(e) => {
-                RouterOutput{
-                    response_body: serde_json::to_string(&model::simple_task::CreateSimpleTaskResponseModel {
-                        task_id: None,
-                        error: Some(From::from(EvelynServiceError::FailedToCreateSimpleTask(e))),
-                    }).unwrap()
-                }
-            },
+                    RouterOutput {
+                        response_body: serde_json::to_string(&model::simple_task::CreateSimpleTaskResponseModel {
+                                                                 task_id: None,
+                                                                 error: Some(From::from(EvelynServiceError::FailedToCreateSimpleTask(e))),
+                                                             })
+                                .unwrap(),
+                    }
+                },
             }
         },
         Err(e) => {
@@ -54,35 +55,38 @@ pub fn create_simple_task_processor(router_input: RouterInput,
                 error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
             };
 
-            RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+            RouterOutput {
+                response_body: serde_json::to_string(&response).unwrap(),
+            }
         },
     }
 }
 
-pub fn lookup_simple_task_processor(router_input: RouterInput,
-                                    processor_data: Arc<processing::ProcessorData>)
-                                    -> RouterOutput {
-    let request_model_de: Result<model::simple_task::LookupSimpleTaskRequestModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn lookup_simple_task_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::simple_task::LookupSimpleTaskRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
-            match simple_task::lookup_simple_tasks(request_model,
-                                                   session_token_model,
-                                                   processor_data) {
+            match simple_task::lookup_simple_tasks(request_model, session_token_model, processor_data) {
                 Ok(response) => {
-                    RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+                    RouterOutput {
+                        response_body: serde_json::to_string(&response).unwrap(),
+                    }
                 },
                 Err(e) => {
-                RouterOutput{
-                    response_body: serde_json::to_string(&model::simple_task::LookupSimpleTaskResponseModel {
-                        simple_tasks: Vec::new(),
-                        error: Some(From::from(EvelynServiceError::FailedToLookupSimpleTask(e))),
-                    }).unwrap()
-                }
-            },
+                    RouterOutput {
+                        response_body: serde_json::to_string(&model::simple_task::LookupSimpleTaskResponseModel {
+                                                                 simple_tasks: Vec::new(),
+                                                                 error: Some(From::from(EvelynServiceError::FailedToLookupSimpleTask(e))),
+                                                             })
+                                .unwrap(),
+                    }
+                },
             }
         },
         Err(e) => {
@@ -91,43 +95,45 @@ pub fn lookup_simple_task_processor(router_input: RouterInput,
                 error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
             };
 
-            RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+            RouterOutput {
+                response_body: serde_json::to_string(&response).unwrap(),
+            }
         },
     }
 }
 
-pub fn update_simple_task_processor(router_input: RouterInput,
-                                    processor_data: Arc<processing::ProcessorData>)
-                                    -> RouterOutput {
-    let request_model_de: Result<model::simple_task::UpdateSimpleTaskRequestModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn update_simple_task_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::simple_task::UpdateSimpleTaskRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
-            match simple_task::update_simple_task(request_model,
-                                                  session_token_model,
-                                                  processor_data) {
+            match simple_task::update_simple_task(request_model, session_token_model, processor_data) {
                 None => {
-                RouterOutput{response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
-                    error: None,
-                }).unwrap()}
-            },
-                Some(e) => {
-                    let model: model::ErrorModel =
-                        From::from(EvelynServiceError::FailedToUpdateSimpleTask(e));
                     RouterOutput {
-                    response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
-                        error: Some(model),
-                    }).unwrap()
-                }
+                        response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
+                                                                 error: None,
+                                                             })
+                                .unwrap(),
+                    }
+                },
+                Some(e) => {
+                    let model: model::ErrorModel = From::from(EvelynServiceError::FailedToUpdateSimpleTask(e));
+                    RouterOutput {
+                        response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
+                                                                 error: Some(model),
+                                                             })
+                                .unwrap(),
+                    }
                 },
             }
         },
         Err(e) => {
-            let model: model::ErrorModel =
-                From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
+            let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
             RouterOutput {
                 response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
                                                          error: Some(model),

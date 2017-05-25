@@ -21,9 +21,10 @@ use model;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
-pub fn insert_simple_task(client: &Client,
-                          simple_task_model: &model::simple_task::SimpleTaskModel)
-                          -> Option<EvelynDatabaseError> {
+pub fn insert_simple_task(
+    client: &Client,
+    simple_task_model: &model::simple_task::SimpleTaskModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("simpletask");
 
     let bson_simple_task_model = bson::to_bson(&simple_task_model).unwrap();
@@ -38,10 +39,10 @@ pub fn insert_simple_task(client: &Client,
     }
 }
 
-pub fn lookup_simple_tasks
-    (client: &Client,
-     simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel)
-     -> Result<Vec<model::simple_task::SimpleTaskModel>, EvelynDatabaseError> {
+pub fn lookup_simple_tasks(
+    client: &Client,
+    simple_task_lookup_model: &model::simple_task::SimpleTaskLookupModel,
+) -> Result<Vec<model::simple_task::SimpleTaskModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("simpletask");
 
     let ref user_id = simple_task_lookup_model.user_id;
@@ -51,24 +52,24 @@ pub fn lookup_simple_tasks
 
     match cursor {
         Ok(c) => {
-            let docs: Vec<model::simple_task::SimpleTaskModel> =
-                c.map(|x| match x {
-                             Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
-                             Err(e) => {
-                                 println!("Database error in lookup simple tasks {}", e);
-                                 panic!()
-                             },
-                         })
-                    .collect();
+            let docs: Vec<model::simple_task::SimpleTaskModel> = c.map(|x| match x {
+                                                                           Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                                                                           Err(e) => {
+                                                                               println!("Database error in lookup simple tasks {}", e);
+                                                                               panic!()
+                                                                           },
+                                                                       })
+                .collect();
             Ok(docs)
         },
         Err(e) => Err(EvelynDatabaseError::LookupSimpleTask(e)),
     }
 }
 
-pub fn update_simple_task(client: &Client,
-                          simple_task_update_model: model::simple_task::SimpleTaskUpdateModel)
-                          -> Option<EvelynDatabaseError> {
+pub fn update_simple_task(
+    client: &Client,
+    simple_task_update_model: model::simple_task::SimpleTaskUpdateModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("simpletask");
 
     let ref user_id = simple_task_update_model.user_id;

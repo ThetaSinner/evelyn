@@ -25,13 +25,16 @@ pub struct TokenService {
 
 impl TokenService {
     pub fn new(private_key: String) -> Self {
-        TokenService { private_key: private_key }
+        TokenService {
+            private_key: private_key,
+        }
     }
 
-    pub fn create_session_token(&self,
-                                server_session_token: &String,
-                                user_model: &UserModel)
-                                -> String {
+    pub fn create_session_token(
+        &self,
+        server_session_token: &String,
+        user_model: &UserModel,
+    ) -> String {
         let session_token_model = SessionTokenModel {
             user_id: user_model.email_address.to_owned(),
             server_session_token: server_session_token.to_owned(),
@@ -45,10 +48,11 @@ impl TokenService {
         }
     }
 
-    pub fn extract_session_token(&self, token: &String) -> SessionTokenModel {
-        let token_data = match decode::<SessionTokenModel>(&token,
-                                                           self.private_key.as_ref(),
-                                                           &Validation::default()) {
+    pub fn extract_session_token(
+        &self,
+        token: &String,
+    ) -> SessionTokenModel {
+        let token_data = match decode::<SessionTokenModel>(&token, self.private_key.as_ref(), &Validation::default()) {
             Ok(c) => c,
             Err(err) => panic!("JWT failure {}", err),
         };

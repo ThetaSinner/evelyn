@@ -20,7 +20,10 @@ use model::user::UserModel;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
-pub fn insert_user(client: &Client, user_model: &UserModel) -> Option<EvelynDatabaseError> {
+pub fn insert_user(
+    client: &Client,
+    user_model: &UserModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("user");
 
     let bson_user_model = bson::to_bson(&user_model).unwrap();
@@ -35,9 +38,10 @@ pub fn insert_user(client: &Client, user_model: &UserModel) -> Option<EvelynData
     }
 }
 
-pub fn find_user(client: &Client,
-                 email_address: &String)
-                 -> Result<Option<UserModel>, EvelynDatabaseError> {
+pub fn find_user(
+    client: &Client,
+    email_address: &String,
+) -> Result<Option<UserModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("user");
 
     let query = doc!{"emailAddress" => email_address};

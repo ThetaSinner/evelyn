@@ -23,11 +23,11 @@ use serde_json;
 use server::routing::{RouterInput, RouterOutput};
 use std::sync::Arc;
 
-pub fn calendar_add_event_processor(router_input: RouterInput,
-                                    processor_data: Arc<processing::ProcessorData>)
-                                    -> RouterOutput {
-    let request_model_de: Result<calendar_model::CalendarAddEventRequestModel, _> =
-        serde_json::from_str(&router_input.request_body);
+pub fn calendar_add_event_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<calendar_model::CalendarAddEventRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
@@ -36,20 +36,20 @@ pub fn calendar_add_event_processor(router_input: RouterInput,
             match calendar::calendar_add_event(request_model, session_token_model, processor_data) {
                 None => {
                     RouterOutput {
-                        response_body:
-                            serde_json::to_string(&calendar_model::CalendarAddEventResponseModel {
-                                                      error: None,
-                                                  })
-                                    .unwrap(),
+                        response_body: serde_json::to_string(&calendar_model::CalendarAddEventResponseModel {
+                                                                 error: None,
+                                                             })
+                                .unwrap(),
                     }
                 },
                 Some(e) => {
-                RouterOutput{
-                    response_body: serde_json::to_string(&calendar_model::CalendarAddEventResponseModel {
-                        error: Some(From::from(EvelynServiceError::AddCalendarEvent(e))),
-                    }).unwrap()
-                }
-            },
+                    RouterOutput {
+                        response_body: serde_json::to_string(&calendar_model::CalendarAddEventResponseModel {
+                                                                 error: Some(From::from(EvelynServiceError::AddCalendarEvent(e))),
+                                                             })
+                                .unwrap(),
+                    }
+                },
             }
         },
         Err(e) => {
@@ -59,7 +59,9 @@ pub fn calendar_add_event_processor(router_input: RouterInput,
                 error: Some(From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e))),
             };
 
-            RouterOutput { response_body: serde_json::to_string(&response).unwrap() }
+            RouterOutput {
+                response_body: serde_json::to_string(&response).unwrap(),
+            }
         },
     }
 }

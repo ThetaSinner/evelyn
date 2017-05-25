@@ -57,7 +57,7 @@ pub fn hello_evelyn() {
         Err(e) => panic!("Connection to the database failed {}", e),
     };
 
-    let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret",),);
+    let token_service = core::token_service::TokenService::new(String::from("a_very_important_secret"));
     let server_session_token = token_service.create_server_session_token();
 
     let processor_data = ProcessorData {

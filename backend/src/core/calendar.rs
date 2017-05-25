@@ -22,10 +22,11 @@ use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub fn calendar_add_event(model: calendar_model::CalendarAddEventRequestModel,
-                          session_token_model: model::SessionTokenModel,
-                          processor_data: Arc<ProcessorData>)
-                          -> Option<EvelynCoreError> {
+pub fn calendar_add_event(
+    model: calendar_model::CalendarAddEventRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
     let calendar_event_model = calendar_model::CalendarEventModel {
         user_id: session_token_model.user_id,
         event_id: format!("{}", Uuid::new_v4()),

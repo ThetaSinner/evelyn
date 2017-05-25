@@ -20,9 +20,10 @@ use model::calendar as calendar_model;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
 
-pub fn insert_calendar_event(client: &Client,
-                             calendar_event_model: &calendar_model::CalendarEventModel)
-                             -> Option<EvelynDatabaseError> {
+pub fn insert_calendar_event(
+    client: &Client,
+    calendar_event_model: &calendar_model::CalendarEventModel,
+) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("calendar");
 
     let bson_calendar_event_model = bson::to_bson(&calendar_event_model).unwrap();
