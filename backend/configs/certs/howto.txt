@@ -1,0 +1,1 @@
+https://blog.didierstevens.com/2015/03/30/howto-make-your-own-cert-with-openssl-on-windows/

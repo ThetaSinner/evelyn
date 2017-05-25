@@ -14,57 +14,104 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use chrono::prelude::*;
-use core::error_messages;
-use model;
-use processing::ProcessorData;
-use serde_json;
-use server::routing::{Router, RouterInput};
-use std::fmt;
-use std::io::{BufRead, BufReader, BufWriter, Write};
-use std::net::{TcpListener, TcpStream};
-use std::str;
 use std::sync::Arc;
-use std::thread;
+use std::io::Read;
 
-struct Header {
-    pub method: String,
-    pub route: String,
-    pub http_version: String,
-}
+use time;
+use unicase::UniCase;
+use hyper::server::{Server, Handler, Request, Response};
+use hyper::method::Method;
+use hyper::status::StatusCode;
+use hyper::mime::{Mime, TopLevel, SubLevel, Attr, Value};
+use hyper::header::{
+    Server as HeaderServer,
+    HttpDate,
+    Date,
+    AccessControlAllowOrigin,
+    AccessControlAllowMethods,
+    AccessControlAllowHeaders,
+    AccessControlMaxAge,
+    Connection,
+    ContentType,
+    ConnectionOption
+};
+use hyper_openssl::OpensslServer;
+use serde_json;
 
-struct HttpRequest {
-    pub header: Option<Header>,
-    pub body: Option<String>,
-}
+use processing::ProcessorData;
+use server::routing::{Router, RouterInput};
+use model;
+use core::error_messages;
 
 pub struct HttpServer {
     router: Arc<Router>,
     processor_data: Arc<ProcessorData>,
     port: i64,
     hostname: String,
+    use_ssl: bool,
 }
 
-enum HttpStatus {
-    Ok,
-    BadRequest,
-    InternalServerError,
+struct HttpHandler {
+    router: Arc<Router>,
+    processor_data: Arc<ProcessorData>,
 }
 
-impl fmt::Display for HttpStatus {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            HttpStatus::Ok => write!(f, "200 OK"),
-            HttpStatus::BadRequest => write!(f, "400 Bad Request"),
-            HttpStatus::InternalServerError => write!(f, "500 Internal Server Error"),
+impl Handler for HttpHandler {
+    fn handle(&self, mut req: Request, mut res: Response) {
+        info!("Starting to handle http request");
+
+        res.headers_mut().set(HeaderServer("evelyn".to_owned()));
+        res.headers_mut().set(Date(HttpDate(time::now())));
+        res.headers_mut().set(AccessControlAllowOrigin::Any);
+        // vary
+        // keep alive
+        res.headers_mut().set(Connection(vec!{ConnectionOption::KeepAlive}));
+        res.headers_mut().set(ContentType(Mime(TopLevel::Application, SubLevel::Json, vec![(Attr::Charset, Value::Utf8)])));
+
+        debug!("Process request {}", req.method);
+
+        match req.method {
+            Method::Options => {
+                res.headers_mut().set(AccessControlAllowOrigin::Any);
+                res.headers_mut().set(AccessControlAllowMethods(vec![Method::Post, Method::Get, Method::Options]));
+                res.headers_mut().set(AccessControlAllowHeaders(vec![UniCase("Content-Type".to_owned())]));
+                res.headers_mut().set(AccessControlMaxAge(86400));
+
+                res.send(b"").unwrap();
+            },
+            Method::Post => {
+                let mut body = String::new();
+                req.read_to_string(&mut body).unwrap();
+
+                debug!("Got body {}", body);
+
+                let router_output = self.router.clone().route(
+                    format!("{}", req.uri).as_str(),
+                    RouterInput{request_body: body},
+                    self.processor_data.clone()
+                );
+
+                if let Some(router_output) = router_output {
+                    //res.headers_mut().set(ContentLength(router_output.response_body.len() as u64));
+                    //let mut res = res.start().unwrap();
+                    debug!("Server output {}", router_output.response_body);
+                    res.send(router_output.response_body.as_bytes()).unwrap();
+                }
+                else {
+                    *res.status_mut() = StatusCode::InternalServerError;
+                    let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse(error_messages::EvelynBaseError::NothingElse));
+                    let response_body = serde_json::to_string(&model).unwrap();
+                    res.send(response_body.as_bytes()).unwrap();
+                }
+            },
+            _ => {
+                *res.status_mut() = StatusCode::BadRequest;
+                let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::UnsupportedHttpMethod(error_messages::EvelynBaseError::NothingElse));
+                let response_body = serde_json::to_string(&model).unwrap();
+                res.send(response_body.as_bytes()).unwrap();
+            }
         }
     }
-}
-
-struct HttpProcessResult {
-    pub http_status: HttpStatus,
-
-    pub response_body: String,
 }
 
 impl HttpServer {
@@ -73,149 +120,29 @@ impl HttpServer {
             router: Arc::new(router),
             port: processor_data.conf.get_port(),
             hostname: processor_data.conf.get_hostname(),
+            use_ssl: processor_data.conf.is_use_ssl(),
             processor_data: Arc::new(processor_data),
         }
     }
 
     pub fn start(&self) {
         let addr = format!("{}:{}", self.hostname, self.port);
-        let listener = TcpListener::bind(addr.as_str()).unwrap();
 
-        for stream in listener.incoming() {
-            let router = self.router.clone();
-            let processor_data = self.processor_data.clone();
+        debug!("Server starting with address {}, and ssl? {}", addr, self.use_ssl);
 
-            match stream {
-                Ok(stream) => {
-                    thread::spawn(|| read_request(stream, router, processor_data));
-                },
-                Err(e) => println!("Failed connection: {}", e),
-            }
+        if self.use_ssl {
+            let open_ssl_server = OpensslServer::from_files("configs/certs/ia.key", "configs/certs/ia.crt").unwrap();
+
+            Server::https(addr, open_ssl_server).unwrap().handle(HttpHandler {
+                router: self.router.clone(),
+                processor_data: self.processor_data.clone()
+            }).unwrap();
         }
-    }
-}
-
-fn read_request(stream: TcpStream, router: Arc<Router>, processor_data: Arc<ProcessorData>) {
-    let mut reader = BufReader::new(&stream);
-
-    let data = reader.fill_buf().unwrap();
-    let str_data = str::from_utf8(data).unwrap();
-    debug!("Incoming request to evelyn rest api: {:?}", str_data);
-
-    let process_result = process_request(str_data);
-    let mut writer = BufWriter::new(&stream);
-
-    match process_result {
-        Ok(request) => {
-            let header = request.header.unwrap();
-            let body = request.body.unwrap();
-
-            if header.method == "OPTIONS" {
-                send_options_response(&mut writer)
-            } else {
-                let router_output = router.route(header.route.as_str(),
-                                                 RouterInput { request_body: body },
-                                                 processor_data);
-
-                if router_output.is_some() {
-                    send_response(&mut writer,
-                                  HttpProcessResult {
-                                      http_status: HttpStatus::Ok,
-                                      response_body: router_output.unwrap().response_body,
-                                  });
-                } else {
-                    let model: model::ErrorModel = From::from(error_messages::EvelynServiceError::EvelynTriedToHandleTheRequestButDidNotYieldAResponse(error_messages::EvelynBaseError::NothingElse));
-                    send_response(&mut writer,
-                                  HttpProcessResult {
-                                      http_status: HttpStatus::InternalServerError,
-                                      response_body: serde_json::to_string(&model).unwrap(),
-                                  });
-                }
-            }
-        },
-        Err(e) => {
-            let model: model::ErrorModel = From::from(e);
-            send_response(&mut writer,
-                          HttpProcessResult {
-                              http_status: HttpStatus::BadRequest,
-                              response_body: serde_json::to_string(&model).unwrap(),
-                          });
-        },
-    }
-
-}
-
-fn send_options_response<W: Write>(writer: &mut BufWriter<W>) {
-    let dt = Local::now();
-
-    let response =
-        format!("{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
-                "HTTP/1.1 200 OK\r\n",
-                dt.format("Date: %a %e %b %Y %T UTC\r\n").to_string(), /* "Date: Mon, 01 Dec
-                                                                        * 2008 01:15:39 GMT */
-                "Server: Evelyn (Unix)\r\n",
-                "Access-Control-Allow-Origin: *\r\n",
-                "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n",
-                "Access-Control-Allow-Headers: Content-Type\r\n",
-                "Access-Control-Max-Age: 86400\r\n",
-                "Vary: Accept-Encoding, Origin\r\n",
-                "Content-Encoding: gzip\r\n",
-                "Content-Length: 0\r\n",
-                "Keep-Alive: timeout=2, max=100\r\n",
-                "Connection: Keep-Alive\r\n",
-                "Content-Type: application/json\r\n",
-                "\r\n\r\n");
-
-    debug!("Outgoing response from evelyn rest api: {:?}", response);
-
-    writer.write_all(response.as_bytes()).unwrap();
-}
-
-fn send_response<W: Write>(writer: &mut BufWriter<W>, process_result: HttpProcessResult) {
-    let response = format!("HTTP/1.1 {}{}{}\r\n\r\n{}",
-                           process_result.http_status,
-                           "\r\nContent-Type: application/json",
-                           "\r\nAccess-Control-Allow-Origin: *",
-                           process_result.response_body);
-
-    debug!("Outgoing response from evelyn rest api: {:?}", response);
-
-    writer.write_all(response.as_bytes()).unwrap();
-}
-
-fn process_request(request: &str) -> Result<HttpRequest, error_messages::EvelynServiceError> {
-    let lines = request.lines();
-
-    let mut is_processing_header = true;
-    let mut header = Vec::new();
-    let mut body = String::new();
-    for line in lines {
-        if line == "" {
-            is_processing_header = false;
-        } else {
-            if is_processing_header {
-                header.push(line);
-            } else {
-                body = format!("{}\n{}", body, line);
-            }
+        else {
+            Server::http(addr).unwrap().handle(HttpHandler {
+                router: self.router.clone(),
+                processor_data: self.processor_data.clone()
+            }).unwrap();
         }
-    }
-
-    if header.len() == 0 {
-        Err(error_messages::EvelynServiceError::ExpectedHeaderOnRequestButNoneWasFound(error_messages::EvelynBaseError::NothingElse))
-    } else {
-        let top_line = header[0];
-        let top_line_values: Vec<_> = top_line.split(' ').collect();
-
-        let header_model = Header {
-            method: String::from(top_line_values[0]),
-            route: String::from(top_line_values[1]),
-            http_version: String::from(top_line_values[2]),
-        };
-
-        Ok(HttpRequest {
-               header: Some(header_model),
-               body: Some(body),
-           })
     }
 }

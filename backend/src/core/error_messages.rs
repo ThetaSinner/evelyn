@@ -83,6 +83,7 @@ pub enum EvelynServiceError {
     ReqestForActionWhichEvelynDoesNotKnowHowToDo(EvelynBaseError),
     EvelynTriedToHandleTheRequestButDidNotYieldAResponse(EvelynBaseError),
     ExpectedHeaderOnRequestButNoneWasFound(EvelynBaseError),
+    UnsupportedHttpMethod(EvelynBaseError),
 
     CouldNotDecodeTheRequestPayload(serde_json::Error),
     ForeignSessionToken(EvelynBaseError),
@@ -124,6 +125,7 @@ EvelynErrorDisplay!{
     {ReqestForActionWhichEvelynDoesNotKnowHowToDo, "100001", "Request for an action which Evelyn does now know how to do"},
     {EvelynTriedToHandleTheRequestButDidNotYieldAResponse, "100002", "Evelyn tried to handle the request but hasn't managed to give anything back"},
     {ExpectedHeaderOnRequestButNoneWasFound, "100003", "Expected a header with the request but didn't find a header"},
+    {UnsupportedHttpMethod, "100004", "Request uses a method which the evelyn server does not know how to handle"},
 
     {CouldNotDecodeTheRequestPayload, "100101", "Could not decode the JSON request payload"},
     {ForeignSessionToken, "100102", "The server has been restarted please log on again"},
