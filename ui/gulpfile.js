@@ -1,164 +1,148 @@
-var gulp = require('gulp');
+const gulp = require('gulp');
+const plugins = require('gulp-load-plugins')();
 
 const _ = require('lodash');
-const addsrc = require('gulp-add-src');
-const autoprefixer = require('gulp-autoprefixer');
-const babel = require("gulp-babel");
-const buffer = require('vinyl-buffer');
-const concat = require("gulp-concat");
-const cssnano = require('gulp-cssnano');
-const gutil = require('gulp-util');
-const fileinclude = require("gulp-file-include");
-const order = require('gulp-order');
-const pixrem = require('gulp-pixrem');
-const print = require('gulp-print');
-// .pipe(print())   ->  outputs each file in stream
-// .pipe(print(function (filepath) { return "File: " + filepath; })) -> outputs each file prepended with "File: "
-const sass = require('gulp-sass');
 const source = require('vinyl-source-stream');
-const sourcemaps = require("gulp-sourcemaps");
-const streamify = require('gulp-streamify');
-const uglify = require('gulp-uglify');
 
 function ResourceLocator(output_path_prefix, is_use_dev_resources) {
-  this.input_path_prefix = 'src/';
-  this.output_path_prefix = output_path_prefix;
-  this.is_use_dev_resources = is_use_dev_resources;
+    this.input_path_prefix = 'src/';
+    this.output_path_prefix = output_path_prefix;
+    this.is_use_dev_resources = is_use_dev_resources;
 
-  this.srcPaths = {
-    index: 'index.html',
-    scss_entrypoint: 'scss/main.scss',
-    scss_watches: [
-      'vendored/scss/_foundation_settings.scss',
-      'scss/**/*.scss',
-      'components/**/*.scss',
-    ],
-    css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
-    js: [
-      'components/**/*.js',
-      'javascript/modules/*.js',
-      'javascript/controllers/*.js',
-      'javascript/services/*.js',
-    ],
-    vendoredJs: [
-      'vendored/js/jquery-3.2.1.min.js',
-      'vendored/js/lodash-4.17.4.min.js',
-      'vendored/js/angular-1.6.4.min.js',
-      'vendored/js/angular-route-1.6.4.min.js',
-      'vendored/js/underscore-1.8.3.min.js',
-      'vendored/js/backbone-1.3.3.min.js',
-      '../node_modules/foundation-sites/dist/js/foundation.min.js',
-    ],
-    foundationIconFonts: [
-      'vendored/foundation-icon-fonts-3/foundation-icons.eot',
-      'vendored/foundation-icon-fonts-3/foundation-icons.ttf',
-      'vendored/foundation-icon-fonts-3/foundation-icons.woff'
-    ],
-    foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
-    htmlPartials: 'components/**/*.partial.html',
-  };
+    this.srcPaths = {
+        index: 'index.html',
+        scss_entrypoint: 'scss/main.scss',
+        scss_watches: [
+            'vendored/scss/_foundation_settings.scss',
+            'scss/**/*.scss',
+            'components/**/*.scss',
+        ],
+        css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
+        js: [
+            'components/**/*.js',
+            'javascript/modules/*.js',
+            'javascript/controllers/*.js',
+            'javascript/services/*.js',
+        ],
+        vendoredJs: [
+            'vendored/js/jquery-3.2.1.min.js',
+            'vendored/js/lodash-4.17.4.min.js',
+            'vendored/js/angular-1.6.4.min.js',
+            'vendored/js/angular-route-1.6.4.min.js',
+            'vendored/js/underscore-1.8.3.min.js',
+            'vendored/js/backbone-1.3.3.min.js',
+            '../node_modules/foundation-sites/dist/js/foundation.min.js',
+        ],
+        foundationIconFonts: [
+            'vendored/foundation-icon-fonts-3/foundation-icons.eot',
+            'vendored/foundation-icon-fonts-3/foundation-icons.ttf',
+            'vendored/foundation-icon-fonts-3/foundation-icons.woff'
+        ],
+        foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
+        htmlPartials: 'components/**/*.partial.html',
+    };
 
-  if (is_use_dev_resources) {
-  	this.srcPaths.vendoredJs = _.map(this.srcPaths.vendoredJs, function (item) {
-  		return _.replace(item, /(.*)\.min(\.js)/i, "$1$2");
-  	});
-  }
+    if (is_use_dev_resources) {
+        this.srcPaths.vendoredJs = _.map(this.srcPaths.vendoredJs, function (item) {
+            return _.replace(item, /(.*)\.min(\.js)/i, "$1$2");
+        });
+    }
 
-  this.outPaths = {
-    css: 'css',
-    js: 'js',
-    index: '',
-    htmlPartials: 'partials',
-  };
+    this.outPaths = {
+        css: 'css',
+        js: 'js',
+        index: '',
+        htmlPartials: 'partials',
+    };
 
-  this.outResourceNames = {
-    css: 'app.css',
-    js: 'app.js',
-    vendoredJs: 'lib.js',
-  };
+    this.outResourceNames = {
+        css: 'app.css',
+        js: 'app.js',
+        vendoredJs: 'lib.js',
+    };
 }
 
 ResourceLocator.prototype.getSourcePaths = function(identifier) {
-  _this = this;
+    _this = this;
 
-  if (!this.srcPaths.hasOwnProperty(identifier)) {
-    throw new Error('Cannot get source path for identifier [' + identifier + ']');
-  }
+    if (!this.srcPaths.hasOwnProperty(identifier)) {
+        throw new Error('Cannot get source path for identifier [' + identifier + ']');
+    }
 
-  return _.map(_.castArray(this.srcPaths[identifier]), function (item) {
-    return _this.input_path_prefix + item;
-  });
+    return _.map(_.castArray(this.srcPaths[identifier]), function (item) {
+        return _this.input_path_prefix + item;
+    });
 };
 
 ResourceLocator.prototype.getOutputPath = function(identifier) {
-  if (!this.outPaths.hasOwnProperty(identifier)) {
-    throw new Error('Cannot get output path for identifier [' + identifier + ']');
-  }
+    if (!this.outPaths.hasOwnProperty(identifier)) {
+        throw new Error('Cannot get output path for identifier [' + identifier + ']');
+    }
 
-  return this.output_path_prefix + this.outPaths[identifier];
+    return this.output_path_prefix + this.outPaths[identifier];
 };
 
 ResourceLocator.prototype.getOutputResourceName = function(identifier) {
-  if (!this.outResourceNames.hasOwnProperty(identifier)) {
-    throw new Error('Cannot get output resource name for identifier [' + identifier + ']');
-  }
+    if (!this.outResourceNames.hasOwnProperty(identifier)) {
+        throw new Error('Cannot get output resource name for identifier [' + identifier + ']');
+    }
 
-  return this.outResourceNames[identifier];
+    return this.outResourceNames[identifier];
 };
 
 ResourceLocator.prototype.isUseDevResources = function() {
-  return this.is_use_dev_resources;
+    return this.is_use_dev_resources;
 };
 
 var resourceLocator = new ResourceLocator('./app/', true);
 
 const sassCompileSettings = {
-  includePaths: [
-    './node_modules/foundation-sites/scss'
-  ],
-  outputStyle: 'compressed', // if css compressed **file size**
+    includePaths: [
+        './node_modules/foundation-sites/scss'
+    ],
+    outputStyle: 'compressed', // if css compressed **file size**
 };
 
 const autoPrefixerSettings = {
-  browsers: ['last 2 versions'],
-  cascade: false,
+    browsers: ['last 2 versions'],
+    cascade: false,
 };
 
 /*
- * This is the main styles task. It compiles all scss and concatenates the output
- * with any other css files which are specified.
- */
+* This is the main styles task. It compiles all scss and concatenates the output
+* with any other css files which are specified.
+*/
 gulp.task('css', function() {
-  var scssSources = resourceLocator.getSourcePaths('scss_entrypoint');
-  var cssSources = resourceLocator.getSourcePaths('css');
+    var scssSources = resourceLocator.getSourcePaths('scss_entrypoint');
+    var cssSources = resourceLocator.getSourcePaths('css');
 
-  var outputResourceName = resourceLocator.getOutputResourceName('css');
-  var outputPath = resourceLocator.getOutputPath('css');
+    var outputResourceName = resourceLocator.getOutputResourceName('css');
+    var outputPath = resourceLocator.getOutputPath('css');
 
-  return gulp.src(scssSources)
-      //.pipe(sourcemaps.init())
-      .pipe(sass(sassCompileSettings).on('error', sass.logError))
-      .pipe(addsrc.append(cssSources))
-      .pipe(concat(outputResourceName))
-      .pipe(autoprefixer(autoPrefixerSettings))
-      .pipe(pixrem())
-      .pipe(cssnano())
-      //.pipe(sourcemaps.write())
-      .pipe(gulp.dest(outputPath));
+    return gulp.src(scssSources)
+    //.pipe(plugins.sourcemaps.init())
+    .pipe(plugins.sass(sassCompileSettings).on('error', plugins.sass.logError))
+    .pipe(plugins.addSrc.append(cssSources))
+    .pipe(plugins.concat(outputResourceName))
+    .pipe(plugins.autoprefixer(autoPrefixerSettings))
+    .pipe(plugins.pixrem())
+    .pipe(plugins.cssnano())
+    //.pipe(plugins.sourcemaps.write())
+    .pipe(gulp.dest(outputPath));
 });
 
 /*
- * Load all project javascript files.
- */
+* Load all project javascript files.
+*/
 gulp.task('javascript', function () {
-  var sources = resourceLocator.getSourcePaths('js');
+    var sources = resourceLocator.getSourcePaths('js');
 
-  var outputResourceName = resourceLocator.getOutputResourceName('js');
-  var outputPath = resourceLocator.getOutputPath('js');
+    var outputResourceName = resourceLocator.getOutputResourceName('js');
+    var outputPath = resourceLocator.getOutputPath('js');
 
-  var task = gulp.src(sources)
-    .pipe(sourcemaps.init())
-    .pipe(order([
+    var task = gulp.src(sources)
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.order([
         "components/**/*model.js",
         "components/**/*collection.js",
         "components/**/*view.js",
@@ -166,86 +150,86 @@ gulp.task('javascript', function () {
         "javascript/services/*.js",
         "javascript/controllers/*.js",
     ], {base: resourceLocator.input_path_prefix}))
-    .pipe(concat(outputResourceName))
-    .pipe(fileinclude({
-      basepath: '@file',
-      filters: {
-        cleanHtml: function (x) {
-          return x.replace(/\r?\n|\r/g, '');
+    .pipe(plugins.concat(outputResourceName))
+    .pipe(plugins.fileInclude({
+        basepath: '@file',
+        filters: {
+            cleanHtml: function (x) {
+                return x.replace(/\r?\n|\r/g, '');
+            }
         }
-      }
     }));
 
-  if (!resourceLocator.isUseDevResources()) {
-    task = task.pipe(uglify());
-  }
+    if (!resourceLocator.isUseDevResources()) {
+        task = task.pipe(plugins.uglify());
+    }
 
-  return task
-    .pipe(sourcemaps.write('./'))
+    return task
+    .pipe(plugins.sourcemaps.write('./'))
     .pipe(gulp.dest(outputPath));
 });
 
 /*
- * Load all third party javascript files.
- */
+* Load all third party javascript files.
+*/
 gulp.task('vendored-javascript', function () {
-  var sources = resourceLocator.getSourcePaths('vendoredJs');
+    var sources = resourceLocator.getSourcePaths('vendoredJs');
 
-  var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
-  var outputPath = resourceLocator.getOutputPath('js');
+    var outputResourceName = resourceLocator.getOutputResourceName('vendoredJs');
+    var outputPath = resourceLocator.getOutputPath('js');
 
-  return gulp.src(sources)
-    .pipe(sourcemaps.init())
-    .pipe(concat(outputResourceName))
-    .pipe(sourcemaps.write('./'))
+    return gulp.src(sources)
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.concat(outputResourceName))
+    .pipe(plugins.sourcemaps.write('./'))
     .pipe(gulp.dest(outputPath));
 });
 
 /*
- * Copy the index html file.
- */
+* Copy the index html file.
+*/
 gulp.task('copy-index', function () {
-  var source = resourceLocator.getSourcePaths('index');
-  var outputPath = resourceLocator.getOutputPath('index');
+    var source = resourceLocator.getSourcePaths('index');
+    var outputPath = resourceLocator.getOutputPath('index');
 
-  return gulp.src(source)
+    return gulp.src(source)
     .pipe(gulp.dest(outputPath));
 });
 
 
 /*
- * Copy foundation icon fonts.
- */
+* Copy foundation icon fonts.
+*/
 gulp.task('copy-font-icons', function () {
-  var sources = resourceLocator.getSourcePaths('foundationIconFonts');
-  var outputPath = resourceLocator.getOutputPath('css');
+    var sources = resourceLocator.getSourcePaths('foundationIconFonts');
+    var outputPath = resourceLocator.getOutputPath('css');
 
-  return gulp.src(sources)
+    return gulp.src(sources)
     .pipe(gulp.dest(outputPath));
 });
 
 /*
- * Copy foundation icon font svgs.
- */
+* Copy foundation icon font svgs.
+*/
 gulp.task('copy-font-icons-svgs', function () {
-  var sources = resourceLocator.getSourcePaths('foundationIconSvgs');
-  var outputPath = resourceLocator.getOutputPath('css');
+    var sources = resourceLocator.getSourcePaths('foundationIconSvgs');
+    var outputPath = resourceLocator.getOutputPath('css');
 
-  return gulp.src(sources)
+    return gulp.src(sources)
     .pipe(gulp.dest(outputPath + '/svgs'));
 });
 
 gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function () {
-  gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
-  gulp.watch(
+    gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
+    gulp.watch(
         _.concat(
             resourceLocator.getSourcePaths('scss_watches'),
             resourceLocator.getSourcePaths('css')
         ), ['css']);
-    gulp.watch(
-        _.concat(
-            resourceLocator.getSourcePaths('js'),
-            resourceLocator.getSourcePaths('htmlPartials')
-        ), ['javascript']);
-    gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
-});
+        gulp.watch(
+            _.concat(
+                resourceLocator.getSourcePaths('js'),
+                resourceLocator.getSourcePaths('htmlPartials')
+            ), ['javascript']);
+            gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
+        });
