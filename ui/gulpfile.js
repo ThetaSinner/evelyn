@@ -152,7 +152,7 @@ gulp.task('javascript', function () {
     ], {base: resourceLocator.input_path_prefix}))
     .pipe(plugins.concat(outputResourceName))
     .pipe(plugins.fileInclude({
-        basepath: '@file',
+        basepath: '@root',
         filters: {
             cleanHtml: function (x) {
                 return x.replace(/\r?\n|\r/g, '');

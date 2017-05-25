@@ -1,5 +1,5 @@
 var SimpleTaskView = Backbone.View.extend({
-    template: _.template('@@include(cleanHtml("simpletask/simple_task_view.partial.html"))', {
+    template: _.template('@@include(cleanHtml("src/components/simpletask/simple_task_view.partial.html"))', {
         variable: "data"
     }),
 
