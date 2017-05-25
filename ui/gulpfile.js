@@ -150,6 +150,7 @@ gulp.task('javascript', function () {
         "components/**/*view.js",
         "javascript/modules/*.js",
         "javascript/services/*.js",
+        "javascript/controllers/server-bridge.js",
         "javascript/controllers/*.js",
     ], {base: resourceLocator.input_path_prefix}))
     .pipe(plugins.concat(outputResourceName))
