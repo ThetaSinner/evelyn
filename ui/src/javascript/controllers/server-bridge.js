@@ -88,6 +88,7 @@ function serialize_form(form_selector) {
     return _.object(_.map(form_selector.serializeArray(), function(item) {
         // {name: "name", value: "data"}
 
+        // TODO Fix serde in the server, or find a better way of doing this
         if (item.value === "on") {
             return [item.name, true];
         } else if (item.value == "false") {
