@@ -17,6 +17,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.2",
     "gulp-file-include": "^1.1.0",
+    "gulp-load-plugins": "^1.5.0",
     "gulp-order": "^1.1.1",
     "gulp-pixrem": "^1.0.0",
     "gulp-print": "^2.0.1",
