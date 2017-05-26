@@ -5,7 +5,8 @@ services:
     ports:
       - "8081:80"
     volumes:
-      - ./dev_ui/public:/usr/local/apache2/htdocs
+      - ./ui/app:/usr/local/apache2/htdocs
+      - ./dev_ui/public:/usr/local/apache2/htdocs/dev
     depends_on:
       - mongodb
       - backend
