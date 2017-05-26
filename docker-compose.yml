@@ -1,39 +1,39 @@
 version : "3"
 services:
-  website:
-    image: httpd:2.4
-    ports:
-      - "8081:80"
-    volumes:
-      - ./ui/app:/usr/local/apache2/htdocs
-      - ./dev_ui/public:/usr/local/apache2/htdocs/dev
-    depends_on:
-      - mongodb
-      - backend
-  mongodb:
-    image: mongo:3.0
-    ports:
-      - "27017:27017"
-    expose:
-      - "27017"
-    volumes:
-      - mongo_vol:/data/db
-  backend:
-    image: subxaero/rust
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    volumes:
-      - ./backend:/source
-      - ~/.cargo:/root/.cargo
-    depends_on:
-      - mongodb
-    command: bash -c "cargo run -j8"
-  gulp:
-    image: subxaero/gulp:latest
-    build: ./ui
-    volumes:
-      - ./ui:/source
+    website:
+        image: httpd:2.4
+        ports:
+            - "8081:80"
+        volumes:
+            - ./ui/app:/usr/local/apache2/htdocs
+            - ./dev_ui/public:/usr/local/apache2/htdocs/dev
+        depends_on:
+            - mongodb
+            - backend
+    mongodb:
+        image: mongo:3.0
+        ports:
+            - "27017:27017"
+        expose:
+            - "27017"
+        volumes:
+            - mongo_vol:/data/db
+    backend:
+        image: subxaero/rust
+        ports:
+            - "8080:8080"
+        expose:
+            - "8080"
+        volumes:
+            - ./backend:/source
+            - ~/.cargo:/root/.cargo
+        depends_on:
+            - mongodb
+        command: bash -c "cargo run -j8"
+    gulp:
+        image: subxaero/gulp:latest
+        build: ./ui
+        volumes:
+        - ./ui:/source
 volumes:
-  mongo_vol:
+    mongo_vol:
