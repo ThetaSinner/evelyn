@@ -9,6 +9,7 @@
   "author": "ThetaSinner",
   "license": "GPL-3.0",
   "devDependencies": {
+    "express": "^4.15.3",
     "foundation-sites": "^6.3.1",
     "gulp": "^3.9.1",
     "gulp-add-src": "^0.2.0",
@@ -26,6 +27,7 @@
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^2.1.2",
     "gulp-util": "^3.0.8",
+    "html-minifier": "^3.5.2",
     "lodash": "^4.17.4",
     "pixrem": "^3.0.2",
     "vinyl-buffer": "^1.0.0",

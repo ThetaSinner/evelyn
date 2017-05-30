@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 
 const _ = require('lodash');
+const minify = require('html-minifier').minify;
 const source = require('vinyl-source-stream');
 
 function ResourceLocator(output_path_prefix, is_use_dev_resources) {
@@ -21,8 +22,9 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
         js: [
             'components/**/*.js',
             'javascript/modules/*.js',
-            'javascript/controllers/*.js',
+            'javascript/config/*.js',
             'javascript/services/*.js',
+            'javascript/controllers/*.js',
         ],
         vendoredJs: [
             'vendored/js/jquery-3.2.1.min.js',
@@ -158,7 +160,9 @@ gulp.task('javascript', function () {
         basepath: '@root',
         filters: {
             cleanHtml: function (x) {
-                return x.replace(/\r?\n|\r/g, '');
+                return minify(x, {
+                    collapseWhitespace: true,
+                });
             }
         }
     }));
@@ -229,10 +233,10 @@ gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 
             resourceLocator.getSourcePaths('scss_watches'),
             resourceLocator.getSourcePaths('css')
         ), ['css']);
-        gulp.watch(
-            _.concat(
-                resourceLocator.getSourcePaths('js'),
-                resourceLocator.getSourcePaths('htmlPartials')
-            ), ['javascript']);
-            gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
-        });
+    gulp.watch(
+        _.concat(
+            resourceLocator.getSourcePaths('js'),
+            resourceLocator.getSourcePaths('htmlPartials')
+        ), ['javascript']);
+    gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
+});

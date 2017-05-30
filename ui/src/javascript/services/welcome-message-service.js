@@ -1,4 +1,4 @@
-evelynDesktopApp.factory('WelcomeMessageService', function () {
+evelynDesktopApp.factory('WelcomeMessageService', function WelcomeMessageService() {
     return {
         getWelcomeMessage: function () {
             switch (Math.floor(Math.random() * 3)) {

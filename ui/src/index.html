@@ -5,73 +5,43 @@
     <title>Evelyn Desktop</title>
 
     <link rel="stylesheet" type="text/css" href="css/app.css"/>
+
+    <!-- Electron integration -->
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+
+    <script type="text/javascript" src="js/lib.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+
+    <!-- Electron integration -->
+    <script>if (window.module) module = window.module;</script>
+
+    <script>
+        function doNotify(title, body) {
+            new Notification(title, {
+                body: body
+            });
+        }
+
+        $(document).ready(function () {
+            $(document).foundation();
+
+            if (typeof(Storage) === "undefined") {
+                $("body").text("Local storage not available in this environment, cannot function correctly.");
+                return;
+            }
+        });
+    </script>
 </head>
 <body>
-<div ng-app="evelynDesktopApp" ng-controller="DesktopController as desktop">
-    <p ng-model="desktop.welcomeMessage">{{desktop.welcomeMessage}}</p>
+
+<div ng-app="evelynDesktopApp">
+    <div ng-view></div>
 </div>
 
-<ul class="tabs" data-tabs id="example-tabs">
-    <li class="tabs-title is-active"><a href="#panel1" aria-selected="true">Log On</a></li>
-    <li class="tabs-title"><a href="#panel2">Sign Up</a></li>
-</ul>
-
-<div class="tabs-content" data-tabs-content="example-tabs">
-    <div class="tabs-panel is-active" id="panel1">
-        <form id="form_logon_user" action="/user/logon" method="post">
-            <label class="tile-label">E-Mail Address
-                <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-            </label>
-            <label class="tile-label">Password
-                <input name="Password" type="text" placeholder="Password">
-            </label>
-
-            <input type="submit" class="button" value="Logon"/>
-        </form>
-    </div>
-    <div class="tabs-panel" id="panel2">
-        <form id="form_create_user" action="/user/create" method="post">
-            <label class="tile-label">User Name
-                <input name="UserName" type="text" placeholder="User Name">
-            </label>
-            <label class="tile-label">E-Mail Address
-                <input name="EmailAddress" type="text" placeholder="E-Mail Address">
-            </label>
-            <label class="tile-label">Password
-                <input name="Password" type="text" placeholder="Password">
-            </label>
-
-            <input type="submit" class="button" value="Create"/>
-        </form>
-    </div>
-</div>
-
-<div id="simple_task_view">
-
-</div>
-
-<!-- Electron integration -->
-<script>if (typeof module === 'object') {
-    window.module = module;
-    module = undefined;
-}</script>
-
-<script type="text/javascript" src="js/lib.js"></script>
-<script type="text/javascript" src="js/app.js"></script>
-
-<!-- Electron integration -->
-<script>if (window.module) module = window.module;</script>
-
-<script>
-    function doNotify(title, body) {
-        new Notification(title, {
-            body: body
-        });
-    }
-
-    $(document).ready(function () {
-        $(document).foundation();
-    });
-</script>
 </body>
 </html>

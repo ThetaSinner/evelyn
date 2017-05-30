@@ -1,3 +1,3 @@
-evelynDesktopApp.controller('DesktopController', ['WelcomeMessageService', function DesktopController(welcomeMessageService) {
+evelynDesktopApp.controller('DashboardController', ['WelcomeMessageService', function DashboardController(welcomeMessageService) {
     this.welcomeMessage = welcomeMessageService.getWelcomeMessage();
 }]);
