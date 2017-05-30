@@ -30,7 +30,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/jquery-3.2.1.min.js',
             'vendored/js/lodash-4.17.4.min.js',
             'vendored/js/angular-1.6.4.min.js',
-            'vendored/js/angular-route-1.6.4.min.js',
+            'vendored/js/angular-ui-router-1.0.3.min.js',
             'vendored/js/underscore-1.8.3.min.js',
             'vendored/js/backbone-1.3.3.min.js',
             'vendored/js/moment-2.18.1.js',
