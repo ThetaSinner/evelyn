@@ -5,15 +5,15 @@
             <li class="tabs-title is-active"><a href="#" aria-selected="true">Sign Up</a></li>
         </ul>
 
-        <form id="form_create_user" action="/user/create" method="post">
+        <form ng-submit="submit()">
             <label class="tile-label">User Name
-                <input ng-model="UserName" name="UserName" type="text" placeholder="User Name">
+                <input ng-model="userName" name="UserName" type="text" placeholder="User Name">
             </label>
             <label class="tile-label">E-Mail Address
-                <input ng-model="EmailAddress" name="EmailAddress" type="text" placeholder="E-Mail Address">
+                <input ng-model="emailAddress" name="EmailAddress" type="text" placeholder="E-Mail Address">
             </label>
             <label class="tile-label">Password
-                <input ng-model="Password" name="Password" type="text" placeholder="Password">
+                <input ng-model="password" name="Password" type="text" placeholder="Password">
             </label>
 
             <input type="submit" class="button" value="Create"/>
