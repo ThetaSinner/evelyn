@@ -3,4 +3,7 @@
 
 @include foundation-everything;
 
+@import '../vendored/foundation-building-blocks/app-dashboard-layout/app-dashboard-layout.scss';
+@import '../vendored/foundation-building-blocks/app-dashboard-layout/layout.scss';
+
 @import '../components/simpletask/simple_task.scss';

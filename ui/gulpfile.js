@@ -17,6 +17,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/scss/_foundation_settings.scss',
             'scss/**/*.scss',
             'components/**/*.scss',
+            'vendored/foundation-building-blocks/**/*.scss',
         ],
         css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
         js: [
@@ -36,6 +37,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/moment-2.18.1.js',
             '../node_modules/foundation-sites/dist/js/foundation.min.js',
             'vendored/js/foundation-datepicker.js',
+            'vendored/foundation-building-blocks/**/*.js',
         ],
         foundationIconFonts: [
             'vendored/foundation-icon-fonts-3/foundation-icons.eot',
