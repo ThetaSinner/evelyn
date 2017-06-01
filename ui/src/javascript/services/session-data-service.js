@@ -1,18 +1,31 @@
 evelynDesktopApp.factory('sessionDataService', function sessionDataService() {
-    localStorage.evelynSessionData = {};
+    function getSessionData() {
+        if (!localStorage.getItem('evelynSessionData')) {
+            saveSessionData({});
+        }
+
+        return JSON.parse(localStorage.evelynSessionData);
+    }
+
+    function saveSessionData(sessionData) {
+        localStorage.evelynSessionData = JSON.stringify(sessionData);
+    }
 
     return {
         setToken: function(token) {
-            localStorage.evelynSessionData.token = token;
+            var sessionData = getSessionData();
+            sessionData.token = token;
+            saveSessionData(sessionData);
             return this;
         },
 
         getToken: function() {
-            return localStorage.evelynSessionData.token;
+            return getSessionData().token;
         },
 
         destroy: function() {
             localStorage.removeItem('evelynSessionData');
+            saveSessionData({});
         },
     };
 });

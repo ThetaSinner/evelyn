@@ -1,10 +1,10 @@
-evelynDesktopApp.controller('SignupController', ['$scope', 'ServerBridgeService', function SignupController($scope, ServerBridgeService) {
+evelynDesktopApp.controller('SignupController', ['$scope', 'serverBridgeService', function SignupController($scope, serverBridgeService) {
     $scope.userName = '';
     $scope.emailAddress = '';
     $scope.password = '';
 
     $scope.submit = function () {
-        ServerBridgeService.send_to_server('/user/create', {
+        serverBridgeService.send_to_server('/user/create', {
             UserName: $scope.userName,
             EmailAddress: $scope.emailAddress,
             Password: $scope.password

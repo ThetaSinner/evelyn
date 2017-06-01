@@ -1,7 +1,15 @@
 evelynDesktopApp.component('simpleTaskComponent', {
-    template: '@@include(cleanHtml("src/components/simpletask/simple-task-container.partial.html"))',
+    template: '@@include(cleanHtml("src/components/simpletask/simple-task-dashboard-container.partial.html"))',
 
-    controller: function () {
+    bindings: {
+        simpleTasks: '<',
+    },
 
+    controller: function ($scope) {
+        this.$onChanges = function (changes) {
+            var simpleTaskView = new SimpleTaskView({
+                collection: new SimpleTaskCollection(changes.simpleTasks.currentValue)
+            });
+        };
     }
 });

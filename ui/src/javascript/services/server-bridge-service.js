@@ -20,18 +20,6 @@ function serialize_form(form_selector) {
     }));
 };
 
-// TODO move to controllers.
-function add_submit_hook(form_id) {
-    $(form_id).on("submit", function(event) {
-        event.preventDefault();
-
-        var form_selector = $(this);
-        var form_submit_data = serialize_form(form_selector);
-
-        evelynServerBridge.send_to_server(form_selector.attr("action"), form_submit_data, function() {});
-    });
-}
-
 /* TODO move to wherever simple tasks are implemented.
 
 if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && response.SimpleTasks.length !== null) {
@@ -45,7 +33,7 @@ if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && r
 }
 */
 
-evelynDesktopApp.factory('ServerBridgeService', ['sessionDataService', 'SettingsService', function ServerBridgeService(sessionDataService, SettingsService) {
+evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'SettingsService', function serverBridgeService(sessionDataService, SettingsService) {
     function EvelynServerBridge() {
         this.baseUrl = "http://localhost:8080";
     }
@@ -57,11 +45,13 @@ evelynDesktopApp.factory('ServerBridgeService', ['sessionDataService', 'Settings
     EvelynServerBridge.prototype.process_response = function(response) {
         if (response.hasOwnProperty("Token") && response.Token !== null) {
             sessionDataService.setToken(response.Token);
+
+            console.log(sessionDataService.getToken());
         }
     };
 
     EvelynServerBridge.prototype.process_request = function(request) {
-        if (localStorage.token) {
+        if (sessionDataService.getToken()) {
             request.Token = sessionDataService.getToken();
         }
 

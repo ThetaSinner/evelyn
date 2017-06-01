@@ -34,6 +34,20 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 name: 'dashboard.simpletask',
                 url: '/simpletask',
                 component: 'simpleTaskComponent',
+                resolve: {
+                    simpleTasks: function (serverBridgeService) {
+                        return new Promise(function (resolve, reject) {
+                            // TODO fetch via cache.
+                            serverBridgeService.send_to_server('/simpletask/lookup', {
+                                Limit: 0,
+                                ShowCompleted: false
+                            }, function (response) {
+                                // TODO handle response error.
+                                resolve(response.SimpleTasks);
+                            });
+                        });
+                    },
+                },
             }
         );
 });

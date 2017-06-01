@@ -1,14 +1,14 @@
 var SimpleTaskView = Backbone.View.extend({
-    template: _.template('@@include(cleanHtml("src/components/simpletask/simple_task_view.partial.html"))', {
-        variable: "data"
-    }),
+    el: '#simple-tasks-container',
+
+    template: Handlebars.compile('@@include(cleanHtml("src/components/simpletask/simple_task_view.template.html"))'),
+
+    initialize: function() {
+        this.render();
+    },
 
     render: function() {
-        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.html(this.template({SimpleTasks: this.collection.toJSON()}));
         return this;
     }
-});
-
-var simpleTaskView = new SimpleTaskCollectionView({
-    collection: simpleTaskCollection
 });
