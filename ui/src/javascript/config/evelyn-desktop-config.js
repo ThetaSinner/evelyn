@@ -8,7 +8,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 url: '/logon',
                 template: '@@include(cleanHtml("src/components/logon/logon.partial.html"))',
                 controller: 'LogonController',
-                controllerAs: 'logonController'
+                controllerAs: 'logonController',
             }
         )
         .state(
@@ -17,7 +17,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 url: '/signup',
                 template: '@@include(cleanHtml("src/components/logon/signup.partial.html"))',
                 controller: 'SignupController',
-                controllerAs: 'signupController'
+                controllerAs: 'signupController',
             }
         )
         .state(
@@ -26,7 +26,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 url: '/dashboard',
                 template: '@@include(cleanHtml("src/components/dashboard/dashboard.partial.html"))',
                 controller: 'DashboardController',
-                controllerAs: 'dashboardController'
+                controllerAs: 'dashboardController',
             }
         );
 });

@@ -38,7 +38,6 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/moment-2.18.1.js',
             '../node_modules/foundation-sites/dist/js/foundation.min.js',
             'vendored/js/foundation-datepicker.js',
-            'vendored/foundation-building-blocks/**/*.js',
         ],
         fontAwesomeFonts: [
             'vendored/font-awesome-4.7.0/FontAwesome.otf',

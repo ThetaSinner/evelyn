@@ -66,7 +66,7 @@ $app-dashboard-top-nav-height: 55px;
     &.hollow {
       border-color: $white;
       color: $white;
-      
+
       &:hover {
         background: $white;
         color: $primary-color;
@@ -82,7 +82,7 @@ $app-dashboard-top-nav-height: 55px;
 
 .app-dashboard-sidebar {
   background-color: $white;
-  height: 100%;
+  // height: 100%; Removing because it gives a scroll bar before one is needed.
   overflow-x: visible;
   overflow-y: auto;
   z-index: 1;
@@ -101,7 +101,7 @@ $app-dashboard-top-nav-height: 55px;
   }
 
   .app-dashboard-sidebar-inner {
-    height: 100%;
+    // height: 100%; Removing because it gives a scroll bar before one is needed.
     overflow-x: hidden;
     overflow-y: auto;
     .menu > li > a {

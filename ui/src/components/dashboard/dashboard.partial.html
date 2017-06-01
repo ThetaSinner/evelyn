@@ -1,4 +1,4 @@
-<div class="app-dashboard shrink-medium">
+<div class="app-dashboard shrink-medium shrink-large">
   <div class="row expanded app-dashboard-top-nav-bar">
     <div class="columns medium-2 large-1">
       <button data-toggle="app-dashboard-sidebar" class="menu-icon hide-for-medium"></button>
@@ -20,14 +20,14 @@
     <div id="app-dashboard-sidebar" class="app-dashboard-sidebar position-left off-canvas off-canvas-absolute reveal-for-medium" data-off-canvas>
       <div class="app-dashboard-sidebar-title-area">
         <div class="app-dashboard-close-sidebar">
-          <h3 class="app-dashboard-sidebar-block-title">Items</h3>
+          <h3 class="app-dashboard-sidebar-block-title">Navigation</h3>
           <!-- Close button -->
-          <button id="close-sidebar" data-app-dashboard-toggle-shrink class="app-dashboard-sidebar-close-button show-for-medium" aria-label="Close menu" type="button">
+          <button id="close-sidebar" ng-click="appDashboardToggleShrink($event)" class="app-dashboard-sidebar-close-button show-for-medium" aria-label="Close menu" type="button">
             <span aria-hidden="true"><a href="#"><i class="large fa fa-angle-double-left"></i></a></span>
           </button>
         </div>
         <div class="app-dashboard-open-sidebar">
-          <button id="open-sidebar" data-app-dashboard-toggle-shrink class="app-dashboard-open-sidebar-button show-for-medium" aria-label="open menu" type="button">
+          <button id="open-sidebar" ng-click="appDashboardToggleShrink($event)" class="app-dashboard-open-sidebar-button show-for-medium" aria-label="Open menu" type="button">
             <span aria-hidden="true"><a href="#"><i class="large fa fa-angle-double-right"></i></a></span>
           </button>
         </div>
