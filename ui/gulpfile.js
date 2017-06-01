@@ -27,6 +27,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'javascript/config/*.js',
             'javascript/services/*.js',
             'javascript/controllers/*.js',
+            'javascript/components/*.js',
         ],
         vendoredJs: [
             'vendored/js/jquery-3.2.1.min.js',
@@ -158,6 +159,7 @@ gulp.task('javascript', function () {
         "javascript/modules/*.js",
         "javascript/services/*.js",
         "javascript/controllers/*.js",
+        "javascript/components/*.js",
     ], {base: resourceLocator.input_path_prefix}))
     .pipe(plugins.concat(outputResourceName))
     .pipe(plugins.fileInclude({

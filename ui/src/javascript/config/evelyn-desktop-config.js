@@ -28,6 +28,13 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 controller: 'DashboardController',
                 controllerAs: 'dashboardController',
             }
+        )
+        .state(
+            {
+                name: 'dashboard.simpletask',
+                url: '/simpletask',
+                component: 'simpleTaskComponent',
+            }
         );
 });
 
