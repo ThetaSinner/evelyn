@@ -45,7 +45,7 @@ if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && r
 }
 */
 
-evelynDesktopApp.factory('ServerBridgeService', ["SettingsService", function ServerBridgeService(SettingsService) {
+evelynDesktopApp.factory('ServerBridgeService', ['sessionDataService', 'SettingsService', function ServerBridgeService(sessionDataService, SettingsService) {
     function EvelynServerBridge() {
         this.baseUrl = "http://localhost:8080";
     }
@@ -56,13 +56,13 @@ evelynDesktopApp.factory('ServerBridgeService', ["SettingsService", function Ser
 
     EvelynServerBridge.prototype.process_response = function(response) {
         if (response.hasOwnProperty("Token") && response.Token !== null) {
-            localStorage.token = response.Token;
+            sessionDataService.setToken(response.Token);
         }
     };
 
     EvelynServerBridge.prototype.process_request = function(request) {
         if (localStorage.token) {
-            request.Token = localStorage.token;
+            request.Token = sessionDataService.getToken();
         }
 
         for (var attr in request) {
