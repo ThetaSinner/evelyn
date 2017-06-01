@@ -18,8 +18,9 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'scss/**/*.scss',
             'components/**/*.scss',
             'vendored/foundation-building-blocks/**/*.scss',
+            'vendored/font-awesome-4.7.0/scss/*.scss',
         ],
-        css: 'vendored/foundation-icon-fonts-3/foundation-icons.css',
+        css: [],
         js: [
             'components/**/*.js',
             'javascript/modules/*.js',
@@ -39,12 +40,14 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/foundation-datepicker.js',
             'vendored/foundation-building-blocks/**/*.js',
         ],
-        foundationIconFonts: [
-            'vendored/foundation-icon-fonts-3/foundation-icons.eot',
-            'vendored/foundation-icon-fonts-3/foundation-icons.ttf',
-            'vendored/foundation-icon-fonts-3/foundation-icons.woff'
+        fontAwesomeFonts: [
+            'vendored/font-awesome-4.7.0/FontAwesome.otf',
+            'vendored/font-awesome-4.7.0/fontawesome-webfont.eot',
+            'vendored/font-awesome-4.7.0/fontawesome-webfont.svg',
+            'vendored/font-awesome-4.7.0/fontawesome-webfont.ttf',
+            'vendored/font-awesome-4.7.0/fontawesome-webfont.woff',
+            'vendored/font-awesome-4.7.0/fontawesome-webfont.woff2',
         ],
-        foundationIconSvgs: 'vendored/foundation-icon-fonts-3/svgs/*',
         htmlPartials: 'components/**/*.partial.html',
     };
 
@@ -59,6 +62,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
         js: 'js',
         index: '',
         htmlPartials: 'partials',
+        fonts: 'fonts',
     };
 
     this.outResourceNames = {
@@ -154,7 +158,6 @@ gulp.task('javascript', function () {
         "components/**/*view.js",
         "javascript/modules/*.js",
         "javascript/services/*.js",
-        "javascript/controllers/server-bridge.js",
         "javascript/controllers/*.js",
     ], {base: resourceLocator.input_path_prefix}))
     .pipe(plugins.concat(outputResourceName))
@@ -205,30 +208,18 @@ gulp.task('copy-index', function () {
     .pipe(gulp.dest(outputPath));
 });
 
-
 /*
-* Copy foundation icon fonts.
+* Copy font icons.
 */
 gulp.task('copy-font-icons', function () {
-    var sources = resourceLocator.getSourcePaths('foundationIconFonts');
-    var outputPath = resourceLocator.getOutputPath('css');
+    var sources = resourceLocator.getSourcePaths('fontAwesomeFonts');
+    var outputPath = resourceLocator.getOutputPath('fonts');
 
     return gulp.src(sources)
     .pipe(gulp.dest(outputPath));
 });
 
-/*
-* Copy foundation icon font svgs.
-*/
-gulp.task('copy-font-icons-svgs', function () {
-    var sources = resourceLocator.getSourcePaths('foundationIconSvgs');
-    var outputPath = resourceLocator.getOutputPath('css');
-
-    return gulp.src(sources)
-    .pipe(gulp.dest(outputPath + '/svgs'));
-});
-
-gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons', 'copy-font-icons-svgs'], function () {
+gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons'], function () {
     gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
     gulp.watch(
         _.concat(
