@@ -31,6 +31,13 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
         )
         .state(
             {
+                name: 'dashboard.home',
+                url: '/home',
+                component: 'homeComponent',
+            }
+        )
+        .state(
+            {
                 name: 'dashboard.simpletask',
                 url: '/simpletask',
                 component: 'simpleTaskComponent',

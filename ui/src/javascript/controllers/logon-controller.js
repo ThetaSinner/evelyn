@@ -8,7 +8,7 @@ evelynDesktopApp.controller('LogonController', ['$scope', 'serverBridgeService',
             Password: $scope.password
         }, function (response) {
             if (response.Error === null) {
-                window.location.href = "#!/dashboard";
+                window.location.href = "#!/dashboard/home";
             }
             else {
                 console.log(response);

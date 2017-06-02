@@ -1,6 +1,4 @@
-evelynDesktopApp.controller('DashboardController', ['$scope', '$state', 'sessionDataService', 'WelcomeMessageService', function DashboardController($scope, $state, sessionDataService, welcomeMessageService) {
-    this.welcomeMessage = welcomeMessageService.getWelcomeMessage();
-
+evelynDesktopApp.controller('DashboardController', ['$scope', '$state', 'sessionDataService', function DashboardController($scope, $state, sessionDataService) {
     $scope.appDashboardToggleShrink = function(event) {
         // See foundation-building-blocks/app-dashboard-layout
         event.preventDefault();
