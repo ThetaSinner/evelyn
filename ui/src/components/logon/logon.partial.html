@@ -1,19 +1,31 @@
-<div class="rows">
-    <div class="columns">
-        <ul class="tabs">
-            <li class="tabs-title is-active"><a href="#" aria-selected="true">Log On</a></li>
-            <li class="tabs-title"><a ui-sref="signup">Sign Up</a></li>
-        </ul>
+<div class="app-dashboard shrink-medium shrink-large">
+    <div class="row expanded app-dashboard-top-nav-bar">
+        <div class="columns medium-2 large-1">
+            <button data-toggle="app-dashboard-sidebar" class="menu-icon hide-for-medium"></button>
+            <a class="app-dashboard-logo">Evelyn</a>
+        </div>
+    </div>
 
-        <form ng-submit="submit()">
-            <label class="tile-label">E-Mail Address
-                <input ng-model="emailAddress" name="EmailAddress" type="text" placeholder="E-Mail Address">
-            </label>
-            <label class="tile-label">Password
-                <input ng-model="password" name="Password" type="text" placeholder="Password">
-            </label>
-
-            <input type="submit" class="button" value="Logon"/>
-        </form>
+    <div class="app-dashboard-body">
+        <div class="app-dashboard-body-content">
+            <div class="rows">
+                <div class="float-center small-12 medium-6">
+                    <ul class="tabs">
+                        <li class="tabs-title is-active"><a href="#" aria-selected="true">Log On</a></li>
+                        <li class="tabs-title"><a ui-sref="signup">Sign Up</a></li>
+                    </ul>
+                    <hr>
+                    <form ng-submit="submit()">
+                        <label class="tile-label">E-Mail Address
+                            <input ng-model="emailAddress" name="EmailAddress" type="text" placeholder="E-Mail Address">
+                        </label>
+                        <label class="tile-label">Password
+                            <input ng-model="password" name="Password" type="text" placeholder="Password">
+                        </label>
+                        <input type="submit" class="button" value="Logon" />
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
