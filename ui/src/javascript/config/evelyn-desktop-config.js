@@ -56,6 +56,13 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                     },
                 },
             }
+        )
+        .state(
+            {
+                name: 'dashboard.createsimpletask',
+                url: '/createsimpletask',
+                component: 'createSimpleTaskComponent',
+            }
         );
 });
 

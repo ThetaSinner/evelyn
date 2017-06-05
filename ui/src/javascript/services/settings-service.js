@@ -1,4 +1,4 @@
-evelynDesktopApp.factory('SettingsService', function SettingsService() {
+evelynDesktopApp.factory('settingsService', function SettingsService() {
     return {
         // TODO this needs to be a user setting, ideally collected at create user and
         // with some option to update later.
@@ -12,7 +12,7 @@ evelynDesktopApp.factory('SettingsService', function SettingsService() {
         moment_date_format: "DD/MM/YYYY HH:mm",
 
         get_moment_date_format: function () {
-            return moment_date_format;
-        }
+            return this.moment_date_format;
+        },
     }
 });

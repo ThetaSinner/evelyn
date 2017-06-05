@@ -1,10 +1,14 @@
 <h2 class="text-center">Simple Tasks</h2>
 
+<div class="float-right space-below">
+    <button ng-click="create()"><i class="fa fa-3x fa-plus"></i></button>
+</div>
+
 <div class="small-up-3">
     <div class="column" ng-repeat="task in $ctrl.simpleTasks">
         <div class="row callout">
             <div class="column large-11">
-                <h5>{{task.title}}</h5>
+                <h4>{{task.title}}</h4>
                 <p>{{task.description}}</p>
                 <p>{{task.dueDate}}</p>
             </div>

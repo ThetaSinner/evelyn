@@ -33,7 +33,7 @@ if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && r
 }
 */
 
-evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'SettingsService', function serverBridgeService(sessionDataService, SettingsService) {
+evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settingsService', function serverBridgeService(sessionDataService, settingsService) {
     function EvelynServerBridge() {
         this.baseUrl = "http://localhost:8080";
     }
@@ -57,7 +57,7 @@ evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'Settings
 
         for (var attr in request) {
             if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-                request[attr] = moment(request[attr], moment_date_format).toISOString();
+                request[attr] = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
             }
         }
 
