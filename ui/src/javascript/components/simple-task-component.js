@@ -5,9 +5,17 @@ evelynDesktopApp.component('simpleTaskComponent', {
         simpleTasks: '<',
     },
 
-    controller: function ($scope) {
-      $scope.edit = function(taskId) {
-        alert(taskId);
-      };
+    controller: function($scope) {
+        $scope.edit = function(taskId) {
+            alert(taskId);
+        };
+
+        $scope.done = function(taskId) {
+            alert(taskId);
+        };
+
+        $scope.delete = function(taskId) {
+            alert(taskId);
+        };
     }
 });

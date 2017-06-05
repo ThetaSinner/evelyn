@@ -1,10 +1,24 @@
 <h2 class="text-center">Simple Tasks</h2>
 
 <div class="small-up-3">
-  <div class="column" ng-repeat="task in $ctrl.simpleTasks">
-    <h5>{{task.title}}</h5>
-    <p>{{task.description}}</p>
-    <p>{{task.dueDate}}</p>
-    <button ng-click="edit(task.taskId)"><i class="medium fa fa-wrench"></i></button>
-  </div>
+    <div class="column" ng-repeat="task in $ctrl.simpleTasks">
+        <div class="row callout">
+            <div class="column large-11">
+                <h5>{{task.title}}</h5>
+                <p>{{task.description}}</p>
+                <p>{{task.dueDate}}</p>
+            </div>
+            <div class="column large-1">
+                <div class="row">
+                    <button ng-click="edit(task.taskId)"><i class="fa fa-2x fa-wrench"></i></button>
+                </div>
+                <div class="row">
+                    <button ng-click="done(task.taskId)"><i class="fa fa-2x fa-check"></i></button>
+                </div>
+                <div class="row">
+                    <button ng-click="delete(task.taskId)"><i class="fa fa-2x fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
