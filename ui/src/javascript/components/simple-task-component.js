@@ -6,10 +6,8 @@ evelynDesktopApp.component('simpleTaskComponent', {
     },
 
     controller: function ($scope) {
-        this.$onChanges = function (changes) {
-            var simpleTaskView = new SimpleTaskView({
-                collection: new SimpleTaskCollection(changes.simpleTasks.currentValue)
-            });
-        };
+      $scope.edit = function(taskId) {
+        alert(taskId);
+      };
     }
 });

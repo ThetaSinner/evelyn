@@ -1,3 +1,10 @@
 <h2 class="text-center">Simple Tasks</h2>
 
-<div id="simple-tasks-container"></div>
+<div class="row">
+  <div class="columns large-3" ng-repeat="task in $ctrl.simpleTasks">
+    <h5>{{task.title}}</h5>
+    <p>{{task.description}}</p>
+    <p>{{task.dueDate}}</p>
+    <button ng-click="edit(task.taskId)"><i class="medium fa fa-wrench"></i></button>
+  </div>
+</div>
