@@ -1,11 +1,11 @@
-evelynDesktopApp.factory('settingsService', function SettingsService() {
+evelynDesktopApp.factory('settingsService', function settingsService() {
     return {
         // TODO this needs to be a user setting, ideally collected at create user and
         // with some option to update later.
         date_format: "dd/mm/yyyy hh:ii",
 
         get_date_format: function () {
-            return date_format;
+            return this.date_format;
         },
 
         // TODO derive this from the above.

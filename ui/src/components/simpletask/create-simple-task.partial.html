@@ -4,13 +4,13 @@
     <div class="float-center small-12 medium-6">
         <form ng-submit="create()">
             <label>Title
-                <input type="text" ng-model="title" />
+                <input type="text" ng-model="title" paceholder="Title" />
             </label>
             <label>Description
-                <textarea type="text" ng-model="description"></textarea>
+                <textarea type="text" ng-model="description" placeholder="Description"></textarea>
             </label>
             <label>Due Date
-                <input type="text" ng-model="dueDate" />
+                <input type="text" ng-model="dueDate" class="date-input" placeholder="01/01/1970" />
             </label>
 
             <input type="submit" value="Create" class="button"/>
