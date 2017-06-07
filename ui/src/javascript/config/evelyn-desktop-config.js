@@ -60,8 +60,18 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
         .state(
             {
                 name: 'dashboard.createsimpletask',
-                url: '/createsimpletask',
+                url: '/simpletask/create',
                 component: 'createSimpleTaskComponent',
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.updatesimpletask',
+                url: '/simpletask/update',
+                component: 'updateSimpleTaskComponent',
+                params: {
+                    simpleTask: null,
+                },
             }
         );
 });

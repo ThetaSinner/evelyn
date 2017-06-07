@@ -6,8 +6,13 @@ evelynDesktopApp.component('simpleTaskComponent', {
     },
 
     controller: function($scope, $state) {
+        var ctrl = this;
+
         $scope.edit = function(taskId) {
-            alert(taskId);
+            $state.go(
+                'dashboard.updatesimpletask',
+                {simpleTask: _.find(ctrl.simpleTasks, function (obj) { return obj.taskId === taskId; })},
+            );
         };
 
         $scope.done = function(taskId) {

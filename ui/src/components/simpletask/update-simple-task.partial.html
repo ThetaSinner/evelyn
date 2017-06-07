@@ -1,0 +1,19 @@
+<h2 class="text-center">Update Simple Task</h2>
+
+<div class="rows">
+    <div class="float-center small-12 medium-6">
+        <form ng-submit="update()">
+            <label>Title
+                <input type="text" ng-model="title" paceholder="Title" />
+            </label>
+            <label>Description
+                <textarea type="text" ng-model="description" placeholder="Description"></textarea>
+            </label>
+            <label>Due Date
+                <input type="text" ng-model="dueDate" class="date-input" placeholder="01/01/1970" />
+            </label>
+
+            <input type="submit" value="Update" class="button"/>
+        </form>
+    </div>
+</div>
