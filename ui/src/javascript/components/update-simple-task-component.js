@@ -3,7 +3,6 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
 
     controller: function($scope, $state, $stateParams, settingsService, serverBridgeService) {
         $(".date-input").fdatepicker({
-            initialDate: moment().hour(12).minute(0).add(1, 'days').format(settingsService.get_moment_date_format()),
             format: settingsService.get_date_format(),
             disableDblClickSelection: true,
             leftArrow: '<<',
@@ -12,8 +11,6 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
             closeButton: true,
             pickTime: true,
         });
-
-        console.log("state params", $stateParams);
 
         $scope.title = "";
         $scope.description = "";
@@ -28,14 +25,15 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
         $scope.update = function() {
             serverBridgeService.send_to_server('/simpletask/update', {
                 TaskId: $stateParams.simpleTask.taskId,
-                Title: $scope.title,
-                Description: $scope.description,
-                DueDate: $scope.dueDate,
+                NewTitle: $scope.title,
+                NewDescription: $scope.description,
+                NewDueDate: $scope.dueDate,
             }, function (response) {
                 if (response.Error === null) {
                     $state.go("dashboard.simpletask");
                 }
                 else {
+                    // TODO handle error.
                     console.log(response);
                 }
             });

@@ -45,8 +45,6 @@ evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settings
     EvelynServerBridge.prototype.process_response = function(response) {
         if (response.hasOwnProperty("Token") && response.Token !== null) {
             sessionDataService.setToken(response.Token);
-
-            console.log(sessionDataService.getToken());
         }
     };
 
@@ -57,7 +55,14 @@ evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settings
 
         for (var attr in request) {
             if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-                request[attr] = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
+                var isoDate = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
+
+                if (_.isNull(isoDate)) {
+                    console.log("Failed to convert date in request processor");
+                }
+                else {
+                    request[attr] = isoDate;
+                }
             }
         }
 

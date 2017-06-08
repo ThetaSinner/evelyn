@@ -42,7 +42,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 url: '/simpletask',
                 component: 'simpleTaskComponent',
                 resolve: {
-                    simpleTasks: function (serverBridgeService) {
+                    simpleTasks: function (serverBridgeService, settingsService) {
                         return new Promise(function (resolve, reject) {
                             // TODO fetch via cache.
                             serverBridgeService.send_to_server('/simpletask/lookup', {
@@ -50,6 +50,12 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                                 ShowCompleted: false
                             }, function (response) {
                                 // TODO handle response error.
+                                for (var i = 0; i < response.SimpleTasks.length; i++) {
+                                    response.SimpleTasks[i].dueDate =
+                                        moment(response.SimpleTasks[i].dueDate)
+                                        .format(settingsService.get_moment_date_format());
+                                }
+
                                 resolve(response.SimpleTasks);
                             });
                         });
