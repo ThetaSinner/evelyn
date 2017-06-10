@@ -34,6 +34,7 @@ services:
     gulp:
         image: subxaero/gulp:latest
         build: ./ui
+        command: bash -c "npm install && gulp"
         volumes:
         - ./ui:/source
         - /source/node_modules
