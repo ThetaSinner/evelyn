@@ -25,5 +25,18 @@ evelynDesktopApp.component('viewTodoListComponent', {
                 }
             });
         };
+
+        $scope.updateDone = function(index) {
+            var todoListId = $scope.$ctrl.todoList.TodoListId;
+            var isDone = $scope.$ctrl.todoList.TodoListItems[index].IsDone;
+
+            serverBridgeService.send_to_server('/todolist/updateitem', {
+                TodoListId: todoListId,
+                ItemIndex: index,
+                IsDone: isDone,
+            }, function (response) {
+                // TODO check for error.
+            });
+        }
     }
 });
