@@ -26,6 +26,7 @@ services:
             - "8080"
         volumes:
             - ./backend:/source
+            - /source/target
             - ~/.cargo:/root/.cargo
         depends_on:
             - mongodb
@@ -35,5 +36,6 @@ services:
         build: ./ui
         volumes:
         - ./ui:/source
+        - /source/node_modules
 volumes:
     mongo_vol:
