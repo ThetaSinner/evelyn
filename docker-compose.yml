@@ -19,7 +19,7 @@ services:
         volumes:
             - mongo_vol:/data/db
     backend:
-        image: subxaero/rust
+        image: subxaero/rust:latest
         ports:
             - "8080:8080"
         expose:
@@ -27,10 +27,9 @@ services:
         volumes:
             - ./backend:/source
             - /source/target
-            - ~/.cargo:/root/.cargo
         depends_on:
             - mongodb
-        command: bash -c "cargo run -j8 -- -conf='./configs/docker-evelyn.json'"
+        command: bash -c "cargo watch --poll -x 'run -j8 -- -conf=./configs/docker-evelyn.json'"
     gulp:
         image: subxaero/gulp:latest
         build: ./ui

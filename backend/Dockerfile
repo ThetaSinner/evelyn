@@ -23,6 +23,7 @@ RUN curl -sO https://static.rust-lang.org/dist/rust-$RUST_VERSION-x86_64-unknown
     /var/tmp/* && \
   mkdir /source
 RUN cargo install rustfmt -j 8
+RUN cargo install cargo-watch -j 8
 ENV PATH="/root/.cargo/bin:$PATH"
 VOLUME ["/source"]
 WORKDIR /source
