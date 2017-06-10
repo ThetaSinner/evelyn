@@ -90,7 +90,7 @@ pub fn lookup_user_group(
                                             .members
                                             .into_iter()
                                             .map(|x| {
-                                                     model::user_group::UserGroupMemberExternalModel {
+                                                     model::user_group::member::UserGroupMemberExternalModel {
                                                          user_id: x.user_id,
                                                      }
                                                  })
@@ -100,5 +100,24 @@ pub fn lookup_user_group(
                })
         },
         Err(e) => Err(EvelynCoreError::FailedToLookupUserGroup(e)),
+    }
+}
+
+pub fn add_member(
+    model: model::user_group::member::AddMemberRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let data_store = processor_data.data_store.clone();
+
+    let add_member_model = model::user_group::member::AddMemberModel {
+        user_group_id: model.user_group_id,
+        user_group_member_model: model::user_group::member::UserGroupMemberModel {
+            user_id: model.user_group_member_external_model.user_id
+        }
+    };
+
+    match data::user_group::add_member(&data_store, add_member_model) {
+        None => None,
+        Some(e) => Some(EvelynCoreError::FailedToAddMemberToUserGroup(e)),
     }
 }

@@ -102,6 +102,7 @@ pub enum EvelynServiceError {
     CreateUserGroup(EvelynCoreError),
     LookupUserGroups(EvelynCoreError),
     LookupUserGroup(EvelynCoreError),
+    AddMemberToUserGroup(EvelynCoreError),
 
     // Simple Task
     FailedToCreateSimpleTask(EvelynCoreError),
@@ -144,6 +145,7 @@ EvelynErrorDisplay!{
     {CreateUserGroup, "100601", "Failed to create user group"},
     {LookupUserGroups, "100602", "Failed to lookup user groups"},
     {LookupUserGroup, "100603", "Failed to lookup user group"},
+    {AddMemberToUserGroup, "100604", "Failed to add member to user group"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
@@ -178,6 +180,7 @@ pub enum EvelynCoreError {
     FailedToCreateUserGroup(EvelynDatabaseError),
     FailedToLookupUserGroups(EvelynDatabaseError),
     FailedToLookupUserGroup(EvelynDatabaseError),
+    FailedToAddMemberToUserGroup(EvelynDatabaseError),
 
     // Simple Task`
     FailedToCreateSimpleTask(EvelynDatabaseError),
@@ -213,6 +216,7 @@ EvelynErrorDisplay!{
     {FailedToCreateUserGroup, "Failed to create user group: {}"},
     {FailedToLookupUserGroups, "Failed to lookup user groups: {}"},
     {FailedToLookupUserGroup, "Failed to lookup user group: {}"},
+    {FailedToAddMemberToUserGroup, "Failed to add member to user group: {}"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "Failed to create task: {}"},
@@ -247,6 +251,7 @@ pub enum EvelynDatabaseError {
     LookupUserGroups(MongoDbError),
     UserGroupNotFound(EvelynBaseError),
     LookupUserGroup(MongoDbError),
+    AddMemberToUserGroup(MongoDbError),
 
     // Simple Task
     InsertSimpleTask(MongoDbError),
@@ -283,6 +288,7 @@ EvelynErrorDisplay!{
     {LookupUserGroups, "Failed to lookup user groups: {}"},
     {UserGroupNotFound, "User group not found: {}"},
     {LookupUserGroup, "Failed to lookup user group: {}"},
+    {AddMemberToUserGroup, "Failed to add member to user group: {}"},
 
     // Simple Task
     {InsertSimpleTask, "Failed to create new simple task: {}"},

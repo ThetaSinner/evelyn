@@ -49,6 +49,8 @@ pub fn load_processors(router: &mut Router) {
                     user_group::lookup_user_groups_processor);
     router.add_rule("/usergroup/lookupgroup",
                     user_group::lookup_user_group_processor);
+    router.add_rule("/usergroup/addmember",
+                    user_group::add_member_processor);
 
     router.add_rule("/simpletask/create",
                     simple_task::create_simple_task_processor);

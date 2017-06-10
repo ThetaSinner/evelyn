@@ -86,7 +86,9 @@ pub fn lookup_user_group_processor(
             validate_session!(processor_data, request_model);
 
             match user_group::lookup_user_group(request_model, processor_data) {
-                Ok(response) => model_to_router_output!(response),
+                Ok(response) => {
+                    model_to_router_output!(response)
+                },
                 Err(e) => {
                     model_to_router_output!(model::user_group::LookupUserGroupResponseModel {
                                                 user_group: None,
@@ -100,6 +102,33 @@ pub fn lookup_user_group_processor(
                                         user_group: None,
                                         error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
                                     })
+        },
+    }
+}
+
+pub fn add_member_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(user_group_model::member::AddMemberRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match user_group::add_member(request_model, processor_data) {
+                None => model_to_router_output!(model::user_group::member::AddMemberResponseModel {
+                    error: None,
+                }),
+                Some(e) => {
+                    model_to_router_output!(model::user_group::member::AddMemberResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::AddMemberToUserGroup(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(model::user_group::member::AddMemberResponseModel {
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
         },
     }
 }

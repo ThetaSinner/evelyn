@@ -84,3 +84,29 @@ pub fn lookup_user_group(
         Err(e) => Err(EvelynDatabaseError::LookupUserGroup(e)),
     }
 }
+
+pub fn add_member(
+    client: &Client,
+    add_member_model: user_group_model::member::AddMemberModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("usergroup");
+
+    let ref user_group_id = add_member_model.user_group_id;
+    let filter = doc!("userGroupId" => user_group_id);
+
+    let mut update_query = Document::new();
+    let bson_member_model = bson::to_bson(&add_member_model.user_group_member_model).unwrap();
+    if let bson::Bson::Document(document) = bson_member_model {
+        update_query.insert("members", document);
+
+        let mut push_update_query = Document::new();
+        push_update_query.insert("$push", update_query);
+
+        match collection.update_one(filter, push_update_query, None) {
+            Ok(_) => None,
+            Err(e) => Some(EvelynDatabaseError::AddMemberToUserGroup(e)),
+        }
+    } else {
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+    }
+}

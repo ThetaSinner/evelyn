@@ -16,6 +16,8 @@
 
 use model::ErrorModel;
 
+pub mod member;
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateUserGroupRequestModel {
@@ -33,18 +35,12 @@ pub struct CreateUserGroupResponseModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UserGroupMemberModel {
-    pub user_id: String,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct UserGroupModel {
     pub user_group_id: String,
     pub created_by_user_id: String,
     pub name: String,
     pub description: String,
-    pub members: Vec<UserGroupMemberModel>,
+    pub members: Vec<member::UserGroupMemberModel>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -95,11 +91,5 @@ pub struct LookupUserGroupResponseModel {
 pub struct UserGroupExternalModel {
     pub name: String,
     pub description: String,
-    pub members: Vec<UserGroupMemberExternalModel>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
-pub struct UserGroupMemberExternalModel {
-    pub user_id: String,
+    pub members: Vec<member::UserGroupMemberExternalModel>,
 }
