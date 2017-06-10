@@ -1,0 +1,13 @@
+<h2 class="text-center">Todo Lists</h2>
+
+<div class="float-right space-below">
+    <button ng-click="create()"><i class="fa fa-3x fa-plus"></i></button>
+</div>
+
+<div class="small-up-3">
+    <div class="column" ng-repeat="todoList in $ctrl.todoLists">
+        <div class="row callout" ng-click="viewList(todoList.TodoListId)">
+            <h5>{{todoList.Title}}</h5>
+        </div>
+    </div>
+</div>

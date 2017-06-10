@@ -79,6 +79,57 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                     simpleTask: null,
                 },
             }
+        )
+        .state(
+            {
+                name: 'dashboard.todolist',
+                url: '/todolist',
+                component: 'todoListComponent',
+                resolve: {
+                    todoLists: function (serverBridgeService, settingsService) {
+                        return new Promise(function (resolve, reject) {
+                            // TODO fetch via cache.
+                            serverBridgeService.send_to_server('/todolist/lookuplists', {}, function (response) {
+                                // TODO handle response error.
+                                resolve(response.TodoLists);
+                            });
+                        });
+                    },
+                },
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.viewtodolist',
+                url: '/todolist/view',
+                component: 'viewTodoListComponent',
+                params: {
+                    todoListId: null,
+                },
+                resolve: {
+                    todoList: function ($stateParams, serverBridgeService, settingsService) {
+                        return new Promise(function (resolve, reject) {
+                            // TODO fetch via cache.
+                            // TODO handle todoListId null. Display a 'no todo list selected'.
+                            serverBridgeService.send_to_server('/todolist/lookuplist', {
+                                TodoListId: $stateParams.todoListId,
+                            }, function (response) {
+                                // TODO handle response error.
+                                var todoList = response.TodoList;
+                                todoList.TodoListId = $stateParams.todoListId;
+                                resolve(todoList);
+                            });
+                        });
+                    },
+                },
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.createtodolist',
+                url: '/todolist/create',
+                component: 'createTodoListComponent',
+            }
         );
 });
 

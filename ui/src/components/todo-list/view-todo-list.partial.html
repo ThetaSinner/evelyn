@@ -1,0 +1,16 @@
+<h2 class="text-center">Todo Lists</h2>
+
+<div class="small-up-3">
+    <div class="column">
+        <div class="row">
+            <h4>{{$ctrl.todoList.Title}}</h4>
+            <ul>
+                <li ng-repeat="item in $ctrl.todoList.TodoListItems">{{item.Text}}</li>
+            </ul>
+            <form ng-submit="addItem()">
+                <input type="text" ng-model="newItem" placeholder="What else?" />
+                <button type="submit" class="button">+</button>
+            </form>
+        </div>
+    </div>
+</div>
