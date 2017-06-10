@@ -29,7 +29,7 @@ impl Conf {
             .unwrap();
         c.set_default("use_ssl", "true").unwrap();
 
-        println!("Reading config from evelyn.json");
+        println!("Reading config from {}", filename);
         match c.merge(config::File::new(filename, config::FileFormat::Json)) {
             Ok(_) => println!("Config loaded"),
             Err(e) => println!("Failed to load config {:?}", e),
