@@ -38,6 +38,7 @@ mod processing;
 pub mod model;
 pub mod core;
 
+use std::env;
 use mongodb::{Client, ThreadedClient};
 use processing::ProcessorData;
 use server::http::HttpServer;
@@ -49,7 +50,18 @@ pub fn hello_evelyn() {
     // Initialise the logging back end.
     log4rs::init_file("./configs/log4rs.yml", Default::default()).unwrap();
 
-    let conf = data::conf::Conf::new("./configs/evelyn.json");
+    let mut conf_file = String::from("./configs/evelyn.json");
+
+    // Prints each argument on a separate line
+    for mut argument in env::args() {
+        if argument.starts_with("-conf") {
+            let pos = argument.find("=").unwrap() + 1;
+            conf_file = argument.split_off(pos);
+            break;
+        }
+    }
+
+    let conf = data::conf::Conf::new(conf_file.as_str());
     let uri = conf.get_db_connnection_string();
     // Note this will not fail if MongoDB is not available.
     let client = match Client::with_uri(uri.as_str()) {

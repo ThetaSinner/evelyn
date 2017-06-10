@@ -30,7 +30,7 @@ services:
             - ~/.cargo:/root/.cargo
         depends_on:
             - mongodb
-        command: bash -c "cargo run -j8"
+        command: bash -c "cargo run -j8 -- -conf='./configs/docker-evelyn.json'"
     gulp:
         image: subxaero/gulp:latest
         build: ./ui
