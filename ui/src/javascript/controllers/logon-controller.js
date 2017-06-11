@@ -1,4 +1,5 @@
 evelynDesktopApp.controller('LogonController', ['$scope', 'serverBridgeService', function LogonController($scope, serverBridgeService) {
+    $scope.error = null;
     $scope.emailAddress = '';
     $scope.password = '';
 
@@ -11,6 +12,8 @@ evelynDesktopApp.controller('LogonController', ['$scope', 'serverBridgeService',
                 window.location.href = "#!/dashboard/home";
             }
             else {
+                $scope.error = "" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage;
+                $scope.$apply();
                 console.log(response);
             }
         });
