@@ -112,7 +112,7 @@ pub fn add_member(
     let add_member_model = model::user_group::member::AddMemberModel {
         user_group_id: model.user_group_id,
         user_group_member_model: model::user_group::member::UserGroupMemberModel {
-            user_id: model.user_group_member_external_model.user_id
+            user_id: model.member.user_id
         }
     };
 
