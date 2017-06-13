@@ -88,15 +88,22 @@ function lookupGroup(token, groupId) {
 }
 
 describe('User groups', function() {
-    var token = null;
+    var token1 = null;
+    var token2 = null;
 
     before(function () {
         return httpHelper.chaiHttpPostPurgeDatabase()
         .then(function () {
-            return httpHelper.createUserAndLogon();
+            return httpHelper.createUserAndLogon('user1');
         })
         .then(function (_token) {
-            token = _token;
+            token1 = _token;
+        })
+        .then(function () {
+            return httpHelper.createUserAndLogon('user2');
+        })
+        .then(function (_token) {
+            token2 = _token;
         });
     });
 
@@ -105,27 +112,27 @@ describe('User groups', function() {
     });
 
     it('Create a group', function() {
-        return createUserGroup(token, "my dev team", "the description of the team");
+        return createUserGroup(token1, "my dev team", "the description of the team");
     });
 
     it('Add a member', function() {
-        return createUserGroup(token, "my dev team", "the description of the team")
+        return createUserGroup(token1, "my dev team", "the description of the team")
         .then(function (response) {
-            return addMember(token, response.UserGroupId, "some user id");
+            return addMember(token1, response.UserGroupId, "some user id");
         });
     });
 
     describe('Lookup', function() {
         it('Lookup group previews', function() {
-            return createUserGroup(token, 'my dev team', 'the description of the team')
+            return createUserGroup(token1, 'my dev team', 'the description of the team')
             .then(function (response) {
-                return addMember(token, response.UserGroupId, 'some user id');
+                return addMember(token1, response.UserGroupId, 'some user id');
             })
             .then(function (response) {
-                return createUserGroup(token, 'my other dev team', 'some other description');
+                return createUserGroup(token1, 'my other dev team', 'some other description');
             })
             .then(function (response) {
-                return lookupGroups(token);
+                return lookupGroups(token1);
             })
             .then(function (response) {
                 expect(response.UserGroups).to.be.ok;
@@ -146,13 +153,13 @@ describe('User groups', function() {
         it('Lookup group', function() {
             var groupId = null;
 
-            return createUserGroup(token, 'my dev team', 'the description of the team')
+            return createUserGroup(token1, 'my dev team', 'the description of the team')
             .then(function (response) {
                 groupId = response.UserGroupId;
-                return addMember(token, response.UserGroupId, 'some user id');
+                return addMember(token1, response.UserGroupId, 'some user id');
             })
             .then(function (response) {
-                return lookupGroup(token, groupId);
+                return lookupGroup(token1, groupId);
             })
             .then(function (response) {
                 expect(response.UserGroup).to.be.ok;

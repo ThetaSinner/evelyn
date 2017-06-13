@@ -90,12 +90,16 @@ function chaiHttpPostPurgeDatabaseArea(target) {
     });
 }
 
-function createUserAndLogon() {
+function createUserAndLogon(user_ref) {
+    if (!_.isString(user_ref)) {
+        user_ref = 'rupert';
+    }
+
     return chaiHttpPost(
         '/user/create',
         {
-            UserName: "Theta",
-            EmailAddress: "ts@evelyn.com",
+            UserName: user_ref,
+            EmailAddress: user_ref + "@evelyn.com",
             Password: "asdf"
         }
     )
@@ -105,7 +109,7 @@ function createUserAndLogon() {
         return chaiHttpPost(
             '/user/logon',
             {
-                EmailAddress: 'ts@evelyn.com',
+                EmailAddress: user_ref + '@evelyn.com',
                 Password: 'asdf'
             }
         );
