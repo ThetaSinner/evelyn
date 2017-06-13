@@ -79,11 +79,12 @@ pub fn lookup_user_groups(
 
 pub fn lookup_user_group(
     model: model::user_group::LookupUserGroupRequestModel,
+    session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
 ) -> Result<model::user_group::LookupUserGroupResponseModel, EvelynCoreError> {
     let data_store = processor_data.data_store.clone();
 
-    match data::user_group::lookup_user_group(&data_store, model.user_group_id) {
+    match data::user_group::lookup_user_group(&data_store, session_token_model.user_id, model.user_group_id) {
         Ok(result) => {
             Ok(model::user_group::LookupUserGroupResponseModel {
                    user_group: Some(model::user_group::UserGroupExternalModel {

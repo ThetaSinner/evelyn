@@ -22,6 +22,25 @@ use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
+fn build_user_group_lookup_filter(user_id: String) -> Document {
+    let ref _user_id = &user_id;
+
+    let mut created_by_filter = Document::new();
+    created_by_filter.insert("createdByUserId", *_user_id);
+
+    let mut member_filter = Document::new();
+    member_filter.insert("members", *_user_id);
+
+    let mut arr = bson::Array::new();
+    arr.push(bson::to_bson(&created_by_filter).unwrap());
+    arr.push(bson::to_bson(&member_filter).unwrap());
+
+    let mut filter = Document::new();
+    filter.insert("$or", Bson::Array(arr));
+
+    filter
+}
+
 pub fn insert_user_group(
     client: &Client,
     user_group_model: &user_group_model::UserGroupModel,
@@ -39,20 +58,7 @@ pub fn lookup_user_groups(
 ) -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
-    let ref _user_id = &user_id;
-
-    let mut created_by_filter = Document::new();
-    created_by_filter.insert("createdByUserId", *_user_id);
-
-    let mut member_filter = Document::new();
-    member_filter.insert("members", *_user_id);
-
-    let mut arr = bson::Array::new();
-    arr.push(bson::to_bson(&created_by_filter).unwrap());
-    arr.push(bson::to_bson(&member_filter).unwrap());
-
-    let mut filter = Document::new();
-    filter.insert("$or", Bson::Array(arr));
+    let filter = build_user_group_lookup_filter(user_id);
 
     let mut find_options = FindOptions::new();
 
@@ -85,11 +91,13 @@ pub fn lookup_user_groups(
 
 pub fn lookup_user_group(
     client: &Client,
+    user_id: String,
     user_group_id: String,
 ) -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
-    let filter = doc!("userGroupId" => user_group_id);
+    let mut filter = build_user_group_lookup_filter(user_id);
+    filter.insert("userGroupId", user_group_id);
 
     match collection.find_one(Some(filter), None) {
         Ok(result) => {

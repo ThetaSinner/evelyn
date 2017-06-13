@@ -83,9 +83,9 @@ pub fn lookup_user_group_processor(
 ) -> RouterOutput {
     match decode_router_input_to_model!(user_group_model::LookupUserGroupRequestModel, router_input) {
         Ok(request_model) => {
-            validate_session!(processor_data, request_model);
+            let session_token_model = validate_session!(processor_data, request_model);
 
-            match user_group::lookup_user_group(request_model, processor_data) {
+            match user_group::lookup_user_group(request_model, session_token_model, processor_data) {
                 Ok(response) => {
                     model_to_router_output!(response)
                 },
