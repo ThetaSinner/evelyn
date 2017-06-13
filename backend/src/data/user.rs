@@ -15,9 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
-use model::user::UserModel;
+use model::user::{UserModel, SearchResult};
 use mongodb::{Client, ThreadedClient};
+use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
 pub fn insert_user(
@@ -57,5 +59,40 @@ pub fn find_user(
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
+    }
+}
+
+pub fn search_for_users(
+    client: &Client,
+    query: String,
+) -> Result<Vec<SearchResult>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("user");
+
+    let regex = doc!{"$regex" => query};
+    let filter = doc!{"userName" => regex};
+
+    let mut find_options = FindOptions::new();
+
+    let mut projection = Document::new();
+    projection.insert("userId", Bson::I32(1));
+    projection.insert("userName", Bson::I32(1));
+    projection.insert("_id", Bson::I32(0));
+    find_options.projection = Some(projection);
+
+    let cursor = collection.find(Some(filter), Some(find_options));
+
+    match cursor {
+        Ok(c) => {
+            let results: Vec<SearchResult> = c.map(|x| match x {
+               Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+               Err(e) => {
+                   println!("Database error in search for users {}", e);
+                   panic!()
+               },
+           }).collect();
+
+           Ok(results)
+        },
+        Err(e) => Err(EvelynDatabaseError::SearchForUsers(e)),
     }
 }

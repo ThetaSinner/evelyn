@@ -52,3 +52,31 @@ pub struct UserModel {
     pub email_address: String,
     pub password: String,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SearchRequestModel {
+    pub token: String,
+    pub query: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SearchResult {
+    pub user_id: String,
+    pub user_name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SearchResultExternal {
+    pub user_id: String,
+    pub user_name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct SearchResponseModel {
+    pub search_results: Vec<SearchResultExternal>,
+    pub error: Option<ErrorModel>,
+}

@@ -97,6 +97,7 @@ pub enum EvelynServiceError {
     UserAlreadyExists(EvelynCoreError),
     LogonUser(EvelynCoreError),
     FailedToLogonUser(EvelynCoreError),
+    SearchForUsers(EvelynCoreError),
 
     // User group
     CreateUserGroup(EvelynCoreError),
@@ -140,6 +141,7 @@ EvelynErrorDisplay!{
     {UserAlreadyExists, "100202", "Failed to create user a user with that name already exists"},
     {LogonUser, "100203", "Invalid logon"},
     {FailedToLogonUser, "100204", "Failed to logon user"},
+    {SearchForUsers, "100205", "Failed to search for users"},
 
     // User group
     {CreateUserGroup, "100601", "Failed to create user group"},
@@ -175,6 +177,7 @@ pub enum EvelynCoreError {
     FailedToCreateUser(EvelynDatabaseError),
     InvalidLogon(EvelynBaseError),
     FailedToLogonUser(EvelynDatabaseError),
+    FailedToSearchForUsers(EvelynDatabaseError),
 
     // User group
     FailedToCreateUserGroup(EvelynDatabaseError),
@@ -211,6 +214,7 @@ EvelynErrorDisplay!{
     {FailedToCreateUser, "Failed to create user: {}"},
     {InvalidLogon, "Invalid logon {}"},
     {FailedToLogonUser, "Failed to logon user: {}"},
+    {FailedToSearchForUsers, "Failed to search for users: {}"},
 
     // User Group
     {FailedToCreateUserGroup, "Failed to create user group: {}"},
@@ -245,6 +249,7 @@ pub enum EvelynDatabaseError {
     // User
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
+    SearchForUsers(MongoDbError),
 
     // User group
     InsertUserGroup(MongoDbError),
@@ -280,8 +285,9 @@ EvelynErrorDisplay!{
     {PurgeCollection, "Failed to purge collection {}"},
 
     // User
-    {InsertUser, "Failed to create record for new user\n {}"},
+    {InsertUser, "Failed to create record for new user: {}"},
     {LookupUser, "Failed to lookup user: {}"},
+    {SearchForUsers, "Failed to search for users: {}"},
 
     // User group
     {InsertUserGroup, "Failed to create user group: {}"},

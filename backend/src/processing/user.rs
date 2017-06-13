@@ -122,3 +122,32 @@ pub fn logon_user_processor(
         },
     }
 }
+
+pub fn search_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(model::user::SearchRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match user::search_for_users(request_model, processor_data) {
+                Ok(response) => {
+                    model_to_router_output!(response)
+                },
+                Err(e) => {
+                    model_to_router_output!(model::user::SearchResponseModel {
+                        search_results: Vec::new(),
+                        error: service_error_to_model!(EvelynServiceError::SearchForUsers(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(model::user::SearchResponseModel {
+                search_results: Vec::new(),
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

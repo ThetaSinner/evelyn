@@ -43,6 +43,7 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/user/create", user::create_user_processor);
     router.add_rule("/user/logon", user::logon_user_processor);
+    router.add_rule("/user/search", user::search_processor);
 
     router.add_rule("/usergroup/create", user_group::create_user_group_processor);
     router.add_rule("/usergroup/lookupgroups",

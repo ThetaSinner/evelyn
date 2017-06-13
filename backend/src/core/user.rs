@@ -16,7 +16,7 @@
 
 use core::error_messages::{EvelynBaseError, EvelynCoreError};
 use data;
-use model::user::{CreateUserRequestModel, LogonUserRequestModel, LogonUserResponseModel, UserModel};
+use model::user::{CreateUserRequestModel, LogonUserRequestModel, LogonUserResponseModel, UserModel, SearchRequestModel, SearchResponseModel, SearchResultExternal};
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -83,5 +83,25 @@ pub fn logon_user(
             }
         },
         Err(e) => Err(EvelynCoreError::FailedToLogonUser(e)),
+    }
+}
+
+pub fn search_for_users(
+    model: SearchRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<SearchResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match data::user::search_for_users(&ds, model.query) {
+        Ok(search_results) => {
+            Ok(SearchResponseModel {
+                search_results: search_results.into_iter().map(|x| SearchResultExternal {
+                    user_id: x.user_id,
+                    user_name: x.user_name,
+                }).collect(),
+                error: None,
+            })
+        },
+        Err(e) => Err(EvelynCoreError::FailedToSearchForUsers(e)),
     }
 }
