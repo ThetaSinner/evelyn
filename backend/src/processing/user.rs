@@ -26,7 +26,7 @@ pub fn create_user_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    let request_model_decoded: Result<model::user::CreateUserModel, _> = serde_json::from_str(&router_input.request_body);
+    let request_model_decoded: Result<model::user::CreateUserRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_decoded {
         Ok(request_model) => {
@@ -77,7 +77,7 @@ pub fn logon_user_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    let request_model_de: Result<model::user::LogonUserModel, _> = serde_json::from_str(&router_input.request_body);
+    let request_model_de: Result<model::user::LogonUserRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {

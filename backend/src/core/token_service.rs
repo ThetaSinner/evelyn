@@ -35,8 +35,9 @@ impl TokenService {
         server_session_token: &String,
         user_model: &UserModel,
     ) -> String {
+        // TODO token issue timestamp
         let session_token_model = SessionTokenModel {
-            user_id: user_model.email_address.to_owned(),
+            user_id: user_model.user_id.to_owned(),
             server_session_token: server_session_token.to_owned(),
         };
 

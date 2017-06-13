@@ -33,8 +33,26 @@ pub fn insert_user_group(
                   EvelynDatabaseError::InsertUserGroup)
 }
 
-pub fn lookup_user_groups(client: &Client) -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
+pub fn lookup_user_groups(
+    user_id: String,
+    client: &Client,
+) -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
+
+    let ref _user_id = &user_id;
+
+    let mut createdByFilter = Document::new();
+    createdByFilter.insert("createdByUserId", *_user_id);
+
+    let mut memberFilter = Document::new();
+    memberFilter.insert("members", *_user_id);
+
+    let mut arr = bson::Array::new();
+    arr.push(bson::to_bson(&createdByFilter).unwrap());
+    arr.push(bson::to_bson(&memberFilter).unwrap());
+
+    let mut filter = Document::new();
+    filter.insert("$or", Bson::Array(arr));
 
     let mut find_options = FindOptions::new();
 
@@ -45,7 +63,7 @@ pub fn lookup_user_groups(client: &Client) -> Result<Vec<user_group_model::UserG
     projection.insert("_id", Bson::I32(0));
     find_options.projection = Some(projection);
 
-    let cursor = collection.find(Some(Document::new()), Some(find_options));
+    let cursor = collection.find(Some(filter), Some(find_options));
 
     match cursor {
         Ok(cursor) => {

@@ -18,7 +18,7 @@ use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct CreateUserModel {
+pub struct CreateUserRequestModel {
     pub user_name: String,
     pub email_address: String,
     pub password: String,
@@ -32,7 +32,7 @@ pub struct CreateUserResponseModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct LogonUserModel {
+pub struct LogonUserRequestModel {
     pub email_address: String,
     pub password: String,
 }
@@ -47,6 +47,7 @@ pub struct LogonUserResponseModel {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserModel {
+    pub user_id: String,
     pub user_name: String,
     pub email_address: String,
     pub password: String,
