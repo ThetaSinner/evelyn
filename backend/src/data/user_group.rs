@@ -29,7 +29,7 @@ fn build_user_group_lookup_filter(user_id: String) -> Document {
     created_by_filter.insert("createdByUserId", *_user_id);
 
     let mut member_filter = Document::new();
-    member_filter.insert("members", *_user_id);
+    member_filter.insert("members.userId", *_user_id);
 
     let mut arr = bson::Array::new();
     arr.push(bson::to_bson(&created_by_filter).unwrap());

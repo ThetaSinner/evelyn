@@ -120,9 +120,28 @@ function createUserAndLogon(user_ref) {
     });
 }
 
+function searchForUsers(token, user_ref) {
+    if (!_.isString(user_ref)) {
+        user_ref = 'rupert';
+    }
+
+    return chaiHttpPost(
+        '/user/search',
+        {
+            Token: token,
+            Query: user_ref
+        }
+    )
+    .then(function (response) {
+        expect(response.Error).to.be.null;
+        return Promise.resolve(response);
+    });
+}
+
 module.exports = {
     chaiHttpPost: chaiHttpPost,
     chaiHttpPostPurgeDatabase: chaiHttpPostPurgeDatabase,
     chaiHttpPostPurgeDatabaseArea: chaiHttpPostPurgeDatabaseArea,
-    createUserAndLogon: createUserAndLogon
+    createUserAndLogon: createUserAndLogon,
+    searchForUsers: searchForUsers
 };

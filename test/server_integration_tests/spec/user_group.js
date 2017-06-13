@@ -179,5 +179,79 @@ describe('User groups', function() {
                 expect(member1.UserId).to.equal('some user id');
             });
         });
+
+        it('Lookup groups restricted to created by', function() {
+            return createUserGroup(token1, 'my dev team', 'the description of the team')
+            .then(function (response) {
+                groupId1 = response.UserGroupId;
+                return createUserGroup(token2, 'other dev team', 'description');
+            })
+            .then(function (response) {
+                return lookupGroups(token1);
+            })
+            .then(function (response) {
+                expect(response.UserGroups).to.be.ok;
+                var userGroups = response.UserGroups;
+                expect(userGroups).to.be.an.array;
+                expect(userGroups).to.have.lengthOf(1);
+
+                var group = userGroups[0];
+                expect(group.Name).to.equal('my dev team');
+                expect(group.Description).to.equal('the description of the team');
+            })
+            .then(function (response) {
+                return lookupGroups(token2);
+            })
+            .then(function (response) {
+                expect(response.UserGroups).to.be.ok;
+                var userGroups = response.UserGroups;
+                expect(userGroups).to.be.an.array;
+                expect(userGroups).to.have.lengthOf(1);
+
+                var group = userGroups[0];
+                expect(group.Name).to.equal('other dev team');
+                expect(group.Description).to.equal('description');
+            });
+        });
+
+        it('Lookup groups restricted to membership', function() {
+            var group2Id = null;
+
+            return createUserGroup(token1, 'my dev team', 'the description of the team')
+            .then(function (response) {
+                expect(response.Error).to.be.null;
+
+                return createUserGroup(token1, 'other dev team', 'description');
+            })
+            .then(function (response) {
+                expect(response.Error).to.be.null;
+                expect(response.UserGroupId).to.be.ok;
+                group2Id = response.UserGroupId;
+
+                return httpHelper.searchForUsers(token1, 'user2');
+            })
+            .then(function (response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                var user2Id = response.SearchResults[0].UserId;
+
+                return addMember(token1, group2Id, user2Id)
+            })
+            .then(function (response) {
+                expect(response.Error).to.be.null;
+
+                return lookupGroups(token2);
+            })
+            .then(function (response) {
+                expect(response.UserGroups).to.be.ok;
+                var userGroups = response.UserGroups;
+                expect(userGroups).to.be.an.array;
+                expect(userGroups).to.have.lengthOf(1);
+
+                var group = userGroups[0];
+                expect(group.Name).to.equal('other dev team');
+                expect(group.Description).to.equal('description');
+            });
+        });
     });
 });
