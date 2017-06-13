@@ -41,15 +41,15 @@ pub fn lookup_user_groups(
 
     let ref _user_id = &user_id;
 
-    let mut createdByFilter = Document::new();
-    createdByFilter.insert("createdByUserId", *_user_id);
+    let mut created_by_filter = Document::new();
+    created_by_filter.insert("createdByUserId", *_user_id);
 
-    let mut memberFilter = Document::new();
-    memberFilter.insert("members", *_user_id);
+    let mut member_filter = Document::new();
+    member_filter.insert("members", *_user_id);
 
     let mut arr = bson::Array::new();
-    arr.push(bson::to_bson(&createdByFilter).unwrap());
-    arr.push(bson::to_bson(&memberFilter).unwrap());
+    arr.push(bson::to_bson(&created_by_filter).unwrap());
+    arr.push(bson::to_bson(&member_filter).unwrap());
 
     let mut filter = Document::new();
     filter.insert("$or", Bson::Array(arr));
