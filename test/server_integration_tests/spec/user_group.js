@@ -150,13 +150,21 @@ describe('User groups', function() {
             });
         });
 
-        it('Lookup group', function() {
+        it('Lookup group with member', function() {
             var groupId = null;
+            var userId = null;
 
             return createUserGroup(token1, 'my dev team', 'the description of the team')
             .then(function (response) {
                 groupId = response.UserGroupId;
-                return addMember(token1, response.UserGroupId, 'some user id');
+                return httpHelper.searchForUsers(token1, 'user1');
+            })
+            .then(function (response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                userId = response.SearchResults[0].UserId;
+
+                return addMember(token1, groupId, userId);
             })
             .then(function (response) {
                 return lookupGroup(token1, groupId);
@@ -176,7 +184,39 @@ describe('User groups', function() {
 
                 var member1 = members[0];
                 expect(member1).to.be.ok;
-                expect(member1.UserId).to.equal('some user id');
+                expect(member1.UserId).to.equal(userId);
+                expect(member1.UserName).to.equal('user1');
+            });
+        });
+
+        it('Lookup group with invalid member', function() {
+            var groupId = null;
+            var userId = null;
+
+            return createUserGroup(token1, 'my dev team', 'the description of the team')
+            .then(function (response) {
+                groupId = response.UserGroupId;
+
+                return addMember(token1, groupId, 'invalid user id');
+            })
+            .then(function (response) {
+                return lookupGroup(token1, groupId);
+            })
+            .then(function (response) {
+                expect(response.UserGroup).to.be.ok;
+
+                var userGroup = response.UserGroup;
+                expect(userGroup.Name).to.equal('my dev team');
+                expect(userGroup.Description).to.equal('the description of the team');
+
+                expect(userGroup.Members).to.be.ok;
+
+                var members = userGroup.Members;
+                expect(members).to.be.an.array;
+                expect(members).to.have.lengthOf(1);
+
+                var member1 = members[0];
+                expect(member1).to.be.null;
             });
         });
 

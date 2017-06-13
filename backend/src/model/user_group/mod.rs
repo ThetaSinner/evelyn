@@ -91,5 +91,5 @@ pub struct LookupUserGroupResponseModel {
 pub struct UserGroupExternalModel {
     pub name: String,
     pub description: String,
-    pub members: Vec<member::UserGroupMemberExternalModel>,
+    pub members: Vec<Option<member::UserGroupMemberExternalModel>>,
 }

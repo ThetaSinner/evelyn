@@ -62,6 +62,28 @@ pub fn find_user(
     }
 }
 
+pub fn find_user_by_id(
+    client: &Client,
+    user_id: &String,
+) -> Result<Option<UserModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("user");
+
+    let query = doc!{"userId" => user_id};
+    let result = collection.find_one(Some(query), None);
+
+    match result {
+        Ok(r) => {
+            if r.is_some() {
+                Ok(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
+            } else {
+                // TODO fix me.
+                Ok(None)
+            }
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
+    }
+}
+
 pub fn search_for_users(
     client: &Client,
     query: String,

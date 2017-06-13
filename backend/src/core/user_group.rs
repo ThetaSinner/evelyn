@@ -88,18 +88,18 @@ pub fn lookup_user_group(
         Ok(result) => {
             Ok(model::user_group::LookupUserGroupResponseModel {
                    user_group: Some(model::user_group::UserGroupExternalModel {
-                                        name: result.name,
-                                        description: result.description,
-                                        members: result
-                                            .members
-                                            .into_iter()
-                                            .map(|x| {
-                                                     model::user_group::member::UserGroupMemberExternalModel {
-                                                         user_id: x.user_id,
-                                                     }
-                                                 })
-                                            .collect(),
-                                    }),
+                        name: result.name,
+                        description: result.description,
+                        members: result.members.into_iter().map(|x| {
+                            match data::user::find_user_by_id(&data_store, &x.user_id) {
+                                Ok(Some(found_user)) => Some(model::user_group::member::UserGroupMemberExternalModel {
+                                    user_name: found_user.user_name,
+                                    user_id: found_user.user_id,
+                                }),
+                                _ => None,
+                            }
+                         }).collect(),
+                    }),
                    error: None,
                })
         },

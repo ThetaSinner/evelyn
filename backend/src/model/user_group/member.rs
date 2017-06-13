@@ -21,7 +21,7 @@ use model::ErrorModel;
 pub struct AddMemberRequestModel {
     pub token: String,
     pub user_group_id: String,
-    pub member: UserGroupMemberExternalModel,
+    pub member: UserGroupAddMemberExternalModel,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -39,7 +39,14 @@ pub struct AddMemberModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
+pub struct UserGroupAddMemberExternalModel {
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct UserGroupMemberExternalModel {
+    pub user_name: String,
     pub user_id: String,
 }
 
