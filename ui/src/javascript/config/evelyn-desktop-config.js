@@ -130,6 +130,60 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 url: '/todolist/create',
                 component: 'createTodoListComponent',
             }
+        )
+        .state(
+            {
+                name: 'dashboard.usergroups',
+                url: '/usergroups',
+                component: 'userGroupsComponent',
+                resolve: {
+                    userGroups: function(serverBridgeService) {
+                        return new Promise(function(resolve, reject) {
+                            serverBridgeService.send_to_server('/usergroup/lookupgroups', {}, function(response) {
+                                resolve(response.UserGroups);
+                            });
+                        });
+                    },
+                },
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.createusergroup',
+                url: '/usergroup/create',
+                component: 'createUserGroupComponent',
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.addmembertousergroup',
+                url: '/usergroup/addmember',
+                component: 'addMemberToUserGroupComponent',
+                params: {
+                    userGroupId: null,
+                },
+            }
+        )
+        .state(
+            {
+                name: 'dashboard.viewusergroup',
+                url: '/usergroup/view',
+                component: 'viewUserGroupComponent',
+                params: {
+                    userGroupId: null,
+                },
+                resolve: {
+                    userGroup: function($stateParams, serverBridgeService) {
+                        return new Promise(function (resolve, reject) {
+                            serverBridgeService.send_to_server('/usergroup/lookupgroup', {
+                                UserGroupId: $stateParams.userGroupId,
+                            }, function (response) {
+                                resolve(response.UserGroup);
+                            });
+                        });
+                    },
+                },
+            }
         );
 });
 
