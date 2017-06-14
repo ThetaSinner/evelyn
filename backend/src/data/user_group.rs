@@ -126,7 +126,7 @@ pub fn add_member(
         update_query.insert("members", document);
 
         let mut push_update_query = Document::new();
-        push_update_query.insert("$push", update_query);
+        push_update_query.insert("$addToSet", update_query);
 
         match collection.update_one(filter, push_update_query, None) {
             Ok(_) => None,

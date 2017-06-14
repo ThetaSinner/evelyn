@@ -122,6 +122,48 @@ describe('User groups', function() {
         });
     });
 
+    it('Adding same member twice only adds once', function() {
+        var groupId = null;
+        var userId = null;
+
+        return createUserGroup(token1, 'my dev team', 'the description of the team')
+        .then(function (response) {
+            groupId = response.UserGroupId;
+            return httpHelper.searchForUsers(token1, 'user1');
+        })
+        .then(function (response) {
+            expect(response.SearchResults).to.be.an.array;
+            expect(response.SearchResults).to.have.lengthOf(1);
+            userId = response.SearchResults[0].UserId;
+
+            return addMember(token1, groupId, userId);
+        })
+        .then(function (response) {
+            return addMember(token1, groupId, userId);
+        })
+        .then(function (response) {
+            return lookupGroup(token1, groupId);
+        })
+        .then(function (response) {
+            expect(response.UserGroup).to.be.ok;
+
+            var userGroup = response.UserGroup;
+            expect(userGroup.Name).to.equal('my dev team');
+            expect(userGroup.Description).to.equal('the description of the team');
+
+            expect(userGroup.Members).to.be.ok;
+
+            var members = userGroup.Members;
+            expect(members).to.be.an.array;
+            expect(members).to.have.lengthOf(1);
+
+            var member1 = members[0];
+            expect(member1).to.be.ok;
+            expect(member1.UserId).to.equal(userId);
+            expect(member1.UserName).to.equal('user1');
+        });
+    });
+
     describe('Lookup', function() {
         it('Lookup group previews', function() {
             return createUserGroup(token1, 'my dev team', 'the description of the team')
