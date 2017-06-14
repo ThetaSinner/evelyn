@@ -26,7 +26,8 @@ uuid = { version = "0.*", features = ["v4"] }
 chrono = { version = "0.*", features = ["serde", "rustc-serialize"] }
 
 # Open SSL binaries for Windows http://slproweb.com/products/Win32OpenSSL.html
-hyper = "0.*"
+# Latest hyper (0.11 and up) seems to have no https so can't upgrade yet.
+hyper = "0.10.12"
 hyper-openssl = "0.*"
 unicase = "1.4" # Until hyper upgrade.
 time = "0.1" # Until hyper upgrade
