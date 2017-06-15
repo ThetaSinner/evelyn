@@ -334,4 +334,46 @@ describe('Simple Task', function() {
             });
         });
     });
+
+    describe('Remove', function() {
+        before(function() {
+            return httpHelper.chaiHttpPostPurgeDatabaseArea('simpletask');
+        });
+
+        it('removes a task', function() {
+            var taskIdToRemove = null;
+
+            return createTasks({
+                Token : token,
+                Title : "Test Task",
+                Description : "Descriptive",
+                DueDate : date
+            }, 2)
+            .then(function() {
+                return lookupTasks(token);
+            })
+            .then(function(response) {
+                expect(response.SimpleTasks).to.be.an.array;
+                expect(response.SimpleTasks).to.have.lengthOf(2);
+
+                taskIdToRemove = response.SimpleTasks[0].taskId;
+                expect(response.SimpleTasks[1].taskId).to.not.equal(taskIdToRemove);
+
+                return httpHelper.chaiHttpPost('/simpletask/remove', {
+                    Token: token,
+                    TaskId: response.SimpleTasks[0].taskId
+                });
+            })
+            .then(function(response) {
+                expect(response.Error).to.be.null;
+
+                return lookupTasks(token);
+            })
+            .then(function(response) {
+                expect(response.SimpleTasks).to.be.an.array;
+                expect(response.SimpleTasks).to.have.lengthOf(1);
+                expect(response.SimpleTasks[0].taskId).to.not.equal(taskIdToRemove);
+            });
+        })
+    });
 });
