@@ -31,7 +31,17 @@ evelynDesktopApp.component('simpleTaskComponent', {
         };
 
         $scope.delete = function(taskId) {
-            alert(taskId);
+            serverBridgeService.send_to_server('/simpletask/remove', {
+                TaskId: taskId,
+            }, function (response) {
+                if (response.Error === null) {
+                    $state.reload();
+                }
+                else {
+                    // TODO handle error.
+                    console.log(response);
+                }
+            });
         };
 
         $scope.create = function() {
