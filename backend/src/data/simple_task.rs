@@ -103,3 +103,17 @@ pub fn update_simple_task(
         Err(e) => Some(EvelynDatabaseError::UpdateSimpleTask(e)),
     }
 }
+
+pub fn remove(
+    client: &Client,
+    task_id: String,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("simpletask");
+
+    let filter = doc!{"taskId" => task_id};
+
+    match collection.delete_one(filter, None) {
+        Ok(_) => None,
+        Err(e) => Some(EvelynDatabaseError::RemoveSimpleTask(e)),
+    }
+}

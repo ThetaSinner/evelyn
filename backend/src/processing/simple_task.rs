@@ -135,10 +135,46 @@ pub fn update_simple_task_processor(
         Err(e) => {
             let model: model::ErrorModel = From::from(EvelynServiceError::CouldNotDecodeTheRequestPayload(e));
             RouterOutput {
-                response_body: serde_json::to_string(&model::user::CreateUserResponseModel {
-                                                         error: Some(model),
-                                                     })
-                        .unwrap(),
+                response_body: serde_json::to_string(&model::simple_task::UpdateSimpleTaskResponseModel {
+                     error: Some(model),
+                 }).unwrap(),
+            }
+        },
+    }
+}
+
+pub fn remove_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    let request_model_de: Result<model::simple_task::RemoveSimpleTaskRequestModel, _> = serde_json::from_str(&router_input.request_body);
+
+    match request_model_de {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match simple_task::remove(request_model, processor_data) {
+                None => {
+                    RouterOutput {
+                        response_body: serde_json::to_string(&model::simple_task::RemoveSimpleTaskResponseModel {
+                             error: None,
+                         }).unwrap(),
+                    }
+                },
+                Some(e) => {
+                    RouterOutput {
+                        response_body: serde_json::to_string(&model::simple_task::RemoveSimpleTaskResponseModel {
+                             error: service_error_to_model!(EvelynServiceError::FailedToRemoveSimpleTask(e)),
+                         }).unwrap(),
+                    }
+                },
+            }
+        },
+        Err(e) => {
+            RouterOutput {
+                response_body: serde_json::to_string(&model::simple_task::RemoveSimpleTaskResponseModel {
+                     error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+                 }).unwrap(),
             }
         },
     }

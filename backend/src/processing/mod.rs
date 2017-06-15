@@ -59,6 +59,8 @@ pub fn load_processors(router: &mut Router) {
                     simple_task::lookup_simple_task_processor);
     router.add_rule("/simpletask/update",
                     simple_task::update_simple_task_processor);
+    router.add_rule("/simpletask/remove",
+                    simple_task::remove_processor);
 
     router.add_rule("/todolist/create", todo_list::create_todo_list_processor);
     router.add_rule("/todolist/additem", todo_list::add_item_todo_list_processor);

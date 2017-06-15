@@ -129,3 +129,15 @@ pub fn update_simple_task(
         Some(e) => Some(EvelynCoreError::FailedToUpdateSimpleTask(e)),
     }
 }
+
+pub fn remove(
+    model: model::simple_task::RemoveSimpleTaskRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match data::simple_task::remove(&ds, model.task_id) {
+        None => None,
+        Some(e) => Some(EvelynCoreError::FailedToRemoveSimpleTask(e)),
+    }
+}

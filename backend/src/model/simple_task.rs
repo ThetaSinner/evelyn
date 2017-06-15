@@ -93,3 +93,16 @@ pub struct SimpleTaskUpdateModel {
     pub due_date: Option<String>,
     pub completed: Option<bool>,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RemoveSimpleTaskRequestModel {
+    pub token: String,
+    pub task_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct RemoveSimpleTaskResponseModel {
+    pub error: Option<ErrorModel>,
+}

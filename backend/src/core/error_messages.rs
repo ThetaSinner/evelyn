@@ -109,6 +109,7 @@ pub enum EvelynServiceError {
     FailedToCreateSimpleTask(EvelynCoreError),
     FailedToUpdateSimpleTask(EvelynCoreError),
     FailedToLookupSimpleTask(EvelynCoreError),
+    FailedToRemoveSimpleTask(EvelynCoreError),
 
     // Todo List
     CreateTodoList(EvelynCoreError),
@@ -153,6 +154,7 @@ EvelynErrorDisplay!{
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
     {FailedToUpdateSimpleTask, "100302", "Failed to update simple task"},
     {FailedToLookupSimpleTask, "100303", "Failed to lookup simple task"},
+    {FailedToRemoveSimpleTask, "100304", "Failed to remove simple task"},
 
     // Todo List
     {CreateTodoList, "100401", "Failed to create todo list"},
@@ -189,6 +191,7 @@ pub enum EvelynCoreError {
     FailedToCreateSimpleTask(EvelynDatabaseError),
     FailedToUpdateSimpleTask(EvelynDatabaseError),
     FailedToLookupSimpleTask(EvelynDatabaseError),
+    FailedToRemoveSimpleTask(EvelynDatabaseError),
 
     // Todo List
     FailedToCreateTodoList(EvelynDatabaseError),
@@ -226,6 +229,7 @@ EvelynErrorDisplay!{
     {FailedToCreateSimpleTask, "Failed to create task: {}"},
     {FailedToUpdateSimpleTask, "Failed to update task: {}"},
     {FailedToLookupSimpleTask, "Failed to lookup task: {}"},
+    {FailedToRemoveSimpleTask, "Failed to remove task: {}"},
 
     // Todo List
     {FailedToCreateTodoList, "Failed to create todo list: {}"},
@@ -262,6 +266,7 @@ pub enum EvelynDatabaseError {
     InsertSimpleTask(MongoDbError),
     UpdateSimpleTask(MongoDbError),
     LookupSimpleTask(MongoDbError),
+    RemoveSimpleTask(MongoDbError),
 
     // Todo List
     InsertTodoList(MongoDbError),
@@ -300,6 +305,7 @@ EvelynErrorDisplay!{
     {InsertSimpleTask, "Failed to create new simple task: {}"},
     {UpdateSimpleTask, "Failed to update simple task: {}"},
     {LookupSimpleTask, "Failed to lookup simple tasks: {}"},
+    {RemoveSimpleTask, "Failed to remove simple task: {}"},
 
     // Todo List
     {InsertTodoList, "Failed to insert todo list: {}"},
