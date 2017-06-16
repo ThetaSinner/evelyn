@@ -18,7 +18,7 @@ use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct CreateSimpleTaskModel {
+pub struct CreateSimpleTaskRequestModel {
     pub token: String,
     pub title: String,
     pub description: String,
@@ -45,6 +45,16 @@ pub struct SimpleTaskModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
+pub struct SimpleTaskExternalModel {
+    pub task_id: String,
+    pub title: String,
+    pub description: String,
+    pub due_date: String,
+    pub completed: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskRequestModel {
     pub token: String,
     pub limit: u32,
@@ -55,11 +65,11 @@ pub struct LookupSimpleTaskRequestModel {
 #[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,
-    pub simple_tasks: Vec<SimpleTaskModel>,
+    pub simple_tasks: Vec<SimpleTaskExternalModel>,
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct SimpleTaskLookupModel {
     pub user_id: String,
     pub limit: u32,
@@ -84,7 +94,7 @@ pub struct UpdateSimpleTaskResponseModel {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct SimpleTaskUpdateModel {
     pub user_id: String,
     pub task_id: String,

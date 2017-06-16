@@ -93,14 +93,13 @@ describe('Simple Task', function() {
 
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.lengthOf(12);
-                // TODO note server bug here, should be TaskId.
-                expect(response.SimpleTasks[0]).to.have.property('taskId').that.is.a('string');
+                expect(response.SimpleTasks[0]).to.have.property('TaskId').that.is.a('string');
 
                 return httpHelper.chaiHttpPost(
                     '/simpletask/update',
                     {
                         Token: token,
-                        TaskId: response.SimpleTasks[0].taskId,
+                        TaskId: response.SimpleTasks[0].TaskId,
                         NewTitle: simpletask.Title,
                         NewDescription: simpletask.Description,
                         NewDueDate: simpletask.DueDate,
@@ -126,7 +125,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.not.containSubset([{completed: true}]);
+                expect(response.SimpleTasks).to.not.containSubset([{Completed: true}]);
             });
         });
 
@@ -143,7 +142,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
                 expect(response.SimpleTasks).to.have.length.of.at.most(10);
-                expect(response.SimpleTasks).to.not.containSubset([{completed: true}]);
+                expect(response.SimpleTasks).to.not.containSubset([{Completed: true}]);
             });
         });
 
@@ -159,7 +158,7 @@ describe('Simple Task', function() {
             .then(function (response) {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.containSubset([{completed: true}]);
+                expect(response.SimpleTasks).to.containSubset([{Completed: true}]);
             });
         });
 
@@ -176,7 +175,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
                 expect(response.SimpleTasks).to.have.length.of.at.most(10);
-                expect(response.SimpleTasks).to.containSubset([{completed: true}]);
+                expect(response.SimpleTasks).to.containSubset([{Completed: true}]);
             });
         });
     });
@@ -234,7 +233,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, title: newTitle}]);
+                expect(response.SimpleTasks).to.containSubset([{TaskId: simpletask.taskId, Title: newTitle}]);
             });
         });
 
@@ -266,7 +265,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, description: newDescription}]);
+                expect(response.SimpleTasks).to.containSubset([{TaskId: simpletask.taskId, Description: newDescription}]);
             });
         });
 
@@ -283,23 +282,22 @@ describe('Simple Task', function() {
                     NewDueDate: newDate,
                     NewCompleted: simpletask.completed,
                 }
-            ).then(
-                function (response) {
-                    expect(response.Error).to.be.null;
-                    return httpHelper.chaiHttpPost(
-                        '/simpletask/lookup',
-                        {
-                            Token : token,
-                            Limit : 0,
-                            ShowCompleted : true
-                        }
-                    );
-                }
             ).then(function (response) {
+                expect(response.Error).to.be.null;
+                return httpHelper.chaiHttpPost(
+                    '/simpletask/lookup',
+                    {
+                        Token : token,
+                        Limit : 0,
+                        ShowCompleted : true
+                    }
+                );
+            })
+            .then(function (response) {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, dueDate: newDate}]);
+                expect(response.SimpleTasks).to.containSubset([{TaskId: simpletask.taskId, DueDate: newDate}]);
             });
         });
 
@@ -330,7 +328,7 @@ describe('Simple Task', function() {
                 expect(response.Error).to.be.null;
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.length.of.at.least(1);
-                expect(response.SimpleTasks).to.containSubset([{taskId: simpletask.taskId, completed: true}]);
+                expect(response.SimpleTasks).to.containSubset([{TaskId: simpletask.taskId, Completed: true}]);
             });
         });
     });
@@ -357,11 +355,11 @@ describe('Simple Task', function() {
                 expect(response.SimpleTasks).to.have.lengthOf(2);
 
                 taskIdToRemove = response.SimpleTasks[0].taskId;
-                expect(response.SimpleTasks[1].taskId).to.not.equal(taskIdToRemove);
+                expect(response.SimpleTasks[1].TaskId).to.not.equal(taskIdToRemove);
 
                 return httpHelper.chaiHttpPost('/simpletask/remove', {
                     Token: token,
-                    TaskId: response.SimpleTasks[0].taskId
+                    TaskId: response.SimpleTasks[0].TaskId
                 });
             })
             .then(function(response) {
@@ -372,8 +370,8 @@ describe('Simple Task', function() {
             .then(function(response) {
                 expect(response.SimpleTasks).to.be.an.array;
                 expect(response.SimpleTasks).to.have.lengthOf(1);
-                expect(response.SimpleTasks[0].taskId).to.not.equal(taskIdToRemove);
+                expect(response.SimpleTasks[0].TaskId).to.not.equal(taskIdToRemove);
             });
-        })
+        });
     });
 });

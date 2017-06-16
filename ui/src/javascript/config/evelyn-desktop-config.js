@@ -52,7 +52,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                                 // TODO handle response error.
                                 for (var i = 0; i < response.SimpleTasks.length; i++) {
                                     response.SimpleTasks[i].dueDate =
-                                        moment(response.SimpleTasks[i].dueDate)
+                                        moment(response.SimpleTasks[i].DueDate)
                                         .format(settingsService.get_moment_date_format());
                                 }
 

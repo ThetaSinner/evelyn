@@ -46,30 +46,20 @@ pub fn load_processors(router: &mut Router) {
     router.add_rule("/user/search", user::search_processor);
 
     router.add_rule("/usergroup/create", user_group::create_user_group_processor);
-    router.add_rule("/usergroup/lookupgroups",
-                    user_group::lookup_user_groups_processor);
-    router.add_rule("/usergroup/lookupgroup",
-                    user_group::lookup_user_group_processor);
-    router.add_rule("/usergroup/addmember",
-                    user_group::add_member_processor);
+    router.add_rule("/usergroup/lookupgroups", user_group::lookup_user_groups_processor);
+    router.add_rule("/usergroup/lookupgroup", user_group::lookup_user_group_processor);
+    router.add_rule("/usergroup/addmember", user_group::add_member_processor);
 
-    router.add_rule("/simpletask/create",
-                    simple_task::create_simple_task_processor);
-    router.add_rule("/simpletask/lookup",
-                    simple_task::lookup_simple_task_processor);
-    router.add_rule("/simpletask/update",
-                    simple_task::update_simple_task_processor);
-    router.add_rule("/simpletask/remove",
-                    simple_task::remove_processor);
+    router.add_rule("/simpletask/create", simple_task::create_simple_task_processor);
+    router.add_rule("/simpletask/lookup", simple_task::lookup_simple_task_processor);
+    router.add_rule("/simpletask/update", simple_task::update_simple_task_processor);
+    router.add_rule("/simpletask/remove", simple_task::remove_processor);
 
     router.add_rule("/todolist/create", todo_list::create_todo_list_processor);
     router.add_rule("/todolist/additem", todo_list::add_item_todo_list_processor);
-    router.add_rule("/todolist/lookuplists",
-                    todo_list::lookup_todo_lists_processor);
-    router.add_rule("/todolist/lookuplist",
-                    todo_list::lookup_todo_list_processor);
-    router.add_rule("/todolist/updateitem",
-                    todo_list::update_item_todo_list_processor);
+    router.add_rule("/todolist/lookuplists", todo_list::lookup_todo_lists_processor);
+    router.add_rule("/todolist/lookuplist", todo_list::lookup_todo_list_processor);
+    router.add_rule("/todolist/updateitem", todo_list::update_item_todo_list_processor);
 
     router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }

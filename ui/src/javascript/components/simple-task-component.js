@@ -11,7 +11,7 @@ evelynDesktopApp.component('simpleTaskComponent', {
         $scope.edit = function(taskId) {
             $state.go(
                 'dashboard.updatesimpletask',
-                {simpleTask: _.find(ctrl.simpleTasks, function (obj) { return obj.taskId === taskId; })}
+                {simpleTask: _.find(ctrl.simpleTasks, function (obj) { return obj.TaskId === taskId; })}
             );
         };
 

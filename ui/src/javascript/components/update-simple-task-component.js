@@ -17,14 +17,14 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
         $scope.dueDate;
 
         if (_.isObject($stateParams.simpleTask)) {
-            $scope.title = $stateParams.simpleTask.title;
-            $scope.description = $stateParams.simpleTask.description;
-            $scope.dueDate = $stateParams.simpleTask.dueDate;
+            $scope.title = $stateParams.simpleTask.Title;
+            $scope.description = $stateParams.simpleTask.Description;
+            $scope.dueDate = $stateParams.simpleTask.DueDate;
         }
 
         $scope.update = function() {
             serverBridgeService.send_to_server('/simpletask/update', {
-                TaskId: $stateParams.simpleTask.taskId,
+                TaskId: $stateParams.simpleTask.TaskId,
                 NewTitle: $scope.title,
                 NewDescription: $scope.description,
                 NewDueDate: $scope.dueDate,

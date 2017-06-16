@@ -25,7 +25,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 pub fn create_simple_task(
-    model: model::simple_task::CreateSimpleTaskModel,
+    model: model::simple_task::CreateSimpleTaskRequestModel,
     session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
 ) -> Result<model::simple_task::CreateSimpleTaskResponseModel, EvelynCoreError> {
@@ -100,9 +100,17 @@ pub fn lookup_simple_tasks(
             }
 
             Ok(model::simple_task::LookupSimpleTaskResponseModel {
-                   simple_tasks: filtered_tasks,
+                   simple_tasks: filtered_tasks.into_iter().map(|x| {
+                       model::simple_task::SimpleTaskExternalModel {
+                           task_id: x.task_id,
+                           title: x.title,
+                           description: x.description,
+                           due_date: x.due_date,
+                           completed: x.completed,
+                       }
+                   }).collect(),
                    error: None,
-               })
+            })
         },
         Err(e) => Err(EvelynCoreError::FailedToLookupSimpleTask(e)),
     }

@@ -26,7 +26,7 @@ pub fn create_simple_task_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    let request_model_de: Result<model::simple_task::CreateSimpleTaskModel, _> = serde_json::from_str(&router_input.request_body);
+    let request_model_de: Result<model::simple_task::CreateSimpleTaskRequestModel, _> = serde_json::from_str(&router_input.request_body);
 
     match request_model_de {
         Ok(request_model) => {
