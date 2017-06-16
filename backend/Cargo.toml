@@ -28,7 +28,7 @@ chrono = { version = "0.*", features = ["serde", "rustc-serialize"] }
 # Open SSL binaries for Windows http://slproweb.com/products/Win32OpenSSL.html
 # Latest hyper (0.11 and up) seems to have no https so can't upgrade yet.
 hyper = "0.10.12"
-hyper-openssl = "0.*"
+hyper-openssl = "0.2.6"
 unicase = "1.4" # Until hyper upgrade.
 time = "0.1" # Until hyper upgrade
 
