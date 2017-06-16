@@ -24,6 +24,8 @@ services:
             - "8080:8080"
         expose:
             - "8080"
+        environment:
+            - RUST_BACKTRACE=1
         volumes:
             - ./backend:/source
             - /source/target
