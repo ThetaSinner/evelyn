@@ -4,7 +4,7 @@
   "description": "Evelyn UI for Desktop",
   "main": "app/main.js",
   "scripts": {
-    "start": "./node_modules/.bin/electon .",
+    "start": "./node_modules/.bin/electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ThetaSinner",
