@@ -14,12 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod token_service;
-pub mod simple_task;
-pub mod todo_list;
-pub mod error_messages;
-pub mod calendar;
-pub mod server_admin;
-pub mod agile;
+use bson;
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model::agile::project as project_model;
+use mongodb::{Client, ThreadedClient};
+use mongodb::db::ThreadedDatabase;
+
+pub fn insert_project(
+    client: &Client,
+    project_model: &project_model::ProjectModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_project");
+
+    insert_model!(
+        collection,
+        project_model,
+        EvelynDatabaseError::InsertAgileProject
+    )
+}

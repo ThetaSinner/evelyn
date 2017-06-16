@@ -118,6 +118,9 @@ pub enum EvelynServiceError {
     LookupTodoList(EvelynCoreError),
     UpdateTodoListItem(EvelynCoreError),
 
+    // Agile: Project
+    CreateAgileProject(EvelynCoreError),
+
     // Calendar
     AddCalendarEvent(EvelynCoreError),
 }
@@ -163,6 +166,9 @@ EvelynErrorDisplay!{
     {LookupTodoList, "100404", "Failed to lookup todo list"},
     {UpdateTodoListItem, "100405", "Failed to update todo list item"},
 
+    // Agile: Project
+    {CreateAgileProject, "1006001", "Failed to create agile project"},
+
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
@@ -199,6 +205,9 @@ pub enum EvelynCoreError {
     FailedToLookupTodoLists(EvelynDatabaseError),
     FailedToLookupTodoList(EvelynDatabaseError),
     FailedToUpdateTodoListItem(EvelynDatabaseError),
+
+    // Agile: Project
+    FailedToCreateAgileProject(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -238,6 +247,9 @@ EvelynErrorDisplay!{
     {FailedToLookupTodoList, "Failed to lookup todo list: {}"},
     {FailedToUpdateTodoListItem, "Failed to update todo list item: {}"},
 
+    // Agile: Project
+    {FailedToCreateAgileProject, "Failed to create agile project: {}"},
+
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
 }
@@ -275,6 +287,9 @@ pub enum EvelynDatabaseError {
     TodoListNotFound(EvelynBaseError),
     LookupTodoList(MongoDbError),
     UpdateTodoListItem(MongoDbError),
+
+    // Agile: Project
+    InsertAgileProject(MongoDbError),
 
     // Calendar
     InsertCalendarEvent(MongoDbError),
@@ -314,6 +329,9 @@ EvelynErrorDisplay!{
     {TodoListNotFound, "Todo list not found {}"},
     {LookupTodoList, "Failed to lookup todo list:  {}"},
     {UpdateTodoListItem, "Failed to update todo list item:  {}"},
+
+    // Agile: Project
+    {InsertAgileProject, "Failed to insert agile project: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

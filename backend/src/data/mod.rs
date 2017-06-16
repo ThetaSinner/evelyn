@@ -24,3 +24,4 @@ pub mod todo_list;
 pub mod calendar;
 pub mod server_admin;
 pub mod user_group;
+pub mod agile;

@@ -28,6 +28,7 @@ pub mod simple_task;
 pub mod todo_list;
 pub mod calendar;
 pub mod server_admin;
+pub mod agile;
 
 pub struct ProcessorData {
     pub data_store: Client,
@@ -60,6 +61,8 @@ pub fn load_processors(router: &mut Router) {
     router.add_rule("/todolist/lookup", todo_list::lookup_todo_list_processor);
     router.add_rule("/todolist/item/add", todo_list::add_item_todo_list_processor);
     router.add_rule("/todolist/item/update", todo_list::update_item_todo_list_processor);
+
+    router.add_rule("/agile/project/add", agile::project::create_processor);
 
     router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }

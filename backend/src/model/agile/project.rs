@@ -14,42 +14,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod simple_task;
-pub mod todo_list;
-pub mod calendar;
-pub mod server_admin;
-pub mod agile;
-
-use core::error_messages;
-use std::error::Error;
+use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ErrorResponseModel {
-    pub error: ErrorModel,
+pub struct ProjectAddRequestModel {
+    pub token: String,
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ErrorModel {
-    pub error_code: String,
-    pub error_message: String,
+pub struct ProjectAddResponseModel {
+    pub error: Option<ErrorModel>,
 }
 
-impl From<error_messages::EvelynServiceError> for ErrorModel {
-    fn from(error: error_messages::EvelynServiceError) -> Self {
-        ErrorModel {
-            error_code: format!("{}", error),
-            error_message: String::from(error.description()),
-        }
-    }
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectModel {
+    pub project_id: String,
+    pub created_by_user_id: String,
+    pub date_created: String,
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SessionTokenModel {
-    pub user_id: String,
 
-    pub server_session_token: String,
-}
