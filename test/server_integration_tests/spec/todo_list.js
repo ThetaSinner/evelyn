@@ -30,7 +30,7 @@ function createTodoList(token, title) {
 function addItem(token, todo_list_id, item) {
     return new Promise(function (resolve, reject) {
         httpHelper.chaiHttpPost(
-            '/todolist/additem',
+            '/todolist/item/add',
             {
                 Token: token,
                 TodoListId: todo_list_id,
@@ -50,7 +50,7 @@ function addItem(token, todo_list_id, item) {
 function updateItem(request) {
     return new Promise(function (resolve, reject) {
         httpHelper.chaiHttpPost(
-            '/todolist/updateitem',
+            '/todolist/item/update',
             request
         )
         .then(function (response) {
@@ -84,7 +84,7 @@ function lookupPreviews(token) {
 function lookupList(token, todo_list_id) {
     return new Promise(function (resolve, reject) {
         httpHelper.chaiHttpPost(
-            '/todolist/lookuplist',
+            '/todolist/lookup',
             {
                 Token: token,
                 TodoListId: todo_list_id

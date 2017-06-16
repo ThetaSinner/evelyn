@@ -17,7 +17,7 @@ evelynDesktopApp.component('addMemberToUserGroupComponent', {
         };
 
         $scope.addMember = function(userId) {
-            serverBridgeService.send_to_server('/usergroup/addmember', {
+            serverBridgeService.send_to_server('/usergroup/member/add', {
                 UserGroupId: $stateParams.userGroupId,
                 Member: {
                     UserId: userId,

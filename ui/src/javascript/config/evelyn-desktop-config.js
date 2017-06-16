@@ -111,7 +111,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                         return new Promise(function (resolve, reject) {
                             // TODO fetch via cache.
                             // TODO handle todoListId null. Display a 'no todo list selected'.
-                            serverBridgeService.send_to_server('/todolist/lookuplist', {
+                            serverBridgeService.send_to_server('/todolist/lookup', {
                                 TodoListId: $stateParams.todoListId,
                             }, function (response) {
                                 // TODO handle response error.
@@ -175,7 +175,7 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 resolve: {
                     userGroup: function($stateParams, serverBridgeService) {
                         return new Promise(function (resolve, reject) {
-                            serverBridgeService.send_to_server('/usergroup/lookupgroup', {
+                            serverBridgeService.send_to_server('/usergroup/lookup', {
                                 UserGroupId: $stateParams.userGroupId,
                             }, function (response) {
                                 resolve(response.UserGroup);

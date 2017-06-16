@@ -31,7 +31,7 @@ function createUserGroup(token, name, description) {
 function addMember(token, user_group_id, user_id) {
     return new Promise(function (resolve, reject) {
         httpHelper.chaiHttpPost(
-            '/usergroup/addmember',
+            '/usergroup/member/add',
             {
                 Token: token,
                 UserGroupId: user_group_id,
@@ -71,7 +71,7 @@ function lookupGroups(token) {
 function lookupGroup(token, groupId) {
     return new Promise(function (resolve, reject) {
         httpHelper.chaiHttpPost(
-            '/usergroup/lookupgroup',
+            '/usergroup/lookup',
             {
                 Token: token,
                 UserGroupId: groupId

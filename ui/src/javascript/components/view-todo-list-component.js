@@ -10,7 +10,7 @@ evelynDesktopApp.component('viewTodoListComponent', {
             var todoListId = $scope.$ctrl.todoList.TodoListId;
 
             // TODO check new item isn't empty.
-            serverBridgeService.send_to_server('/todolist/additem', {
+            serverBridgeService.send_to_server('/todolist/item/add', {
                 TodoListId: todoListId,
                 TodoListItem: {
                     Text: $scope.newItem,
@@ -30,7 +30,7 @@ evelynDesktopApp.component('viewTodoListComponent', {
             var todoListId = $scope.$ctrl.todoList.TodoListId;
             var isDone = $scope.$ctrl.todoList.TodoListItems[index].IsDone;
 
-            serverBridgeService.send_to_server('/todolist/updateitem', {
+            serverBridgeService.send_to_server('/todolist/item/update', {
                 TodoListId: todoListId,
                 ItemIndex: index,
                 IsDone: isDone,
