@@ -52,6 +52,7 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/font-awesome-4.7.0/fontawesome-webfont.woff2',
         ],
         htmlPartials: 'components/**/*.partial.html',
+        electronJs: 'desktop/*.js',
     };
 
     if (is_use_dev_resources) {
@@ -105,6 +106,10 @@ ResourceLocator.prototype.getOutputResourceName = function(identifier) {
 
 ResourceLocator.prototype.isUseDevResources = function() {
     return this.is_use_dev_resources;
+};
+
+ResourceLocator.prototype.setOutputPathPrefix = function(path) {
+    this.output_path_prefix = path;
 };
 
 var resourceLocator = new ResourceLocator('./app/', true);
@@ -223,7 +228,21 @@ gulp.task('copy-font-icons', function () {
     .pipe(gulp.dest(outputPath));
 });
 
-gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons'], function () {
+gulp.task('electron-js', function() {
+    var sources = resourceLocator.getSourcePaths('electronJs');
+    var outputPath = resourceLocator.getOutputPath('index');
+
+    return gulp.src(sources)
+        .pipe(gulp.dest(outputPath));
+});
+
+gulp.task('set-env-desktop', function() {
+    resourceLocator.setOutputPathPrefix('./desktop/app/');
+});
+
+const defaultTasks = ['copy-index', 'css', 'javascript', 'vendored-javascript', 'copy-font-icons'];
+
+function defaultWatches() {
     gulp.watch(resourceLocator.getSourcePaths('index'), ['copy-index']);
     gulp.watch(
         _.concat(
@@ -236,4 +255,14 @@ gulp.task('default', ['copy-index', 'css', 'javascript', 'vendored-javascript', 
             resourceLocator.getSourcePaths('htmlPartials')
         ), ['javascript']);
     gulp.watch(resourceLocator.getSourcePaths('vendoredJs'), ['vendored-javascript']);
+}
+
+gulp.task('default', defaultTasks, function () {
+    defaultWatches();
+});
+
+gulp.task('desktop', _.concat(['set-env-desktop', 'electron-js'], defaultTasks), function () {
+    defaultWatches();
+
+    // TODO add watches for electron.
 });
