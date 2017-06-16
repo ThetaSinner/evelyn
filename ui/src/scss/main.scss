@@ -10,3 +10,7 @@
 @import '../vendored/font-awesome-4.7.0/scss/font-awesome.scss';
 
 @import '../components/simpletask/simple_task.scss';
+
+body {
+    overflow-x: hidden;
+}
