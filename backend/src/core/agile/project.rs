@@ -98,3 +98,35 @@ pub fn lookup_projects(
         Err(e) => Err(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
     }
 }
+
+pub fn lookup(
+    request_model: project_model::LookupRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<project_model::LookupResponseModel, EvelynCoreError> {
+    let user_groups_response_model = user_group::lookup_user_groups(&session_token_model, processor_data.clone()).unwrap();
+
+    let ds = processor_data.data_store.clone();
+
+    match project_data::lookup(&ds, &request_model.project_id, &session_token_model.user_id, user_groups_response_model.user_groups) {
+        Ok(result) => Ok(project_model::LookupResponseModel {
+            project: Some(project_model::ProjectExternalModel {
+                project_id: result.project_id,
+                name: result.name,
+                short_name: result.short_name,
+                description: result.description,
+                contributors: result.contributors.into_iter().map(|x| {
+                    project_model::ContributorExternalModel {
+                        id_type: match x.id_type {
+                            project_model::IdType::User => project_model::IdTypeExternal::User,
+                            project_model::IdType::Group => project_model::IdTypeExternal::Group,
+                        },
+                        id: x.id,
+                    }
+                }).collect(),
+            }),
+            error: None,
+        }),
+        Err(e) => Err(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
+    }
+}

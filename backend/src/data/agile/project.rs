@@ -140,3 +140,26 @@ pub fn lookup_projects(
     }
 }
 
+pub fn lookup(
+    client: &Client,
+    project_id: &String,
+    user_id: &String,
+    user_groups: Vec<model::user_group::UserGroupsExternalModel>,
+) -> Result<project_model::ProjectModel, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_project");
+
+    let mut filter = build_project_lookup_filter(user_id, user_groups);
+    filter.insert("projectId", project_id);
+
+    match collection.find_one(Some(filter), None) {
+        Ok(result) => {
+            if let Some(result) = result {
+                Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
+            }
+            else {
+                Err(EvelynDatabaseError::UserGroupNotFound(EvelynBaseError::NothingElse))
+            }
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupUserGroup(e)),
+    }
+}

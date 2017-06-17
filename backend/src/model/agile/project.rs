@@ -130,3 +130,27 @@ pub struct ProjectsExternalModel {
     pub short_name: String,
     pub description: String,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupResponseModel {
+    pub project: Option<ProjectExternalModel>,
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ProjectExternalModel {
+    pub project_id: String,
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
+    pub contributors: Vec<ContributorExternalModel>,
+}
