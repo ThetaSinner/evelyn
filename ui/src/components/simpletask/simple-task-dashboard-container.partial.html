@@ -4,23 +4,23 @@
     <button ng-click="create()"><i class="fa fa-3x fa-plus"></i></button>
 </div>
 
-<div class="small-up-3">
-    <div class="column" ng-repeat="task in $ctrl.simpleTasks">
-        <div class="row callout">
-            <div class="column small-10">
+<div class="row small-up-1 medium-up-2 large-up-3">
+    <div class="column" ng-repeat="task in $ctrl.simpleTasks" >
+        <div class="column callout">
+            <div class="column small-12">
                 <h4>{{task.Title}}</h4>
                 <p>{{task.Description}}</p>
                 <p>{{task.DueDate}}</p>
             </div>
-            <div class="column small-2">
-                <div class="float-right">
-                    <div class="row">
+            <div class="column text-center small-12">
+                <div class="small-up-3">
+                    <div class="column">
                         <button ng-click="edit(task.TaskId)"><i class="fa fa-2x fa-wrench"></i></button>
                     </div>
-                    <div class="row">
+                    <div class="column">
                         <button ng-click="done(task.TaskId)"><i class="fa fa-2x fa-check"></i></button>
                     </div>
-                    <div class="row">
+                    <div class="column">
                         <button ng-click="delete(task.TaskId)"><i class="fa fa-2x fa-trash"></i></button>
                     </div>
                 </div>
