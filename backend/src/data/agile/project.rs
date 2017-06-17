@@ -22,7 +22,6 @@ use model::agile::project as project_model;
 use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
-use serde_json;
 
 fn build_project_lookup_filter(
     user_id: &String,
@@ -34,8 +33,7 @@ fn build_project_lookup_filter(
     created_by_filter.insert("createdByUserId", *_user_id);
 
     let mut user_id_filter = Document::new();
-    user_id_filter.insert("contributors.id_type", serde_json::to_string(&model::agile::project::IdType::User).unwrap());
-    user_id_filter.insert("contributors.id", *_user_id);
+    user_id_filter.insert("user_contributors.user_id", *_user_id);
 
     let mut group_ids = bson::Array::new();
     for group in user_groups {
@@ -46,8 +44,7 @@ fn build_project_lookup_filter(
     user_group_in_filter.insert("$in", group_ids);
 
     let mut user_group_filter = Document::new();
-    user_group_filter.insert("contributors.id_type", serde_json::to_string(&model::agile::project::IdType::Group).unwrap());
-    user_group_filter.insert("contributors.id", user_group_in_filter);
+    user_group_filter.insert("contributors.user_group_id", user_group_in_filter);
 
     let mut arr = bson::Array::new();
     arr.push(bson::to_bson(&created_by_filter).unwrap());
@@ -73,26 +70,52 @@ pub fn insert_project(
     )
 }
 
-pub fn push_contributor(
+pub fn add_user_contributor(
     client: &Client,
-    contributor_model: project_model::CreateContributorModel,
+    user_contributor_model: project_model::AddUserContributorModel,
 ) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("agile_project");
 
-    let ref project_id = contributor_model.project_id;
+    let ref project_id = user_contributor_model.project_id;
     let filter = doc!("projectId" => project_id);
 
     let mut update_query = Document::new();
-    let bson_contributor_model = bson::to_bson(&contributor_model.contributor).unwrap();
-    if let bson::Bson::Document(document) = bson_contributor_model {
-        update_query.insert("contributors", document);
+    let bson_user_contributor_model = bson::to_bson(&user_contributor_model.user_contributor).unwrap();
+    if let bson::Bson::Document(document) = bson_user_contributor_model {
+        update_query.insert("user_contributors", document);
 
         let mut push_update_query = Document::new();
         push_update_query.insert("$addToSet", update_query);
 
         match collection.update_one(filter, push_update_query, None) {
             Ok(_) => None,
-            Err(e) => Some(EvelynDatabaseError::AddContributorToAgileProject(e)),
+            Err(e) => Some(EvelynDatabaseError::AddUserContributorToAgileProject(e)),
+        }
+    } else {
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+    }
+}
+
+pub fn add_user_group_contributor(
+    client: &Client,
+    user_group_contributor_model: project_model::AddUserGroupContributorModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_project");
+
+    let ref project_id = user_group_contributor_model.project_id;
+    let filter = doc!("projectId" => project_id);
+
+    let mut update_query = Document::new();
+    let bson_user_group_contributor_model = bson::to_bson(&user_group_contributor_model.user_group_contributor).unwrap();
+    if let bson::Bson::Document(document) = bson_user_group_contributor_model {
+        update_query.insert("user_group_contributors", document);
+
+        let mut push_update_query = Document::new();
+        push_update_query.insert("$addToSet", update_query);
+
+        match collection.update_one(filter, push_update_query, None) {
+            Ok(_) => None,
+            Err(e) => Some(EvelynDatabaseError::AddUserGroupContributorToAgileProject(e)),
         }
     } else {
         Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
@@ -136,7 +159,7 @@ pub fn lookup_projects(
                 }
             }).collect())
         },
-        Err(e) => Err(EvelynDatabaseError::LookupUserGroups(e)),
+        Err(e) => Err(EvelynDatabaseError::LookupAgileProjects(e)),
     }
 }
 
@@ -157,9 +180,9 @@ pub fn lookup(
                 Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
             }
             else {
-                Err(EvelynDatabaseError::UserGroupNotFound(EvelynBaseError::NothingElse))
+                Err(EvelynDatabaseError::AgileProjectNotFound(EvelynBaseError::NothingElse))
             }
         },
-        Err(e) => Err(EvelynDatabaseError::LookupUserGroup(e)),
+        Err(e) => Err(EvelynDatabaseError::LookupAgileProject(e)),
     }
 }

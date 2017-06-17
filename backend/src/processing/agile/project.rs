@@ -27,7 +27,7 @@ pub fn create_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    match decode_router_input_to_model!(project_model::ProjectAddRequestModel, router_input) {
+    match decode_router_input_to_model!(project_model::CreateProjectRequestModel, router_input) {
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
@@ -36,7 +36,7 @@ pub fn create_processor(
                     model_to_router_output!(response)
                 },
                 Err(e) => {
-                    model_to_router_output!(project_model::ProjectAddResponseModel {
+                    model_to_router_output!(project_model::CreateProjectResponseModel {
                         project_id: None,
                         error: service_error_to_model!(EvelynServiceError::CreateAgileProject(e)),
                     })
@@ -44,7 +44,7 @@ pub fn create_processor(
             }
         },
         Err(e) => {
-            model_to_router_output!(project_model::ProjectAddResponseModel {
+            model_to_router_output!(project_model::CreateProjectResponseModel {
                 project_id: None,
                 error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
             })
@@ -52,29 +52,58 @@ pub fn create_processor(
     }
 }
 
-pub fn add_contributor_processor(
+pub fn add_user_contributor_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    match decode_router_input_to_model!(project_model::CreateContributorRequestModel, router_input) {
+    match decode_router_input_to_model!(project_model::AddUserContributorRequestModel, router_input) {
         Ok(request_model) => {
             validate_session!(processor_data, request_model);
 
-            match project::add_contributor(request_model, processor_data) {
+            match project::add_user_contributor(request_model, processor_data) {
                 None => {
-                    model_to_router_output!(project_model::CreateContributorResponseModel {
+                    model_to_router_output!(project_model::AddUserContributorResponseModel {
                         error: None,
                     })
                 },
                 Some(e) => {
-                    model_to_router_output!(project_model::CreateContributorResponseModel {
-                        error: service_error_to_model!(EvelynServiceError::AddContributorToAgileProject(e)),
+                    model_to_router_output!(project_model::AddUserContributorResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::AddUserContributorToAgileProject(e)),
                     })
                 },
             }
         },
         Err(e) => {
-            model_to_router_output!(project_model::CreateContributorResponseModel {
+            model_to_router_output!(project_model::AddUserContributorResponseModel {
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}
+
+pub fn add_user_group_contributor_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(project_model::AddUserGroupContributorRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match project::add_user_group_contributor(request_model, processor_data) {
+                None => {
+                    model_to_router_output!(project_model::AddUserGroupContributorResponseModel {
+                        error: None,
+                    })
+                },
+                Some(e) => {
+                    model_to_router_output!(project_model::AddUserGroupContributorResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::AddUserGroupContributorToAgileProject(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(project_model::AddUserGroupContributorResponseModel {
                 error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
             })
         },
@@ -96,7 +125,7 @@ pub fn lookup_projects_processor(
                 Err(e) => {
                     model_to_router_output!(project_model::LookupProjectsResponseModel {
                         projects: Vec::new(),
-                        error: service_error_to_model!(EvelynServiceError::AddContributorToAgileProject(e)),
+                        error: service_error_to_model!(EvelynServiceError::LookupAgileProjects(e)),
                     })
                 },
             }
@@ -125,7 +154,7 @@ pub fn lookup_processor(
                 Err(e) => {
                     model_to_router_output!(project_model::LookupResponseModel {
                         project: None,
-                        error: service_error_to_model!(EvelynServiceError::AddContributorToAgileProject(e)),
+                        error: service_error_to_model!(EvelynServiceError::LookupAgileProject(e)),
                     })
                 },
             }

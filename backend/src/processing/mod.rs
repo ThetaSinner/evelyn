@@ -65,7 +65,8 @@ pub fn load_processors(router: &mut Router) {
     router.add_rule("/agile/project/create", agile::project::create_processor);
     router.add_rule("/agile/project/lookupprojects", agile::project::lookup_projects_processor);
     router.add_rule("/agile/project/lookup", agile::project::lookup_processor);
-    router.add_rule("/agile/project/contributor/add", agile::project::add_contributor_processor);
+    router.add_rule("/agile/project/contributor/user/add", agile::project::add_user_contributor_processor);
+    router.add_rule("/agile/project/contributor/group/add", agile::project::add_user_group_contributor_processor);
 
     router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }

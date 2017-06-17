@@ -19,16 +19,18 @@ use data::agile::project as project_data;
 use model;
 use model::agile::project as project_model;
 use core::user_group;
+use data::user_group as user_group_data;
+use data::user;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 use chrono::prelude::*;
 
 pub fn create(
-    request_model: project_model::ProjectAddRequestModel,
+    request_model: project_model::CreateProjectRequestModel,
     session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
-) -> Result<project_model::ProjectAddResponseModel, EvelynCoreError> {
+) -> Result<project_model::CreateProjectResponseModel, EvelynCoreError> {
     let project_id = format!("{}", Uuid::new_v4());
 
     let project_model = project_model::ProjectModel {
@@ -38,13 +40,14 @@ pub fn create(
         name: request_model.name,
         short_name: request_model.short_name,
         description: request_model.description,
-        contributors: Vec::new(),
+        user_contributors: Vec::new(),
+        group_contributors: Vec::new(),
     };
 
     let ds = processor_data.data_store.clone();
 
     match project_data::insert_project(&ds, &project_model) {
-        None => Ok(project_model::ProjectAddResponseModel {
+        None => Ok(project_model::CreateProjectResponseModel {
             project_id: Some(project_model.project_id),
             error: None,
         }),
@@ -52,26 +55,41 @@ pub fn create(
     }
 }
 
-pub fn add_contributor(
-    request_model: project_model::CreateContributorRequestModel,
+pub fn add_user_contributor(
+    request_model: project_model::AddUserContributorRequestModel,
     processor_data: Arc<ProcessorData>,
 ) -> Option<EvelynCoreError> {
-    let contributor_model = project_model::CreateContributorModel {
+    let user_contributor_model = project_model::AddUserContributorModel {
         project_id: request_model.project_id,
-        contributor: project_model::ContributorModel {
-            id_type: match request_model.contributor.id_type {
-                project_model::IdTypeExternal::User => project_model::IdType::User,
-                project_model::IdTypeExternal::Group => project_model::IdType::Group,
-            },
-            id: request_model.contributor.id,
+        user_contributor: project_model::UserContributorModel {
+            user_id: request_model.user_contributor.user_id,
         },
     };
 
     let ds = processor_data.data_store.clone();
 
-    match project_data::push_contributor(&ds, contributor_model) {
+    match project_data::add_user_contributor(&ds, user_contributor_model) {
         None => None,
-        Some(e) => Some(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
+        Some(e) => Some(EvelynCoreError::FailedToAddUserContributorToAgileProject(e)),
+    }
+}
+
+pub fn add_user_group_contributor(
+    request_model: project_model::AddUserGroupContributorRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let group_contributor_model = project_model::AddUserGroupContributorModel {
+        project_id: request_model.project_id,
+        user_group_contributor: project_model::UserGroupContributorModel {
+            user_group_id: request_model.user_group_contributor.user_group_id,
+        },
+    };
+
+    let ds = processor_data.data_store.clone();
+
+    match project_data::add_user_group_contributor(&ds, group_contributor_model) {
+        None => None,
+        Some(e) => Some(EvelynCoreError::FailedToAddUserGroupContributorToAgileProject(e)),
     }
 }
 
@@ -95,7 +113,7 @@ pub fn lookup_projects(
             }).collect(),
             error: None,
         }),
-        Err(e) => Err(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileProjects(e)),
     }
 }
 
@@ -115,18 +133,35 @@ pub fn lookup(
                 name: result.name,
                 short_name: result.short_name,
                 description: result.description,
-                contributors: result.contributors.into_iter().map(|x| {
-                    project_model::ContributorExternalModel {
-                        id_type: match x.id_type {
-                            project_model::IdType::User => project_model::IdTypeExternal::User,
-                            project_model::IdType::Group => project_model::IdTypeExternal::Group,
+                user_contributors: result.user_contributors.into_iter().map(|x| {
+                    match user::find_user_by_id(&ds, &x.user_id) {
+                        Ok(Some(user)) => project_model::UserContributorPreviewExternalModel {
+                            user_id: x.user_id,
+                            user_name: user.user_name,
                         },
-                        id: x.id,
+                        _ => project_model::UserContributorPreviewExternalModel {
+                            user_id: x.user_id,
+                            user_name: "User not found".to_owned(),
+                        },
+                    }
+                }).collect(),
+                group_contributors: result.group_contributors.into_iter().map(|x| {
+                    match user_group_data::lookup_user_group(&ds, &session_token_model.user_id, &x.user_group_id) {
+                        Ok(user) => project_model::UserGroupContributorPreviewExternalModel {
+                            user_group_id: x.user_group_id,
+                            name: user.name,
+                            description: user.description,
+                        },
+                        _ => project_model::UserGroupContributorPreviewExternalModel {
+                            user_group_id: x.user_group_id,
+                            name: "User group not found".to_owned(),
+                            description: "User group not found".to_owned(),
+                        },
                     }
                 }).collect(),
             }),
             error: None,
         }),
-        Err(e) => Err(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileProject(e)),
     }
 }

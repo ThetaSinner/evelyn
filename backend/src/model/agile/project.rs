@@ -18,7 +18,7 @@ use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProjectAddRequestModel {
+pub struct CreateProjectRequestModel {
     pub token: String,
     pub name: String,
     pub short_name: String,
@@ -27,7 +27,7 @@ pub struct ProjectAddRequestModel {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProjectAddResponseModel {
+pub struct CreateProjectResponseModel {
     pub project_id: Option<String>,
     pub error: Option<ErrorModel>,
 }
@@ -41,56 +41,88 @@ pub struct ProjectModel {
     pub name: String,
     pub short_name: String,
     pub description: String,
-    pub contributors: Vec<ContributorModel>,
+    pub user_contributors: Vec<UserContributorModel>,
+    pub group_contributors: Vec<UserGroupContributorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ContributorModel {
-    pub id_type: IdType,
-    pub id: String,
+pub struct UserContributorModel {
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserGroupContributorModel {
+    pub user_group_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct ContributorExternalModel {
-    pub id_type: IdTypeExternal,
-    pub id: String,
+pub struct UserContributorExternalModel {
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserGroupContributorExternalModel {
+    pub user_group_id: String,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum IdType {
+pub enum ContributorType {
     User,
     Group,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub enum IdTypeExternal {
+pub enum ContributorTypeExternal {
     User,
     Group,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct CreateContributorRequestModel {
+pub struct AddUserContributorRequestModel {
     pub token: String,
     pub project_id: String,
-    pub contributor: ContributorExternalModel,
+    pub user_contributor: UserContributorExternalModel,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct CreateContributorResponseModel {
+pub struct AddUserContributorResponseModel {
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateContributorModel {
+pub struct AddUserContributorModel {
     pub project_id: String,
-    pub contributor: ContributorModel,
+    pub user_contributor: UserContributorModel,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct AddUserGroupContributorRequestModel {
+    pub token: String,
+    pub project_id: String,
+    pub user_group_contributor: UserGroupContributorExternalModel,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct AddUserGroupContributorResponseModel {
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AddUserGroupContributorModel {
+    pub project_id: String,
+    pub user_group_contributor: UserGroupContributorModel,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -99,11 +131,11 @@ pub struct LookupProjectsRequestModel {
     pub token: String,
 }
 
-
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct LookupProjectsModel {
-    pub projects: Vec<ProjectsModel>,
+pub struct LookupProjectsResponseModel {
+    pub projects: Vec<ProjectsExternalModel>,
+    pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -113,13 +145,6 @@ pub struct ProjectsModel {
     pub name: String,
     pub short_name: String,
     pub description: String,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct LookupProjectsResponseModel {
-    pub projects: Vec<ProjectsExternalModel>,
-    pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -152,5 +177,21 @@ pub struct ProjectExternalModel {
     pub name: String,
     pub short_name: String,
     pub description: String,
-    pub contributors: Vec<ContributorExternalModel>,
+    pub user_contributors: Vec<UserContributorPreviewExternalModel>,
+    pub group_contributors: Vec<UserGroupContributorPreviewExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserContributorPreviewExternalModel {
+    pub user_id: String,
+    pub user_name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserGroupContributorPreviewExternalModel {
+    pub user_group_id: String,
+    pub name: String,
+    pub description: String,
 }

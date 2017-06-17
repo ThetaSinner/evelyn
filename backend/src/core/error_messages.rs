@@ -120,7 +120,10 @@ pub enum EvelynServiceError {
 
     // Agile: Project
     CreateAgileProject(EvelynCoreError),
-    AddContributorToAgileProject(EvelynCoreError),
+    AddUserContributorToAgileProject(EvelynCoreError),
+    AddUserGroupContributorToAgileProject(EvelynCoreError),
+    LookupAgileProjects(EvelynCoreError),
+    LookupAgileProject(EvelynCoreError),
 
     // Calendar
     AddCalendarEvent(EvelynCoreError),
@@ -169,7 +172,10 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {CreateAgileProject, "1006001", "Failed to create agile project"},
-    {AddContributorToAgileProject, "1006002", "Failed to add contributor to agile project"},
+    {AddUserContributorToAgileProject, "1006002", "Failed to add user contributor to agile project"},
+    {AddUserGroupContributorToAgileProject, "1006003", "Failed to add user group contributor to agile project"},
+    {LookupAgileProjects, "1006004", "Failed to lookup agile projects"},
+    {LookupAgileProject, "1006005", "Failed to lookup agile project"},
 
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
@@ -210,7 +216,10 @@ pub enum EvelynCoreError {
 
     // Agile: Project
     FailedToCreateAgileProject(EvelynDatabaseError),
-    FailedToAddContributorToAgileProject(EvelynDatabaseError),
+    FailedToAddUserContributorToAgileProject(EvelynDatabaseError),
+    FailedToAddUserGroupContributorToAgileProject(EvelynDatabaseError),
+    FailedToLookupAgileProjects(EvelynDatabaseError),
+    FailedToLookupAgileProject(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -252,7 +261,10 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {FailedToCreateAgileProject, "Failed to create agile project: {}"},
-    {FailedToAddContributorToAgileProject, "Failed to add contributor to agile project: {}"},
+    {FailedToAddUserContributorToAgileProject, "Failed to add user contributor to agile project: {}"},
+    {FailedToAddUserGroupContributorToAgileProject, "Failed to add user group contributor to agile project: {}"},
+    {FailedToLookupAgileProjects, "Failed to lookup agile projects: {}"},
+    {FailedToLookupAgileProject, "Failed to lookup agile project: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -294,7 +306,11 @@ pub enum EvelynDatabaseError {
 
     // Agile: Project
     InsertAgileProject(MongoDbError),
-    AddContributorToAgileProject(MongoDbError),
+    AddUserContributorToAgileProject(MongoDbError),
+    AddUserGroupContributorToAgileProject(MongoDbError),
+    LookupAgileProjects(MongoDbError),
+    AgileProjectNotFound(EvelynBaseError),
+    LookupAgileProject(MongoDbError),
 
     // Calendar
     InsertCalendarEvent(MongoDbError),
@@ -337,7 +353,11 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {InsertAgileProject, "Failed to insert agile project: {}"},
-    {AddContributorToAgileProject, "Failed to add contributor to agile project: {}"},
+    {AddUserContributorToAgileProject, "Failed to add user contributor to agile project: {}"},
+    {AddUserGroupContributorToAgileProject, "Failed to add user group contributor to agile project: {}"},
+    {LookupAgileProjects, "Failed to lookup agile projects: {}"},
+    {AgileProjectNotFound, "Agile project was not found: {}"},
+    {LookupAgileProject, "Failed to lookup agile project: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

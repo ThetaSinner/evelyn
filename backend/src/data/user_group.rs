@@ -90,7 +90,7 @@ pub fn lookup_user_groups(
 pub fn lookup_user_group(
     client: &Client,
     user_id: &String,
-    user_group_id: String,
+    user_group_id: &String,
 ) -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
 
