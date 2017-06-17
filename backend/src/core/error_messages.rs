@@ -120,6 +120,7 @@ pub enum EvelynServiceError {
 
     // Agile: Project
     CreateAgileProject(EvelynCoreError),
+    AddContributorToAgileProject(EvelynCoreError),
 
     // Calendar
     AddCalendarEvent(EvelynCoreError),
@@ -168,6 +169,7 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {CreateAgileProject, "1006001", "Failed to create agile project"},
+    {AddContributorToAgileProject, "1006002", "Failed to add contributor to agile project"},
 
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
@@ -208,6 +210,7 @@ pub enum EvelynCoreError {
 
     // Agile: Project
     FailedToCreateAgileProject(EvelynDatabaseError),
+    FailedToAddContributorToAgileProject(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -249,6 +252,7 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {FailedToCreateAgileProject, "Failed to create agile project: {}"},
+    {FailedToAddContributorToAgileProject, "Failed to add contributor to agile project: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -290,6 +294,7 @@ pub enum EvelynDatabaseError {
 
     // Agile: Project
     InsertAgileProject(MongoDbError),
+    AddContributorToAgileProject(MongoDbError),
 
     // Calendar
     InsertCalendarEvent(MongoDbError),
@@ -332,6 +337,7 @@ EvelynErrorDisplay!{
 
     // Agile: Project
     {InsertAgileProject, "Failed to insert agile project: {}"},
+    {AddContributorToAgileProject, "Failed to add contributor to agile project: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

@@ -27,20 +27,49 @@ pub fn create(
     request_model: project_model::ProjectAddRequestModel,
     session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
-) -> Option<EvelynCoreError> {
+) -> Result<project_model::ProjectAddResponseModel, EvelynCoreError> {
+    let project_id = format!("{}", Uuid::new_v4());
+
     let project_model = project_model::ProjectModel {
-        project_id: format!("{}", Uuid::new_v4()),
+        project_id: project_id,
         created_by_user_id: session_token_model.user_id,
         date_created: format!("{}", UTC::now()),
         name: request_model.name,
         short_name: request_model.short_name,
         description: request_model.description,
+        contributors: Vec::new(),
     };
 
     let ds = processor_data.data_store.clone();
 
     match project_data::insert_project(&ds, &project_model) {
+        None => Ok(project_model::ProjectAddResponseModel {
+            project_id: Some(project_model.project_id),
+            error: None,
+        }),
+        Some(e) => Err(EvelynCoreError::FailedToCreateAgileProject(e)),
+    }
+}
+
+pub fn add_contributor(
+    request_model: project_model::CreateContributorRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let contributor_model = project_model::CreateContributorModel {
+        project_id: request_model.project_id,
+        contributor: project_model::ContributorModel {
+            id_type: match request_model.contributor.id_type {
+                project_model::IdTypeExternal::User => project_model::IdType::User,
+                project_model::IdTypeExternal::Group => project_model::IdType::Group,
+            },
+            id: request_model.contributor.id,
+        },
+    };
+
+    let ds = processor_data.data_store.clone();
+
+    match project_data::push_contributor(&ds, contributor_model) {
         None => None,
-        Some(e) => Some(EvelynCoreError::FailedToCreateAgileProject(e)),
+        Some(e) => Some(EvelynCoreError::FailedToAddContributorToAgileProject(e)),
     }
 }

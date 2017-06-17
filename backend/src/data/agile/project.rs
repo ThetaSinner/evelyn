@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model::agile::project as project_model;
 use mongodb::{Client, ThreadedClient};
@@ -31,4 +32,30 @@ pub fn insert_project(
         project_model,
         EvelynDatabaseError::InsertAgileProject
     )
+}
+
+pub fn push_contributor(
+    client: &Client,
+    contributor_model: project_model::CreateContributorModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_project");
+
+    let ref project_id = contributor_model.project_id;
+    let filter = doc!("projectId" => project_id);
+
+    let mut update_query = Document::new();
+    let bson_contributor_model = bson::to_bson(&contributor_model.contributor).unwrap();
+    if let bson::Bson::Document(document) = bson_contributor_model {
+        update_query.insert("contributors", document);
+
+        let mut push_update_query = Document::new();
+        push_update_query.insert("$addToSet", update_query);
+
+        match collection.update_one(filter, push_update_query, None) {
+            Ok(_) => None,
+            Err(e) => Some(EvelynDatabaseError::AddContributorToAgileProject(e)),
+        }
+    } else {
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+    }
 }

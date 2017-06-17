@@ -32,13 +32,12 @@ pub fn create_processor(
             let session_token_model = validate_session!(processor_data, request_model);
 
             match project::create(request_model, session_token_model, processor_data) {
-                None => {
-                    model_to_router_output!(project_model::ProjectAddResponseModel {
-                        error: None,
-                    })
+                Ok(response) => {
+                    model_to_router_output!(response)
                 },
-                Some(e) => {
+                Err(e) => {
                     model_to_router_output!(project_model::ProjectAddResponseModel {
+                        project_id: None,
                         error: service_error_to_model!(EvelynServiceError::CreateAgileProject(e)),
                     })
                 },
@@ -46,6 +45,36 @@ pub fn create_processor(
         },
         Err(e) => {
             model_to_router_output!(project_model::ProjectAddResponseModel {
+                project_id: None,
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}
+
+pub fn add_contributor_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(project_model::CreateContributorRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match project::add_contributor(request_model, processor_data) {
+                None => {
+                    model_to_router_output!(project_model::CreateContributorResponseModel {
+                        error: None,
+                    })
+                },
+                Some(e) => {
+                    model_to_router_output!(project_model::CreateContributorResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::AddContributorToAgileProject(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(project_model::CreateContributorResponseModel {
                 error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
             })
         },
