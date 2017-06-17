@@ -33,7 +33,7 @@ fn build_project_lookup_filter(
     created_by_filter.insert("createdByUserId", *_user_id);
 
     let mut user_id_filter = Document::new();
-    user_id_filter.insert("user_contributors.user_id", *_user_id);
+    user_id_filter.insert("userContributors.user_id", *_user_id);
 
     let mut group_ids = bson::Array::new();
     for group in user_groups {
@@ -44,7 +44,7 @@ fn build_project_lookup_filter(
     user_group_in_filter.insert("$in", group_ids);
 
     let mut user_group_filter = Document::new();
-    user_group_filter.insert("contributors.user_group_id", user_group_in_filter);
+    user_group_filter.insert("userGroupContributors.user_group_id", user_group_in_filter);
 
     let mut arr = bson::Array::new();
     arr.push(bson::to_bson(&created_by_filter).unwrap());
@@ -82,7 +82,7 @@ pub fn add_user_contributor(
     let mut update_query = Document::new();
     let bson_user_contributor_model = bson::to_bson(&user_contributor_model.user_contributor).unwrap();
     if let bson::Bson::Document(document) = bson_user_contributor_model {
-        update_query.insert("user_contributors", document);
+        update_query.insert("userContributors", document);
 
         let mut push_update_query = Document::new();
         push_update_query.insert("$addToSet", update_query);
@@ -108,7 +108,7 @@ pub fn add_user_group_contributor(
     let mut update_query = Document::new();
     let bson_user_group_contributor_model = bson::to_bson(&user_group_contributor_model.user_group_contributor).unwrap();
     if let bson::Bson::Document(document) = bson_user_group_contributor_model {
-        update_query.insert("user_group_contributors", document);
+        update_query.insert("userGroupContributors", document);
 
         let mut push_update_query = Document::new();
         push_update_query.insert("$addToSet", update_query);

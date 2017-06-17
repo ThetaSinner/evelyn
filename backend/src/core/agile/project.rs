@@ -41,7 +41,7 @@ pub fn create(
         short_name: request_model.short_name,
         description: request_model.description,
         user_contributors: Vec::new(),
-        group_contributors: Vec::new(),
+        user_group_contributors: Vec::new(),
     };
 
     let ds = processor_data.data_store.clone();
@@ -145,7 +145,7 @@ pub fn lookup(
                         },
                     }
                 }).collect(),
-                group_contributors: result.group_contributors.into_iter().map(|x| {
+                group_contributors: result.user_group_contributors.into_iter().map(|x| {
                     match user_group_data::lookup_user_group(&ds, &session_token_model.user_id, &x.user_group_id) {
                         Ok(user) => project_model::UserGroupContributorPreviewExternalModel {
                             user_group_id: x.user_group_id,

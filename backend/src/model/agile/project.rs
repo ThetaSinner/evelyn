@@ -42,7 +42,7 @@ pub struct ProjectModel {
     pub short_name: String,
     pub description: String,
     pub user_contributors: Vec<UserContributorModel>,
-    pub group_contributors: Vec<UserGroupContributorModel>,
+    pub user_group_contributors: Vec<UserGroupContributorModel>,
 }
 
 #[derive(Serialize, Deserialize)]
