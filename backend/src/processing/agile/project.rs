@@ -80,3 +80,32 @@ pub fn add_contributor_processor(
         },
     }
 }
+
+pub fn lookup_projects_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(project_model::LookupProjectsRequestModel, router_input) {
+        Ok(request_model) => {
+            let session_token_model = validate_session!(processor_data, request_model);
+
+            match project::lookup_projects(session_token_model, processor_data) {
+                Ok(result) => {
+                    model_to_router_output!(result)
+                },
+                Err(e) => {
+                    model_to_router_output!(project_model::LookupProjectsResponseModel {
+                        projects: Vec::new(),
+                        error: service_error_to_model!(EvelynServiceError::AddContributorToAgileProject(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(project_model::LookupProjectsResponseModel {
+                projects: Vec::new(),
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

@@ -22,14 +22,12 @@ use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
-fn build_user_group_lookup_filter(user_id: String) -> Document {
-    let ref _user_id = &user_id;
-
-    let mut created_by_filter = Document::new();
-    created_by_filter.insert("createdByUserId", *_user_id);
+fn build_user_group_lookup_filter(user_id: &String) -> Document {
+      let mut created_by_filter = Document::new();
+    created_by_filter.insert("createdByUserId", user_id);
 
     let mut member_filter = Document::new();
-    member_filter.insert("members.userId", *_user_id);
+    member_filter.insert("members.userId", user_id);
 
     let mut arr = bson::Array::new();
     arr.push(bson::to_bson(&created_by_filter).unwrap());
@@ -53,7 +51,7 @@ pub fn insert_user_group(
 }
 
 pub fn lookup_user_groups(
-    user_id: String,
+    user_id: &String,
     client: &Client,
 ) -> Result<Vec<user_group_model::UserGroupsModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");
@@ -91,7 +89,7 @@ pub fn lookup_user_groups(
 
 pub fn lookup_user_group(
     client: &Client,
-    user_id: String,
+    user_id: &String,
     user_group_id: String,
 ) -> Result<user_group_model::UserGroupModel, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("usergroup");

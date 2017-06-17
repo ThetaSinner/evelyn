@@ -58,7 +58,7 @@ pub fn lookup_user_groups_processor(
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
-            match user_group::lookup_user_groups(session_token_model, processor_data) {
+            match user_group::lookup_user_groups(&session_token_model, processor_data) {
                 Ok(response) => model_to_router_output!(response),
                 Err(e) => {
                     model_to_router_output!(model::user_group::LookupUserGroupsResponseModel {

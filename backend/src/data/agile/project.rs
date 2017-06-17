@@ -15,11 +15,50 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
-use bson::{Document};
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model;
 use model::agile::project as project_model;
 use mongodb::{Client, ThreadedClient};
+use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
+use serde_json;
+
+fn build_project_lookup_filter(
+    user_id: &String,
+    user_groups: Vec<model::user_group::UserGroupsExternalModel>,
+) -> Document {
+    let ref _user_id = user_id;
+
+    let mut created_by_filter = Document::new();
+    created_by_filter.insert("createdByUserId", *_user_id);
+
+    let mut user_id_filter = Document::new();
+    user_id_filter.insert("contributors.id_type", serde_json::to_string(&model::agile::project::IdType::User).unwrap());
+    user_id_filter.insert("contributors.id", *_user_id);
+
+    let mut group_ids = bson::Array::new();
+    for group in user_groups {
+        group_ids.push(Bson::String(group.user_group_id));
+    }
+
+    let mut user_group_in_filter = Document::new();
+    user_group_in_filter.insert("$in", group_ids);
+
+    let mut user_group_filter = Document::new();
+    user_group_filter.insert("contributors.id_type", serde_json::to_string(&model::agile::project::IdType::Group).unwrap());
+    user_group_filter.insert("contributors.id", user_group_in_filter);
+
+    let mut arr = bson::Array::new();
+    arr.push(bson::to_bson(&created_by_filter).unwrap());
+    arr.push(bson::to_bson(&user_id_filter).unwrap());
+    arr.push(bson::to_bson(&user_group_filter).unwrap());
+
+    let mut filter = Document::new();
+    filter.insert("$or", Bson::Array(arr));
+
+    filter
+}
 
 pub fn insert_project(
     client: &Client,
@@ -59,3 +98,45 @@ pub fn push_contributor(
         Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
+
+pub fn lookup_projects(
+    client: &Client,
+    user_id: &String,
+    user_groups: Vec<model::user_group::UserGroupsExternalModel>,
+) -> Result<Vec<project_model::ProjectsModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_project");
+
+    let filter = build_project_lookup_filter(user_id, user_groups);
+
+    let mut find_options = FindOptions::new();
+
+    let mut projection = Document::new();
+    projection.insert("projectId", Bson::I32(1));
+    projection.insert("name", Bson::I32(1));
+    projection.insert("shortName", Bson::I32(1));
+    projection.insert("description", Bson::I32(1));
+    projection.insert("_id", Bson::I32(0));
+    find_options.projection = Some(projection);
+
+    let cursor = collection.find(Some(filter), Some(find_options));
+
+    match cursor {
+        Ok(cursor) => {
+            Ok(cursor
+                   .map(|x| {
+                match x {
+                    Ok(x) => {
+                        debug!("{}", x);
+                        bson::from_bson(bson::Bson::Document(x)).unwrap()
+                    },
+                    Err(e) => {
+                        error!("Database error in lookup agile projects {}", e);
+                        panic!() // need a better way to handle this ideally.
+                    },
+                }
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupUserGroups(e)),
+    }
+}
+

@@ -92,3 +92,41 @@ pub struct CreateContributorModel {
     pub project_id: String,
     pub contributor: ContributorModel,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupProjectsRequestModel {
+    pub token: String,
+}
+
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LookupProjectsModel {
+    pub projects: Vec<ProjectsModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProjectsModel {
+    pub project_id: String,
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LookupProjectsResponseModel {
+    pub projects: Vec<ProjectsExternalModel>,
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct ProjectsExternalModel {
+    pub project_id: String,
+    pub name: String,
+    pub short_name: String,
+    pub description: String,
+}
