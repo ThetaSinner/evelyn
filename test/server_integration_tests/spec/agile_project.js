@@ -22,6 +22,7 @@ var expect = require('chai').expect;
 var _ = require('lodash');
 
 var httpHelper = require('../helpers/chai-http-request-helper.js');
+var userGroupHelper = require('./user_group.js');
 
 function createProject(token, project_ref) {
     return httpHelper.chaiHttpPost('/agile/project/create', {
@@ -29,6 +30,36 @@ function createProject(token, project_ref) {
         Name: "name_" + project_ref,
         ShortName: "short_name_" + project_ref,
         Description: "description_" + project_ref
+    })
+    .then(function(response) {
+        expect(response.Error).to.be.null;
+        
+        return Promise.resolve(response);
+    });
+}
+
+function addUserContributor(token, projectId, userId) {
+    return httpHelper.chaiHttpPost('/agile/project/contributor/user/add', {
+        Token: token,
+        ProjectId: projectId,
+        UserContributor: {
+            UserId: userId
+        }
+    })
+    .then(function(response) {
+        expect(response.Error).to.be.null;
+        
+        return Promise.resolve(response);
+    });
+}
+
+function addUserGroupContributor(token, projectId, userGroupId) {
+    return httpHelper.chaiHttpPost('/agile/project/contributor/usergroup/add', {
+        Token: token,
+        ProjectId: projectId,
+        UserGroupContributor: {
+            UserGroupId: userGroupId
+        }
     })
     .then(function(response) {
         expect(response.Error).to.be.null;
@@ -70,5 +101,49 @@ describe('Agile: Project', function() {
 
     it('Creates a project', function() {
         return createProject(tokenProjectOwner, 'starter_ref');
+    });
+
+    it('Adds a user contributor to a project', function() {
+        var projectId = null;
+
+        return createProject(tokenProjectOwner, 'starter_ref')
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+            projectId = response.ProjectId;
+
+            return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+        })
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+            expect(response.SearchResults).to.be.an.array;
+            expect(response.SearchResults).to.have.lengthOf(1);
+            var userId = response.SearchResults[0].UserId;
+
+            return addUserContributor(tokenProjectOwner, projectId, userId);
+        })
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+        });
+    });
+
+    it('Adds a user group contributor to a project', function() {
+        var projectId = null;
+
+        return createProject(tokenProjectOwner, 'starter_ref')
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+            projectId = response.ProjectId;
+
+            return userGroupHelper.createUserGroup(tokenProjectOwner, 'dev team', 'dev team desc');
+        })
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+            var userGroupId = response.UserGroupId;
+            
+            return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
+        })
+        .then(function(response) {
+            expect(response.Error).to.be.null;
+        });
     });
 });
