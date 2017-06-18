@@ -108,21 +108,16 @@ describe('Agile: Project', function() {
 
         return createProject(tokenProjectOwner, 'starter_ref')
         .then(function(response) {
-            expect(response.Error).to.be.null;
             projectId = response.ProjectId;
 
             return httpHelper.searchForUsers(tokenProjectOwner, 'user');
         })
         .then(function(response) {
-            expect(response.Error).to.be.null;
             expect(response.SearchResults).to.be.an.array;
             expect(response.SearchResults).to.have.lengthOf(1);
             var userId = response.SearchResults[0].UserId;
 
             return addUserContributor(tokenProjectOwner, projectId, userId);
-        })
-        .then(function(response) {
-            expect(response.Error).to.be.null;
         });
     });
 
@@ -131,19 +126,14 @@ describe('Agile: Project', function() {
 
         return createProject(tokenProjectOwner, 'starter_ref')
         .then(function(response) {
-            expect(response.Error).to.be.null;
             projectId = response.ProjectId;
 
             return userGroupHelper.createUserGroup(tokenProjectOwner, 'dev team', 'dev team desc');
         })
         .then(function(response) {
-            expect(response.Error).to.be.null;
             var userGroupId = response.UserGroupId;
             
             return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
-        })
-        .then(function(response) {
-            expect(response.Error).to.be.null;
         });
     });
 });
