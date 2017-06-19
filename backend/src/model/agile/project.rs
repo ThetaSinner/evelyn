@@ -178,7 +178,7 @@ pub struct ProjectExternalModel {
     pub short_name: String,
     pub description: String,
     pub user_contributors: Vec<UserContributorPreviewExternalModel>,
-    pub group_contributors: Vec<UserGroupContributorPreviewExternalModel>,
+    pub user_group_contributors: Vec<UserGroupContributorPreviewExternalModel>,
 }
 
 #[derive(Serialize, Deserialize)]

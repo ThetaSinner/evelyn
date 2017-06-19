@@ -79,6 +79,21 @@ function lookupProjectPreviews(token) {
     });
 }
 
+function lookupProject(token, projectId) {
+    return httpHelper.chaiHttpPost('/agile/project/lookup', {
+        Token: token,
+        ProjectId: projectId
+    })
+    .then(function(response) {
+        if (response.Error === null) {
+            return Promise.resolve(response);
+        }
+        else {
+            return Promise.reject(response);
+        }
+    });
+}
+
 describe('Agile: Project', function() {
     var tokenProjectOwner = null;
     var tokenUser = null;
@@ -198,8 +213,6 @@ describe('Agile: Project', function() {
                 return lookupProjectPreviews(tokenUser);
             })
             .then(function(response) {
-                console.log(response);
-
                 expect(response.Projects).to.be.an.array;
                 expect(response.Projects).to.have.lengthOf(1);
 
@@ -251,6 +264,139 @@ describe('Agile: Project', function() {
                 expect(project.Name).to.equal('name_sinker_ref');
                 expect(project.ShortName).to.equal('short_name_sinker_ref');
                 expect(project.Description).to.equal('description_sinker_ref');
+            });
+        });
+    });
+
+    describe('Lookup project', function() {
+        it('Looks up a project', function() {
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                return lookupProject(tokenProjectOwner, response.ProjectId);
+            })
+            .then(function(response) {
+                expect(response.Project).to.be.ok;
+
+                var project = response.Project;
+                expect(project.ProjectId).to.be.ok;
+                expect(project.Name).to.equal('name_starter_ref');
+                expect(project.ShortName).to.equal('short_name_starter_ref');
+                expect(project.Description).to.equal('description_starter_ref');
+                expect(project.UserContributors).to.be.an.array;
+                expect(project.UserContributors).to.be.empty;
+                expect(project.UserGroupContributors).to.be.an.array;
+                expect(project.UserGroupContributors).to.be.empty;
+            });
+        });
+
+        it('Allows user contributor to see project', function() {
+            var projectId1 = null;
+            var projectId2 = null;
+            var userId = null;
+
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                projectId1 = response.ProjectId;
+
+                return createProject(tokenProjectOwner, 'sinker_ref');
+            })
+            .then(function(response) {
+                projectId2 = response.ProjectId;
+
+                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+            })
+            .then(function(response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                userId = response.SearchResults[0].UserId;
+
+                return addUserContributor(tokenProjectOwner, projectId1, userId);
+            })
+            .then(function() {
+                return lookupProject(tokenUser, projectId2);
+            })
+            .catch(function(response) {
+                // Failed to lookup agile project
+                expect(response.Error.ErrorCode).to.equal('1006005');
+
+                return Promise.resolve();
+            })
+            .then(function() {
+                return lookupProject(tokenUser, projectId1);
+            })
+            .then(function(response) {
+                expect(response.Project).to.be.ok;
+
+                var project = response.Project;
+                expect(project.ProjectId).to.be.ok;
+                expect(project.Name).to.equal('name_starter_ref');
+                expect(project.ShortName).to.equal('short_name_starter_ref');
+                expect(project.Description).to.equal('description_starter_ref');
+                expect(project.UserContributors).to.be.an.array;
+                expect(project.UserContributors).to.have.lengthOf(1);
+                expect(project.UserContributors[0].UserId).to.equal(userId);
+                expect(project.UserGroupContributors).to.be.an.array;
+                expect(project.UserGroupContributors).to.be.empty;
+            });
+        });
+
+        it('Allows user group contributor to see project', function() {
+            var projectId1 = null;
+            var projectId2 = null;
+            var userGroupId = null;
+            var userId = null;
+
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                projectId1 = response.ProjectId;
+
+                return createProject(tokenProjectOwner, 'sinker_ref');
+            })
+            .then(function(response) {
+                projectId2 = response.ProjectId;
+
+                return userGroupHelper.createUserGroup(tokenProjectOwner, 'group name', 'group description');
+            })
+            .then(function(response) {
+                userGroupId = response.UserGroupId;
+
+                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+            })
+            .then(function(response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                userId = response.SearchResults[0].UserId;
+
+                return userGroupHelper.addMember(tokenProjectOwner, userGroupId, userId);
+            })
+            .then(function() {
+                return addUserGroupContributor(tokenProjectOwner, projectId2, userGroupId);
+            })
+            .then(function() {
+                return lookupProject(tokenUser, projectId1);
+            })
+            .catch(function(response) {
+                // Failed to lookup agile project
+                expect(response.Error.ErrorCode).to.equal('1006005');
+
+                return Promise.resolve();
+            })
+            .then(function() {
+                return lookupProject(tokenUser, projectId2);
+            })
+            .then(function(response) {
+                expect(response.Project).to.be.ok;
+
+                var project = response.Project;
+                expect(project.ProjectId).to.be.ok;
+                expect(project.Name).to.equal('name_sinker_ref');
+                expect(project.ShortName).to.equal('short_name_sinker_ref');
+                expect(project.Description).to.equal('description_sinker_ref');
+                expect(project.UserContributors).to.be.an.array;
+                expect(project.UserContributors).to.be.empty;
+                expect(project.UserGroupContributors).to.be.an.array;
+                expect(project.UserGroupContributors).to.have.lengthOf(1);
+                expect(project.UserGroupContributors[0].UserGroupId).to.equal(userGroupId);
             });
         });
     });
