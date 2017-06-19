@@ -33,7 +33,7 @@ fn build_project_lookup_filter(
     created_by_filter.insert("createdByUserId", *_user_id);
 
     let mut user_id_filter = Document::new();
-    user_id_filter.insert("userContributors.user_id", *_user_id);
+    user_id_filter.insert("userContributors.userId", *_user_id);
 
     let mut group_ids = bson::Array::new();
     for group in user_groups {
@@ -44,7 +44,7 @@ fn build_project_lookup_filter(
     user_group_in_filter.insert("$in", group_ids);
 
     let mut user_group_filter = Document::new();
-    user_group_filter.insert("userGroupContributors.user_group_id", user_group_in_filter);
+    user_group_filter.insert("userGroupContributors.userGroupId", user_group_in_filter);
 
     let mut arr = bson::Array::new();
     arr.push(bson::to_bson(&created_by_filter).unwrap());

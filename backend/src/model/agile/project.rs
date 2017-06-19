@@ -132,7 +132,7 @@ pub struct LookupProjectsRequestModel {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct LookupProjectsResponseModel {
     pub projects: Vec<ProjectsExternalModel>,
     pub error: Option<ErrorModel>,

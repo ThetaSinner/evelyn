@@ -68,6 +68,17 @@ function addUserGroupContributor(token, projectId, userGroupId) {
     });
 }
 
+function lookupProjectPreviews(token) {
+    return httpHelper.chaiHttpPost('/agile/project/lookupprojects', {
+        Token: token
+    })
+    .then(function(response) {
+        expect(response.Error).to.be.null;
+        
+        return Promise.resolve(response);
+    });
+}
+
 describe('Agile: Project', function() {
     var tokenProjectOwner = null;
     var tokenUser = null;
@@ -134,6 +145,113 @@ describe('Agile: Project', function() {
             var userGroupId = response.UserGroupId;
             
             return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
+        });
+    });
+
+    describe('Lookup project previews', function() {
+        it('Looks up a project preview', function() {
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                return createProject(tokenProjectOwner, 'sinker_ref');
+            })
+            .then(function(response) {
+                return lookupProjectPreviews(tokenProjectOwner);
+            })
+            .then(function(response) {
+                expect(response.Projects).to.be.an.array;
+                expect(response.Projects).to.have.lengthOf(2);
+
+                var project_1 = response.Projects[0];
+                expect(project_1.ProjectId).to.be.ok;
+                expect(project_1.Name).to.equal('name_starter_ref');
+                expect(project_1.ShortName).to.equal('short_name_starter_ref');
+                expect(project_1.Description).to.equal('description_starter_ref');
+
+                var project_2 = response.Projects[1];
+                expect(project_2.ProjectId).to.be.ok;
+                expect(project_2.Name).to.equal('name_sinker_ref');
+                expect(project_2.ShortName).to.equal('short_name_sinker_ref');
+                expect(project_2.Description).to.equal('description_sinker_ref');
+            });
+        });
+
+        it('Allows user contributor to see preview', function() {
+            var projectId = null;
+
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                return createProject(tokenProjectOwner, 'sinker_ref');
+            })
+            .then(function(response) {
+                projectId = response.ProjectId;
+
+                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+            })
+            .then(function(response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                var userId = response.SearchResults[0].UserId;
+
+                return addUserContributor(tokenProjectOwner, projectId, userId);
+            })
+            .then(function() {
+                return lookupProjectPreviews(tokenUser);
+            })
+            .then(function(response) {
+                console.log(response);
+
+                expect(response.Projects).to.be.an.array;
+                expect(response.Projects).to.have.lengthOf(1);
+
+                var project = response.Projects[0];
+                expect(project.ProjectId).to.be.ok;
+                expect(project.Name).to.equal('name_sinker_ref');
+                expect(project.ShortName).to.equal('short_name_sinker_ref');
+                expect(project.Description).to.equal('description_sinker_ref');
+            });
+        });
+
+        it('Allows user group contributor to see preview', function() {
+            var projectId = null;
+            var userGroupId = null;
+
+            return createProject(tokenProjectOwner, 'starter_ref')
+            .then(function(response) {
+                return createProject(tokenProjectOwner, 'sinker_ref');
+            })
+            .then(function(response) {
+                projectId = response.ProjectId;
+
+                return userGroupHelper.createUserGroup(tokenProjectOwner, 'group name', 'group description');
+            })
+            .then(function(response) {
+                userGroupId = response.UserGroupId;
+
+                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+            })
+            .then(function(response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                var userId = response.SearchResults[0].UserId;
+
+                return userGroupHelper.addMember(tokenProjectOwner, userGroupId, userId);
+            })
+            .then(function() {
+                return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
+            })
+            .then(function() {
+                return lookupProjectPreviews(tokenUser);
+            })
+            .then(function(response) {
+                expect(response.Projects).to.be.an.array;
+                expect(response.Projects).to.have.lengthOf(1);
+
+                var project = response.Projects[0];
+                expect(project.ProjectId).to.be.ok;
+                expect(project.Name).to.equal('name_sinker_ref');
+                expect(project.ShortName).to.equal('short_name_sinker_ref');
+                expect(project.Description).to.equal('description_sinker_ref');
+            });
         });
     });
 });

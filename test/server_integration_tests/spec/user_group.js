@@ -24,7 +24,8 @@ var _ = require('lodash');
 var httpHelper = require('../helpers/chai-http-request-helper.js');
 
 module.exports = {
-    createUserGroup: createUserGroup
+    createUserGroup: createUserGroup,
+    addMember: addMember
 };
 
 function createUserGroup(token, name, description) {
