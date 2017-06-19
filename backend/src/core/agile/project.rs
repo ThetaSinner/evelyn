@@ -145,7 +145,7 @@ pub fn lookup(
                         },
                     }
                 }).collect(),
-                group_contributors: result.user_group_contributors.into_iter().map(|x| {
+                user_group_contributors: result.user_group_contributors.into_iter().map(|x| {
                     match user_group_data::lookup_user_group(&ds, &session_token_model.user_id, &x.user_group_id) {
                         Ok(user) => project_model::UserGroupContributorPreviewExternalModel {
                             user_group_id: x.user_group_id,
