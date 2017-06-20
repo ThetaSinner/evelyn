@@ -4,6 +4,7 @@ node_modules
 .sass-cache
 registry-cache
 .idea/
+.vscode/
 
 ui/app
 ui/desktop/app
