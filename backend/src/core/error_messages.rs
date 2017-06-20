@@ -125,6 +125,9 @@ pub enum EvelynServiceError {
     LookupAgileProjects(EvelynCoreError),
     LookupAgileProject(EvelynCoreError),
 
+    // Agile: Task
+    QuickCreateAgileTask(EvelynCoreError),
+
     // Calendar
     AddCalendarEvent(EvelynCoreError),
 }
@@ -177,6 +180,9 @@ EvelynErrorDisplay!{
     {LookupAgileProjects, "1006004", "Failed to lookup agile projects"},
     {LookupAgileProject, "1006005", "Failed to lookup agile project"},
 
+    // Agile: Task
+    {QuickCreateAgileTask, "1006101", "Failed to quick create agile task"},
+
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
@@ -220,6 +226,9 @@ pub enum EvelynCoreError {
     FailedToAddUserGroupContributorToAgileProject(EvelynDatabaseError),
     FailedToLookupAgileProjects(EvelynDatabaseError),
     FailedToLookupAgileProject(EvelynDatabaseError),
+
+    // Agile: Task
+    FailedToQuickCreateAgileTask(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -265,6 +274,9 @@ EvelynErrorDisplay!{
     {FailedToAddUserGroupContributorToAgileProject, "Failed to add user group contributor to agile project: {}"},
     {FailedToLookupAgileProjects, "Failed to lookup agile projects: {}"},
     {FailedToLookupAgileProject, "Failed to lookup agile project: {}"},
+
+    // Agile: Task
+    {FailedToQuickCreateAgileTask, "Failed to quick create agile task: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -312,6 +324,9 @@ pub enum EvelynDatabaseError {
     AgileProjectNotFound(EvelynBaseError),
     LookupAgileProject(MongoDbError),
 
+    // Agile: Task 
+    InsertAgileTask(MongoDbError),
+
     // Calendar
     InsertCalendarEvent(MongoDbError),
 }
@@ -358,6 +373,9 @@ EvelynErrorDisplay!{
     {LookupAgileProjects, "Failed to lookup agile projects: {}"},
     {AgileProjectNotFound, "Agile project was not found: {}"},
     {LookupAgileProject, "Failed to lookup agile project: {}"},
+
+    // Agile: Task
+    {InsertAgileTask, "Failed to insert agile task: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

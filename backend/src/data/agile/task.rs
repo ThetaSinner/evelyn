@@ -14,5 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
+use bson;
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model::agile::task as task_model;
+use mongodb::{Client, ThreadedClient};
+use mongodb::db::ThreadedDatabase;
+
+pub fn insert_task(
+    client: &Client,
+    task_model: &task_model::TaskModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_task");
+
+    insert_model!(
+        collection,
+        task_model,
+        EvelynDatabaseError::InsertAgileTask
+    )
+}

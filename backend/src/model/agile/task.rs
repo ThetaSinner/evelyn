@@ -14,5 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
+use model::ErrorModel;
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct QuickCreateTaskRequestModel {
+    pub token: String,
+    pub project_id: String,
+    pub title: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct QuickCreateTaskResponseModel {
+    pub error: Option<ErrorModel>,
+    pub task_id: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TaskModel {
+    pub task_id: String,
+    pub created_by_user_id: String,
+    pub date_created: String,
+    pub project_id: String,
+    pub title: String,
+    pub description: String,
+    pub original_estimate: String,
+}
