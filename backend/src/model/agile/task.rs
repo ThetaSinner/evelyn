@@ -18,15 +18,17 @@ use model::ErrorModel;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct QuickCreateTaskRequestModel {
+pub struct CreateTaskRequestModel {
     pub token: String,
     pub project_id: String,
     pub title: String,
+    pub description: Option<String>,
+    pub original_estimate: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-pub struct QuickCreateTaskResponseModel {
+pub struct CreateTaskResponseModel {
     pub error: Option<ErrorModel>,
     pub task_id: Option<String>,
 }

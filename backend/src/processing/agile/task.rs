@@ -23,28 +23,28 @@ use serde_json;
 use server::routing::{RouterInput, RouterOutput};
 use std::sync::Arc;
 
-pub fn quick_create_processor(
+pub fn create_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,
 ) -> RouterOutput {
-    match decode_router_input_to_model!(task_model::QuickCreateTaskRequestModel, router_input) {
+    match decode_router_input_to_model!(task_model::CreateTaskRequestModel, router_input) {
         Ok(request_model) => {
             let session_token_model = validate_session!(processor_data, request_model);
 
-            match task::quick_create(request_model, session_token_model, processor_data) {
+            match task::create(request_model, session_token_model, processor_data) {
                 Ok(response) => {
                     model_to_router_output!(response)
                 },
                 Err(e) => {
-                    model_to_router_output!(task_model::QuickCreateTaskResponseModel {
+                    model_to_router_output!(task_model::CreateTaskResponseModel {
                         task_id: None,
-                        error: service_error_to_model!(EvelynServiceError::QuickCreateAgileTask(e)),
+                        error: service_error_to_model!(EvelynServiceError::CreateAgileTask(e)),
                     })
                 },
             }
         },
         Err(e) => {
-            model_to_router_output!(task_model::QuickCreateTaskResponseModel {
+            model_to_router_output!(task_model::CreateTaskResponseModel {
                 task_id: None,
                 error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
             })

@@ -126,7 +126,7 @@ pub enum EvelynServiceError {
     LookupAgileProject(EvelynCoreError),
 
     // Agile: Task
-    QuickCreateAgileTask(EvelynCoreError),
+    CreateAgileTask(EvelynCoreError),
 
     // Calendar
     AddCalendarEvent(EvelynCoreError),
@@ -181,7 +181,7 @@ EvelynErrorDisplay!{
     {LookupAgileProject, "1006005", "Failed to lookup agile project"},
 
     // Agile: Task
-    {QuickCreateAgileTask, "1006101", "Failed to quick create agile task"},
+    {CreateAgileTask, "1006101", "Failed to create agile task"},
 
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
@@ -228,7 +228,7 @@ pub enum EvelynCoreError {
     FailedToLookupAgileProject(EvelynDatabaseError),
 
     // Agile: Task
-    FailedToQuickCreateAgileTask(EvelynDatabaseError),
+    FailedToCreateAgileTask(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -276,7 +276,7 @@ EvelynErrorDisplay!{
     {FailedToLookupAgileProject, "Failed to lookup agile project: {}"},
 
     // Agile: Task
-    {FailedToQuickCreateAgileTask, "Failed to quick create agile task: {}"},
+    {FailedToCreateAgileTask, "Failed to create agile task: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}

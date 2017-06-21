@@ -23,11 +23,11 @@ use std::sync::Arc;
 use uuid::Uuid;
 use chrono::prelude::*;
 
-pub fn quick_create(
-    request_model: task_model::QuickCreateTaskRequestModel,
+pub fn create(
+    request_model: task_model::CreateTaskRequestModel,
     session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
-) -> Result<task_model::QuickCreateTaskResponseModel, EvelynCoreError> {
+) -> Result<task_model::CreateTaskResponseModel, EvelynCoreError> {
     let task_id = format!("{}", Uuid::new_v4());
 
     let task_model = task_model::TaskModel {
@@ -36,17 +36,23 @@ pub fn quick_create(
         date_created: format!("{}", UTC::now()),
         project_id: request_model.project_id,
         title: request_model.title,
-        description: "".to_owned(),
-        original_estimate: "0m".to_owned(),
+        description: match request_model.description {
+            Some(description) => description,
+            None => "".to_owned(),
+        },
+        original_estimate: match request_model.original_estimate {
+            Some(original_estimate) => original_estimate,
+            None => "0m".to_owned(),
+        },
     };
 
     let ds = processor_data.data_store.clone();
 
     match task_data::insert_task(&ds, &task_model) {
-        None => Ok(task_model::QuickCreateTaskResponseModel {
+        None => Ok(task_model::CreateTaskResponseModel {
             task_id: Some(task_model.task_id),
             error: None,
         }),
-        Some(e) => Err(EvelynCoreError::FailedToQuickCreateAgileTask(e)),
+        Some(e) => Err(EvelynCoreError::FailedToCreateAgileTask(e)),
     }
 }
