@@ -14,6 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
-pub mod sprint;
+use model::ErrorModel;
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CreateSprintRequestModel {
+    pub token: String,
+    pub project_id: String,
+    pub start_date: String,
+    pub end_date: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CreateSprintResponseModel {
+    pub error: Option<ErrorModel>,
+    pub sprint_id: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SprintModel {
+    pub sprint_id: String,
+    pub created_by_user_id: String,
+    pub date_created: String,
+    pub start_date: String,
+    pub end_date: String,
+}

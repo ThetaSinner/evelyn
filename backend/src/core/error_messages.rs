@@ -128,6 +128,9 @@ pub enum EvelynServiceError {
     // Agile: Task
     CreateAgileTask(EvelynCoreError),
 
+    // Agile: Sprint
+    CreateAgileSprint(EvelynCoreError),
+
     // Calendar
     AddCalendarEvent(EvelynCoreError),
 }
@@ -183,6 +186,9 @@ EvelynErrorDisplay!{
     // Agile: Task
     {CreateAgileTask, "1006101", "Failed to create agile task"},
 
+    // Agile: Sprint
+    {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
+
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
@@ -229,6 +235,9 @@ pub enum EvelynCoreError {
 
     // Agile: Task
     FailedToCreateAgileTask(EvelynDatabaseError),
+
+    // Agile: Sprint
+    FailedToCreateAgileSprint(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -277,6 +286,9 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {FailedToCreateAgileTask, "Failed to create agile task: {}"},
+
+    // Agile: Sprint
+    {FailedToCreateAgileSprint, "Failed to create agile sprint: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -327,6 +339,9 @@ pub enum EvelynDatabaseError {
     // Agile: Task 
     InsertAgileTask(MongoDbError),
 
+    // Agile: Sprint
+    InsertAgileSprint(MongoDbError),
+
     // Calendar
     InsertCalendarEvent(MongoDbError),
 }
@@ -376,6 +391,9 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {InsertAgileTask, "Failed to insert agile task: {}"},
+
+    // Agile: Sprint
+    {InsertAgileSprint, "Failed to insert agile sprint: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

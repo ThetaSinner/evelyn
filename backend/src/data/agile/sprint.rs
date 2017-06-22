@@ -14,6 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
-pub mod sprint;
+use bson;
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model::agile::sprint as sprint_model;
+use mongodb::{Client, ThreadedClient};
+use mongodb::db::ThreadedDatabase;
+
+pub fn insert_sprint(
+    client: &Client,
+    sprint_model: &sprint_model::SprintModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_sprint");
+
+    insert_model!(
+        collection,
+        sprint_model,
+        EvelynDatabaseError::InsertAgileSprint
+    )
+}

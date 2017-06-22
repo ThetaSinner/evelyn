@@ -70,5 +70,7 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/agile/task/create", agile::task::create_processor);
 
+    router.add_rule("/agile/sprint/create", agile::sprint::create_processor);
+
     router.add_rule("/calendar/addevent", calendar::calendar_add_event_processor);
 }
