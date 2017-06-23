@@ -21,6 +21,7 @@ use model::ErrorModel;
 pub struct CreateSprintRequestModel {
     pub token: String,
     pub project_id: String,
+    pub title: String,
     pub start_date: String,
     pub end_date: String,
 }
@@ -38,6 +39,7 @@ pub struct SprintModel {
     pub sprint_id: String,
     pub created_by_user_id: String,
     pub date_created: String,
+    pub title: String,
     pub start_date: String,
     pub end_date: String,
 }

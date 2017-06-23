@@ -399,7 +399,6 @@ EvelynErrorDisplay!{
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}
 }
 
-
 // This error is a null enum that gets passed if there is no specific error to
 // pass up the chain
 // Side effect of using macros to generate code
