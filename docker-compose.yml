@@ -1,12 +1,12 @@
 version : "3"
 services:
     website:
-        image: httpd:2.4
+        image: nginx:alpine
         ports:
             - "8081:80"
         volumes:
-            - ./ui/app:/usr/local/apache2/htdocs
-            - ./dev_ui/public:/usr/local/apache2/htdocs/dev
+            - ./ui/app:/usr/share/nginx/html
+            - ./dev_ui:/usr/share/nginx/html/dev
         depends_on:
             - mongodb
             - backend
