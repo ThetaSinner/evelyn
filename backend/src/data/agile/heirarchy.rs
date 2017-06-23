@@ -14,7 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
-pub mod sprint;
-pub mod heirarchy;
+use bson;
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model::agile::heirarchy as heirarchy_model;
+use mongodb::{Client, ThreadedClient};
+use mongodb::db::ThreadedDatabase;
+
+pub fn insert_link(
+    client: &Client,
+    model: &heirarchy_model::LinkModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_link");
+
+    insert_model!(
+        collection,
+        model,
+        EvelynDatabaseError::InsertAgileHeirarchyLink
+    )
+}

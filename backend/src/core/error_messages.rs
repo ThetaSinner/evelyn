@@ -131,6 +131,9 @@ pub enum EvelynServiceError {
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
 
+    // Agile: Heirarchy
+    MakeAgileHeirarchyLink(EvelynCoreError),
+
     // Calendar
     AddCalendarEvent(EvelynCoreError),
 }
@@ -189,6 +192,9 @@ EvelynErrorDisplay!{
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
 
+    // Agile: Heirarchy
+    {MakeAgileHeirarchyLink, "1006301", "Failed to make agile heirarchy link"},
+
     // Calendar
     {AddCalendarEvent, "100501", "Failed to add calendar event"}
 }
@@ -238,6 +244,10 @@ pub enum EvelynCoreError {
 
     // Agile: Sprint
     FailedToCreateAgileSprint(EvelynDatabaseError),
+
+    // Agile: Heirarchy
+    AgileHeirarcyInvalidLink(EvelynBaseError),
+    FailedToMakeAgileHeirarchyLink(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -289,6 +299,10 @@ EvelynErrorDisplay!{
 
     // Agile: Sprint
     {FailedToCreateAgileSprint, "Failed to create agile sprint: {}"},
+
+    // Agile: Heirarchy
+    {AgileHeirarcyInvalidLink, "Invalid link: {}"},
+    {FailedToMakeAgileHeirarchyLink, "Failed to make agile heirarchy link: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -342,6 +356,9 @@ pub enum EvelynDatabaseError {
     // Agile: Sprint
     InsertAgileSprint(MongoDbError),
 
+    // Agile: Heirarchy
+    InsertAgileHeirarchyLink(MongoDbError),
+
     // Calendar
     InsertCalendarEvent(MongoDbError),
 }
@@ -394,6 +411,9 @@ EvelynErrorDisplay!{
 
     // Agile: Sprint
     {InsertAgileSprint, "Failed to insert agile sprint: {}"},
+
+    // Agile: Heirarchy
+    {InsertAgileHeirarchyLink, "Failed to insert agile heirarchy link: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}
