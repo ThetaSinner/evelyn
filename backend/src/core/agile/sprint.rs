@@ -33,7 +33,7 @@ pub fn create(
     let sprint_model = sprint_model::SprintModel {
         sprint_id: sprint_id,
         created_by_user_id: session_token_model.user_id,
-        date_created: format!("{}", UTC::now()),
+        date_created: format!("{}", Utc::now()),
         title: request_model.title,
         start_date: request_model.start_date,
         end_date: request_model.end_date,

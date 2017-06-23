@@ -45,7 +45,7 @@ pub fn make_link(
         Ok((link_from, link_to)) => {
             let link_model = heirarchy_model::LinkModel {
                 created_by_user_id: session_token_model.user_id,
-                date_created: format!("{}", UTC::now()),
+                date_created: format!("{}", Utc::now()),
                 link_from_type_name: link_from,
                 link_to_type_name: link_to,
                 link_from_id: request_model.link_from_id,

@@ -30,10 +30,7 @@ impl Conf {
         c.set_default("use_ssl", "true").unwrap();
 
         println!("Reading config from {}", filename);
-        match c.merge(config::File::new(filename, config::FileFormat::Json).required(false)) {
-            Ok(_) => println!("Config loaded"),
-            Err(e) => println!("Failed to load config {:?}", e),
-        };
+        c.merge(config::File::new(filename, config::FileFormat::Json).required(false)).unwrap();
 
         Conf {
             internal: c,

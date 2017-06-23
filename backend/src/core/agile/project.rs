@@ -36,7 +36,7 @@ pub fn create(
     let project_model = project_model::ProjectModel {
         project_id: project_id,
         created_by_user_id: session_token_model.user_id,
-        date_created: format!("{}", UTC::now()),
+        date_created: format!("{}", Utc::now()),
         name: request_model.name,
         short_name: request_model.short_name,
         description: request_model.description,

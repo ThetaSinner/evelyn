@@ -69,8 +69,8 @@ pub fn lookup_simple_tasks(
     match data::simple_task::lookup_simple_tasks(&ds, &simple_task_lookup_model) {
         Ok(mut tasks) => {
             tasks.sort_by(|a, b| {
-                let a_date = a.due_date.parse::<DateTime<UTC>>();
-                let b_date = b.due_date.parse::<DateTime<UTC>>();
+                let a_date = a.due_date.parse::<DateTime<Utc>>();
+                let b_date = b.due_date.parse::<DateTime<Utc>>();
 
                 // TODO unsafe
                 if a_date.unwrap().eq(&b_date.unwrap()) {

@@ -33,7 +33,7 @@ pub fn create(
     let task_model = task_model::TaskModel {
         task_id: task_id,
         created_by_user_id: session_token_model.user_id,
-        date_created: format!("{}", UTC::now()),
+        date_created: format!("{}", Utc::now()),
         project_id: request_model.project_id,
         title: request_model.title,
         description: match request_model.description {
