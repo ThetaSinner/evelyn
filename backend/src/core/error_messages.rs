@@ -339,7 +339,6 @@ pub enum EvelynDatabaseError {
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
     SearchForUsers(MongoDbError),
-    UserNotFound(EvelynBaseError),
 
     // User group
     InsertUserGroup(MongoDbError),
@@ -403,7 +402,6 @@ EvelynErrorDisplay!{
     {InsertUser, "Failed to create record for new user: {}"},
     {LookupUser, "Failed to lookup user: {}"},
     {SearchForUsers, "Failed to search for users: {}"},
-    {UserNotFound, "No matching User found: {}"},
 
     // User group
     {InsertUserGroup, "Failed to create user group: {}"},

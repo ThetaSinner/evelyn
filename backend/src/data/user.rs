@@ -64,7 +64,8 @@ pub fn find_user(
                         Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
                     }
                 },
-                None => Err(EvelynDatabaseError::UserNotFound(EvelynBaseError::NothingElse))
+                // Todo: fix again
+                None => Some(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
@@ -89,7 +90,8 @@ pub fn find_user_by_id(
                         Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
                     }
                 },
-                None => Err(EvelynDatabaseError::UserNotFound(EvelynBaseError::NothingElse))
+                // Todo: fix again
+                None => Some(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
