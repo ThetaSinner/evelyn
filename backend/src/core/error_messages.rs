@@ -16,6 +16,7 @@
 
 use mongodb::error::Error as MongoDbError;
 use serde_json;
+use bson;
 use std::error;
 use std::fmt;
 
@@ -331,6 +332,8 @@ EvelynErrorDisplay!{
 #[derive(Debug)]
 pub enum EvelynDatabaseError {
     SerialisationFailed(EvelynBaseError),
+    BSONEncodeFailed(bson::EncoderError),
+    BSONDecodeFailed(bson::DecoderError),
 
     // Server Admin
     PurgeDatabase(MongoDbError),
@@ -395,6 +398,8 @@ EvelynErrorDisplay!{
     EvelynDatabaseError,
     // Processing
     {SerialisationFailed, "Failed to serialise data for storage. {}"},
+    {BSONEncodeFailed, "Failed to serialise data for storage. {}"},
+    {BSONDecodeFailed, "Failed to deserialise data for storage. {}"},
 
     // Server Admin
     {PurgeDatabase, "Failed to purge database {}"},

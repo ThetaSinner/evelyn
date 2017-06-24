@@ -28,16 +28,22 @@ pub fn insert_user(
 ) -> Option<EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("user");
 
-    let bson_user_model = bson::to_bson(&user_model).unwrap();
+    let bson_user_model = bson::to_bson(&user_model);
 
-    if let bson::Bson::Document(document) = bson_user_model {
-        match collection.insert_one(document, None) {
-            Ok(_) => None,
-            Err(e) => Some(EvelynDatabaseError::InsertUser(e)),
-        }
-    } else {
-        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+    match bson_user_model {
+        Ok(x) =>  {
+            if let bson::Bson::Document(document) = x {
+                match collection.insert_one(document, None) {
+                    Ok(_) => None,
+                    Err(e) => Some(EvelynDatabaseError::InsertUser(e)),
+                }
+            } else {
+                Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+            }
+        },
+        Err(e) => Some(EvelynDatabaseError::BSONEncodeFailed(e))
     }
+
 }
 
 pub fn find_user(
@@ -50,12 +56,16 @@ pub fn find_user(
     let result = collection.find_one(Some(query), None);
 
     match result {
-        Ok(r) => {
-            if r.is_some() {
-                Ok(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
-            } else {
-                // TODO fix me.
-                Ok(None)
+        Ok(result_unwrap) => {
+            match result_unwrap {
+                Some(item) => {
+                    match bson::from_bson(bson::Bson::Document(item)) {
+                        Ok(bson_obj) => Ok(Some(bson_obj)),
+                        Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
+                    }
+                },
+                // Todo: fix again
+                None => Ok(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
@@ -72,12 +82,16 @@ pub fn find_user_by_id(
     let result = collection.find_one(Some(query), None);
 
     match result {
-        Ok(r) => {
-            if r.is_some() {
-                Ok(bson::from_bson(bson::Bson::Document(r.unwrap())).unwrap())
-            } else {
-                // TODO fix me.
-                Ok(None)
+        Ok(result_unwrap) => {
+            match result_unwrap {
+                Some(item) => {
+                    match bson::from_bson(bson::Bson::Document(item)) {
+                        Ok(bson_obj) => Ok(Some(bson_obj)),
+                        Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
+                    }
+                },
+                // Todo: fix again
+                None => Ok(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
