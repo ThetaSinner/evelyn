@@ -88,13 +88,20 @@ pub fn lookup_todo_lists(
 
     match cursor {
         Ok(cursor) => {
-            Ok(cursor
-                   .map(|x| {
+            Ok(cursor.filter_map(|x| {
                 match x {
-                    Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                    Ok(x) => {
+                        match bson::from_bson(bson::Bson::Document(x)) {
+                            Ok(obj) => obj,
+                            Err(e) => {
+                                error!("BSON Serialize error in lookup todo lists {}", e);
+                                None        
+                            }
+                        }
+                    },
                     Err(e) => {
-                        println!("Database error in lookup todo lists {}", e);
-                        panic!() // need a better way to handle this ideally.
+                        error!("Database error in lookup todo lists {}", e);
+                        None
                     },
                 }
             })
@@ -117,7 +124,10 @@ pub fn lookup_todo_list(
     match collection.find_one(Some(query), None) {
         Ok(result) => {
             if let Some(result) = result {
-                Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
+                match bson::from_bson(bson::Bson::Document(result)) {
+                    Ok(obj) => Ok(obj),
+                    Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
+                }
             } else {
                 Err(EvelynDatabaseError::TodoListNotFound(EvelynBaseError::NothingElse))
             }
