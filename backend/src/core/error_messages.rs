@@ -248,6 +248,8 @@ pub enum EvelynCoreError {
     // Agile: Heirarchy
     AgileHeirarcyInvalidLink(EvelynBaseError),
     FailedToMakeAgileHeirarchyLink(EvelynDatabaseError),
+    FailedToLookupExistingAgileHeirarchyLinksTo(EvelynDatabaseError),
+    FailedToRemoveAgileHeirarchyLink(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -303,6 +305,8 @@ EvelynErrorDisplay!{
     // Agile: Heirarchy
     {AgileHeirarcyInvalidLink, "Invalid link: {}"},
     {FailedToMakeAgileHeirarchyLink, "Failed to make agile heirarchy link: {}"},
+    {FailedToLookupExistingAgileHeirarchyLinksTo, "Failed to lookup existing links to: {}"},
+    {FailedToRemoveAgileHeirarchyLink, "Failed to remove agile heirarchy link: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -358,6 +362,8 @@ pub enum EvelynDatabaseError {
 
     // Agile: Heirarchy
     InsertAgileHeirarchyLink(MongoDbError),
+    LookupAgileHeirarchyLinkTo(MongoDbError),
+    RemoveAgileHeirarchyLinksById(MongoDbError),
 
     // Calendar
     InsertCalendarEvent(MongoDbError),
@@ -414,6 +420,8 @@ EvelynErrorDisplay!{
 
     // Agile: Heirarchy
     {InsertAgileHeirarchyLink, "Failed to insert agile heirarchy link: {}"},
+    {LookupAgileHeirarchyLinkTo, "Failed to lookup link to: {}"},
+    {RemoveAgileHeirarchyLinksById, "Failed to remove links by id: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}

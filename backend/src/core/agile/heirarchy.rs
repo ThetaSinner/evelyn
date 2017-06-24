@@ -30,6 +30,12 @@ fn check_link(
         (heirarchy_model::LinkFromTypeNameExternalModel::Sprint, heirarchy_model::LinkToTypeNameExternalModel::Story) => {
             Ok((heirarchy_model::LinkFromTypeNameModel::Sprint, heirarchy_model::LinkToTypeNameModel::Story))
         },
+        (heirarchy_model::LinkFromTypeNameExternalModel::Sprint, heirarchy_model::LinkToTypeNameExternalModel::Task) => {
+            Ok((heirarchy_model::LinkFromTypeNameModel::Sprint, heirarchy_model::LinkToTypeNameModel::Task))
+        },
+        (heirarchy_model::LinkFromTypeNameExternalModel::Story, heirarchy_model::LinkToTypeNameExternalModel::Task) => {
+            Ok((heirarchy_model::LinkFromTypeNameModel::Story, heirarchy_model::LinkToTypeNameModel::Task))
+        },
         _ => {
             Err(EvelynCoreError::AgileHeirarcyInvalidLink(EvelynBaseError::NothingElse))
         },
@@ -54,11 +60,21 @@ pub fn make_link(
 
             let ds = processor_data.data_store.clone();
 
-            match heirarchy_data::insert_link(&ds, &link_model) {
-                None => Ok(heirarchy_model::MakeLinkResponseModel {
-                    error: None,
-                }),
-                Some(e) => Err(EvelynCoreError::FailedToMakeAgileHeirarchyLink(e)),
+            match heirarchy_data::lookup_link_to(&ds, &link_model.link_to_id) {
+                Ok(links_to_id) => {
+                    match heirarchy_data::insert_link(&ds, &link_model) {
+                        None => {
+                            match heirarchy_data::remove_by_db_ids(&ds, links_to_id) {
+                                None => Ok(heirarchy_model::MakeLinkResponseModel {
+                                    error: None,
+                                }),
+                                Some(e) => Err(EvelynCoreError::FailedToRemoveAgileHeirarchyLink(e))
+                            }
+                        },
+                        Some(e) => Err(EvelynCoreError::FailedToMakeAgileHeirarchyLink(e)),
+                    }
+                },
+                Err(e) => Err(EvelynCoreError::FailedToLookupExistingAgileHeirarchyLinksTo(e))
             }
         },
         Err(e) => {

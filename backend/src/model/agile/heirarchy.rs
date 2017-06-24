@@ -72,3 +72,9 @@ pub struct LinkModel {
     pub link_from_id: String,
     pub link_to_id: String,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LinkDbIdModel {
+    pub _id: String,
+}

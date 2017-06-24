@@ -15,9 +15,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model::agile::heirarchy as heirarchy_model;
 use mongodb::{Client, ThreadedClient};
+use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
 
 pub fn insert_link(
@@ -32,3 +34,69 @@ pub fn insert_link(
         EvelynDatabaseError::InsertAgileHeirarchyLink
     )
 }
+
+pub fn lookup_link_to(
+    client: &Client,
+    link_to_id: &String,
+) -> Result<Vec<heirarchy_model::LinkDbIdModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_link");
+
+    let filter = doc!{"linkToId" => link_to_id};
+
+    let mut find_options = FindOptions::new();
+
+    let mut projection = Document::new();
+    projection.insert("_id", Bson::I32(1));
+    find_options.projection = Some(projection);
+
+    let cursor = collection.find(Some(filter), Some(find_options));
+
+    match cursor {
+        Ok(cursor) => {
+            Ok(cursor.filter_map(|x| {
+                match x {
+                    Ok(x) => {
+                        match x.get("_id") {
+                            Some(&Bson::ObjectId(ref id)) => Some(heirarchy_model::LinkDbIdModel {
+                                _id: id.to_hex(),
+                            }),
+                            _ => None,
+                        }
+                    },
+                    Err(e) => {
+                        error!("Database error in lookup agile heirarchy link to {}", e);
+                        None
+                    },
+                }
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupAgileHeirarchyLinkTo(e)),
+    }
+}
+
+pub fn remove_by_db_ids(
+    client: &Client,
+    ids: Vec<heirarchy_model::LinkDbIdModel>,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_link");
+
+    let mut link_ids = bson::Array::new();
+    for id in ids {
+        debug!("{}", id._id);
+        link_ids.push(Bson::ObjectId(
+            bson::oid::ObjectId::with_string(id._id.as_ref()).unwrap()
+        ));
+    }
+
+    let mut link_in_filter = Document::new();
+    link_in_filter.insert("$in", link_ids);
+
+    let mut filter = Document::new();
+    filter.insert("_id", link_in_filter);
+
+    match collection.delete_many(filter, None) {
+        Ok(_) => None,
+        Err(e) => Some(EvelynDatabaseError::RemoveAgileHeirarchyLinksById(e)),
+    }
+}
+
