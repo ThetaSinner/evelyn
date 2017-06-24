@@ -21,6 +21,7 @@ use model::agile::heirarchy as heirarchy_model;
 use mongodb::{Client, ThreadedClient};
 use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
+use serde_json::to_string;
 
 pub fn insert_link(
     client: &Client,
@@ -100,3 +101,32 @@ pub fn remove_by_db_ids(
     }
 }
 
+pub fn lookup_links(
+    client: &Client,
+    link_from_type_name: &heirarchy_model::LinkFromTypeNameModel,
+    link_from_id: &String,
+) -> Result<Vec<heirarchy_model::LinkModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_link");
+
+    let type_name = to_string(link_from_type_name).unwrap();
+    let filter = doc!{"linkFromTypeName" => type_name, "linkFromId" => link_from_id};
+
+    let cursor = collection.find(Some(filter), None);
+
+    match cursor {
+        Ok(cursor) => {
+            Ok(cursor.filter_map(|x| {
+                match x {
+                    Ok(x) => {
+                        Some(bson::from_bson(bson::Bson::Document(x)).unwrap())
+                    },
+                    Err(e) => {
+                        error!("Database error in lookup agile heirarchy links {}", e);
+                        None
+                    },
+                }
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupAgileHeirarchyLinks(e)),
+    }
+}

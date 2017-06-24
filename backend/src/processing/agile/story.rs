@@ -51,3 +51,32 @@ pub fn create_processor(
         },
     }
 }
+
+pub fn lookup_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(story_model::LookupRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match story::lookup(request_model, processor_data) {
+                Ok(response) => {
+                    model_to_router_output!(response)
+                },
+                Err(e) => {
+                    model_to_router_output!(story_model::LookupResponseModel {
+                        stories: Vec::new(),
+                        error: service_error_to_model!(EvelynServiceError::LookupAgileStories(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(story_model::LookupResponseModel {
+                stories: Vec::new(),
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}
