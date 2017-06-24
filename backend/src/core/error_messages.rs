@@ -329,6 +329,7 @@ EvelynErrorDisplay!{
 pub enum EvelynDatabaseError {
     SerialisationFailed(EvelynBaseError),
     BSONEncodeFailed(bson::EncoderError),
+    BSONDecodeFailed(bson::DecoderError),
 
     // Server Admin
     PurgeDatabase(MongoDbError),
@@ -338,6 +339,7 @@ pub enum EvelynDatabaseError {
     InsertUser(MongoDbError),
     LookupUser(MongoDbError),
     SearchForUsers(MongoDbError),
+    UserNotFound(EvelynBaseError),
 
     // User group
     InsertUserGroup(MongoDbError),
@@ -391,6 +393,7 @@ EvelynErrorDisplay!{
     // Processing
     {SerialisationFailed, "Failed to serialise data for storage. {}"},
     {BSONEncodeFailed, "Failed to serialise data for storage. {}"},
+    {BSONDecodeFailed, "Failed to deserialise data for storage. {}"},
 
     // Server Admin
     {PurgeDatabase, "Failed to purge database {}"},
@@ -400,6 +403,7 @@ EvelynErrorDisplay!{
     {InsertUser, "Failed to create record for new user: {}"},
     {LookupUser, "Failed to lookup user: {}"},
     {SearchForUsers, "Failed to search for users: {}"},
+    {UserNotFound, "No matching User found: {}"},
 
     // User group
     {InsertUserGroup, "Failed to create user group: {}"},
