@@ -65,7 +65,7 @@ pub fn find_user(
                     }
                 },
                 // Todo: fix again
-                None => Some(None)
+                None => Ok(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
@@ -91,7 +91,7 @@ pub fn find_user_by_id(
                     }
                 },
                 // Todo: fix again
-                None => Some(None)
+                None => Ok(None)
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupUser(e)),
