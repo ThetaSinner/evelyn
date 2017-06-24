@@ -14,8 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
-pub mod sprint;
-pub mod heirarchy;
-pub mod story;
+use bson;
+use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
+use model::agile::story as story_model;
+use mongodb::{Client, ThreadedClient};
+use mongodb::db::ThreadedDatabase;
+
+pub fn insert_story(
+    client: &Client,
+    story_model: &story_model::StoryModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_story");
+
+    insert_model!(
+        collection,
+        story_model,
+        EvelynDatabaseError::InsertAgileStory
+    )
+}

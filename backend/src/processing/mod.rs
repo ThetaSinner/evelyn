@@ -70,6 +70,8 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/agile/task/create", agile::task::create_processor);
 
+    router.add_rule("/agile/story/create", agile::story::create_processor);
+
     router.add_rule("/agile/sprint/create", agile::sprint::create_processor);
     
     router.add_rule("/agile/heirarchy/link", agile::heirarchy::link_processor);

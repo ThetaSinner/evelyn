@@ -14,8 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod project;
-pub mod task;
-pub mod sprint;
-pub mod heirarchy;
-pub mod story;
+use model::ErrorModel;
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CreateStoryRequestModel {
+    pub token: String,
+    pub project_id: String,
+    pub title: String,
+    pub description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct CreateStoryResponseModel {
+    pub error: Option<ErrorModel>,
+    pub story_id: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StoryModel {
+    pub story_id: String,
+    pub created_by_user_id: String,
+    pub date_created: String,
+    pub project_id: String,
+    pub title: String,
+    pub description: String,
+}

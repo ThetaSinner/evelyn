@@ -128,6 +128,9 @@ pub enum EvelynServiceError {
     // Agile: Task
     CreateAgileTask(EvelynCoreError),
 
+    // Agile: Story
+    CreateAgileStory(EvelynCoreError),
+
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
 
@@ -189,6 +192,9 @@ EvelynErrorDisplay!{
     // Agile: Task
     {CreateAgileTask, "1006101", "Failed to create agile task"},
 
+    // Agile: Story
+    {CreateAgileStory, "1006401", "Failed to create agile story"},
+
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
 
@@ -241,6 +247,9 @@ pub enum EvelynCoreError {
 
     // Agile: Task
     FailedToCreateAgileTask(EvelynDatabaseError),
+
+    // Agile: Story
+    FailedToCreateAgileStory(EvelynDatabaseError),
 
     // Agile: Sprint
     FailedToCreateAgileSprint(EvelynDatabaseError),
@@ -298,6 +307,9 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {FailedToCreateAgileTask, "Failed to create agile task: {}"},
+
+    // Agile: Story
+    {FailedToCreateAgileStory, "Failed to create agile story: {}"},
 
     // Agile: Sprint
     {FailedToCreateAgileSprint, "Failed to create agile sprint: {}"},
@@ -357,6 +369,9 @@ pub enum EvelynDatabaseError {
     // Agile: Task 
     InsertAgileTask(MongoDbError),
 
+    // Agile: Story
+    InsertAgileStory(MongoDbError),
+
     // Agile: Sprint
     InsertAgileSprint(MongoDbError),
 
@@ -414,6 +429,9 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {InsertAgileTask, "Failed to insert agile task: {}"},
+
+    // Agile: Story
+    {InsertAgileStory, "Failed to insert agile story: {}"},
 
     // Agile: Sprint
     {InsertAgileSprint, "Failed to insert agile sprint: {}"},
