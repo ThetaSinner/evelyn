@@ -18,6 +18,9 @@ use core::error_messages::EvelynCoreError;
 use data::agile::story as story_data;
 use model;
 use model::agile::story as story_model;
+use core::agile::heirarchy;
+use model::agile::heirarchy as heirarchy_model;
+use data::agile::task as task_data;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -50,5 +53,66 @@ pub fn create(
             error: None,
         }),
         Some(e) => Err(EvelynCoreError::FailedToCreateAgileStory(e)),
+    }
+}
+
+pub fn lookup(
+    request_model: story_model::LookupRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<story_model::LookupResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match story_data::lookup_stories(&ds, &request_model.project_id) {
+        Ok(result) => Ok(story_model::LookupResponseModel {
+            stories: result.into_iter().map(|x| {
+                let story_id = x.story_id;
+
+                let links = heirarchy::lookup_links(heirarchy_model::LookupLinksRequestModel {
+                    link_from_type_name: heirarchy_model::LinkFromTypeNameExternalModel::Story,
+                    link_from_id: story_id.to_owned(),
+                }, processor_data.clone());
+
+                let tasks = match links {
+                    Ok(result) => {
+                        result.links.into_iter().filter_map(|x| {
+                            let task = task_data::find_task_by_id(&ds, &x.link_to_id);
+
+                            match task {
+                                Ok(task) => {
+                                    if let Some(task) = task {
+                                        Some(story_model::TaskExternalModel {
+                                            task_id: task.task_id,
+                                            title: task.title,
+                                        })
+                                    }
+                                    else {
+                                        // TODO warn.
+                                        None
+                                    }
+                                },
+                                Err(e) => {
+                                    warn!("Database error while lookup up linked task for story [{}], {}", story_id, e);
+                                    None
+                                }
+                            }
+                        }).collect()
+                    },
+                    Err(e) => {
+                        warn!("Error while looking up linked tasks for story [{}], {}", story_id, e);
+                        Vec::new()
+                    }
+                };
+                
+                story_model::StoryExternalModel {
+                    story_id: story_id.to_owned(),
+                    project_id: x.project_id,
+                    title: x.title,
+                    description: x.description,
+                    tasks: tasks,
+                }
+            }).collect(),
+            error: None,
+        }),
+        Err(e) => Err(EvelynCoreError::FailedToCreateAgileStory(e)),
     }
 }

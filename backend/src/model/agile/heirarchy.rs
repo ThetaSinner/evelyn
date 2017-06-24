@@ -78,3 +78,26 @@ pub struct LinkModel {
 pub struct LinkDbIdModel {
     pub _id: String,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupLinksRequestModel {
+    pub link_from_type_name: LinkFromTypeNameExternalModel,
+    pub link_from_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupLinksResponseModel {
+    pub links: Vec<LinkExternalModel>,
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LinkExternalModel {
+    pub link_from_type_name: LinkFromTypeNameModel,
+    pub link_to_type_name: LinkToTypeNameModel,
+    pub link_from_id: String,
+    pub link_to_id: String,
+}

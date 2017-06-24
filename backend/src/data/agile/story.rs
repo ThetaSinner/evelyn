@@ -32,3 +32,28 @@ pub fn insert_story(
         EvelynDatabaseError::InsertAgileStory
     )
 }
+
+pub fn lookup_stories(
+    client: &Client,
+    project_id: &String,
+) -> Result<Vec<story_model::StoryModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("simpletask");
+
+    let query = doc!{"projectId" => project_id};
+
+    let cursor = collection.find(Some(query), None);
+
+    match cursor {
+        Ok(c) => {
+            Ok(c.map(|x| match x {
+                Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                Err(e) => {
+                    println!("Database error in lookup agile stories {}", e);
+                    panic!()
+                },
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupAgileStories(e)),
+    }
+}
+

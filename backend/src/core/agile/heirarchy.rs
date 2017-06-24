@@ -82,3 +82,33 @@ pub fn make_link(
         },
     }
 }
+
+pub fn lookup_links(
+    request_model: heirarchy_model::LookupLinksRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<heirarchy_model::LookupLinksResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    let type_name = match request_model.link_from_type_name {
+        heirarchy_model::LinkFromTypeNameExternalModel::Sprint => heirarchy_model::LinkFromTypeNameModel::Sprint,
+        heirarchy_model::LinkFromTypeNameExternalModel::Story => heirarchy_model::LinkFromTypeNameModel::Story,
+        heirarchy_model::LinkFromTypeNameExternalModel::Task => heirarchy_model::LinkFromTypeNameModel::Task,
+    };
+
+    match heirarchy_data::lookup_links(&ds, &type_name, &request_model.link_from_id) {
+        Ok(links) => {
+           Ok(heirarchy_model::LookupLinksResponseModel {
+               links: links.into_iter().map(|x| {
+                   heirarchy_model::LinkExternalModel {
+                       link_from_type_name: x.link_from_type_name,
+                       link_from_id: x.link_from_id,
+                       link_to_type_name: x.link_to_type_name,
+                       link_to_id: x.link_to_id,
+                   }
+               }).collect(),
+               error: None,
+           })
+        },
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileHeirarchyLinks(e))
+    }
+}

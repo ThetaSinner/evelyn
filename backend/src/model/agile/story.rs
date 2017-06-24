@@ -42,3 +42,34 @@ pub struct StoryModel {
     pub title: String,
     pub description: String,
 }
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupResponseModel {
+    pub error: Option<ErrorModel>,
+    pub stories: Vec<StoryExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct StoryExternalModel {
+    pub story_id: String,
+    pub project_id: String,
+    pub title: String,
+    pub description: String,
+    pub tasks: Vec<TaskExternalModel>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct TaskExternalModel {
+    pub task_id: String,
+    pub title: String,
+}

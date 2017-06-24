@@ -130,6 +130,7 @@ pub enum EvelynServiceError {
 
     // Agile: Story
     CreateAgileStory(EvelynCoreError),
+    LookupAgileStories(EvelynCoreError),
 
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
@@ -194,6 +195,7 @@ EvelynErrorDisplay!{
 
     // Agile: Story
     {CreateAgileStory, "1006401", "Failed to create agile story"},
+    {LookupAgileStories, "1006402", "Failed to lookup agile stories"},
 
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
@@ -259,6 +261,7 @@ pub enum EvelynCoreError {
     FailedToMakeAgileHeirarchyLink(EvelynDatabaseError),
     FailedToLookupExistingAgileHeirarchyLinksTo(EvelynDatabaseError),
     FailedToRemoveAgileHeirarchyLink(EvelynDatabaseError),
+    FailedToLookupAgileHeirarchyLinks(EvelynDatabaseError),
 
     // Calendar
     FailedToAddCalendarEvent(EvelynDatabaseError),
@@ -319,6 +322,7 @@ EvelynErrorDisplay!{
     {FailedToMakeAgileHeirarchyLink, "Failed to make agile heirarchy link: {}"},
     {FailedToLookupExistingAgileHeirarchyLinksTo, "Failed to lookup existing links to: {}"},
     {FailedToRemoveAgileHeirarchyLink, "Failed to remove agile heirarchy link: {}"},
+    {FailedToLookupAgileHeirarchyLinks, "Failed to lookup agile heirarchy links: {}"},
 
     // Calendar
     {FailedToAddCalendarEvent, "Failed to add calendar event: {}"}
@@ -368,9 +372,11 @@ pub enum EvelynDatabaseError {
 
     // Agile: Task 
     InsertAgileTask(MongoDbError),
+    LookupAgileTaskById(MongoDbError),
 
     // Agile: Story
     InsertAgileStory(MongoDbError),
+    LookupAgileStories(MongoDbError),
 
     // Agile: Sprint
     InsertAgileSprint(MongoDbError),
@@ -379,6 +385,7 @@ pub enum EvelynDatabaseError {
     InsertAgileHeirarchyLink(MongoDbError),
     LookupAgileHeirarchyLinkTo(MongoDbError),
     RemoveAgileHeirarchyLinksById(MongoDbError),
+    LookupAgileHeirarchyLinks(MongoDbError),
 
     // Calendar
     InsertCalendarEvent(MongoDbError),
@@ -429,9 +436,11 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {InsertAgileTask, "Failed to insert agile task: {}"},
+    {LookupAgileTaskById, "Failed to lookup agile task by id: {}"},
 
     // Agile: Story
     {InsertAgileStory, "Failed to insert agile story: {}"},
+    {LookupAgileStories, "Failed to lookup agile stories: {}"},
 
     // Agile: Sprint
     {InsertAgileSprint, "Failed to insert agile sprint: {}"},
@@ -440,6 +449,7 @@ EvelynErrorDisplay!{
     {InsertAgileHeirarchyLink, "Failed to insert agile heirarchy link: {}"},
     {LookupAgileHeirarchyLinkTo, "Failed to lookup link to: {}"},
     {RemoveAgileHeirarchyLinksById, "Failed to remove links by id: {}"},
+    {LookupAgileHeirarchyLinks, "Failed to lookup agile heirarchy links: {}"},
 
     // Calendar
     {InsertCalendarEvent, "Failed to insert calendar event: {}"}
