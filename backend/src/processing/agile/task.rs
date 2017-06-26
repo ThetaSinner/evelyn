@@ -51,3 +51,32 @@ pub fn create_processor(
         },
     }
 }
+
+pub fn lookup_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(task_model::LookupTaskRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match task::lookup(request_model, processor_data) {
+                Ok(response) => {
+                    model_to_router_output!(response)
+                },
+                Err(e) => {
+                    model_to_router_output!(task_model::LookupTaskResponseModel {
+                        task: None,
+                        error: service_error_to_model!(EvelynServiceError::LookupAgileTask(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(task_model::LookupTaskResponseModel {
+                task: None,
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

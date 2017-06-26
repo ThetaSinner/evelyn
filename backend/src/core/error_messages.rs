@@ -128,6 +128,7 @@ pub enum EvelynServiceError {
 
     // Agile: Task
     CreateAgileTask(EvelynCoreError),
+    LookupAgileTask(EvelynCoreError),
 
     // Agile: Story
     CreateAgileStory(EvelynCoreError),
@@ -193,6 +194,7 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {CreateAgileTask, "1006101", "Failed to create agile task"},
+    {LookupAgileTask, "1006101", "Failed to lookup agile task"},
 
     // Agile: Story
     {CreateAgileStory, "1006401", "Failed to create agile story"},
@@ -250,6 +252,8 @@ pub enum EvelynCoreError {
 
     // Agile: Task
     FailedToCreateAgileTask(EvelynDatabaseError),
+    FailedToLookupAgileTask(EvelynDatabaseError),
+    AgileTaskNotFound(EvelynBaseError),
 
     // Agile: Story
     FailedToCreateAgileStory(EvelynDatabaseError),
@@ -311,6 +315,8 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {FailedToCreateAgileTask, "Failed to create agile task: {}"},
+    {FailedToLookupAgileTask, "Failed to lookup agile task: {}"},
+    {AgileTaskNotFound, "Agile task not found: {}"},
 
     // Agile: Story
     {FailedToCreateAgileStory, "Failed to create agile story: {}"},

@@ -44,3 +44,27 @@ pub struct TaskModel {
     pub description: String,
     pub original_estimate: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupTaskRequestModel {
+    pub token: String,
+    pub task_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupTaskResponseModel {
+    pub error: Option<ErrorModel>,
+    pub task: Option<TaskExternalModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct TaskExternalModel {
+    pub task_id: String,
+    pub project_id: String,
+    pub title: String,
+    pub description: String,
+    pub original_estimate: String,
+}

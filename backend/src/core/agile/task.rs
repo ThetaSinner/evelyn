@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use core::error_messages::EvelynCoreError;
+use core::error_messages::{EvelynCoreError, EvelynBaseError};
 use data::agile::task as task_data;
 use model;
 use model::agile::task as task_model;
@@ -54,5 +54,33 @@ pub fn create(
             error: None,
         }),
         Some(e) => Err(EvelynCoreError::FailedToCreateAgileTask(e)),
+    }
+}
+
+pub fn lookup(
+    request_model: task_model::LookupTaskRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<task_model::LookupTaskResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match task_data::find_task_by_id(&ds, &request_model.task_id) {
+        Ok(result) => {
+            if let Some(result) = result {
+                Ok(task_model::LookupTaskResponseModel {
+                    task: Some(task_model::TaskExternalModel {
+                        task_id: result.task_id,
+                        project_id: result.project_id,
+                        title: result.title,
+                        description: result.description,
+                        original_estimate: result.original_estimate,
+                    }),
+                    error: None,
+                })
+            }
+            else {
+                Err(EvelynCoreError::AgileTaskNotFound(EvelynBaseError::NothingElse))
+            }
+        },
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileTask(e)),
     }
 }
