@@ -25,13 +25,13 @@ pub mod agile;
 use core::error_messages;
 use std::error::Error;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct ErrorResponseModel {
     pub error: ErrorModel,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct ErrorModel {
     pub error_code: String,
@@ -47,7 +47,7 @@ impl From<error_messages::EvelynServiceError> for ErrorModel {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SessionTokenModel {
     pub user_id: String,
 

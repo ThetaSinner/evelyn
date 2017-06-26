@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct PurgeRequestModel {
     pub token: String,
@@ -24,7 +24,7 @@ pub struct PurgeRequestModel {
     pub target: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct PurgeResponseModel {
     pub error: Option<ErrorModel>,

@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CalendarAddEventRequestModel {
     pub token: String,
@@ -25,13 +25,13 @@ pub struct CalendarAddEventRequestModel {
     pub title: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CalendarAddEventResponseModel {
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CalendarEventModel {
     pub user_id: String,
@@ -41,7 +41,7 @@ pub struct CalendarEventModel {
     pub title: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CalendarLookupRequestModel {
     pub token: String,
@@ -49,7 +49,7 @@ pub struct CalendarLookupRequestModel {
     pub time_range_end: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CalendarLookupResponseModel {
     pub error: ErrorModel,

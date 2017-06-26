@@ -83,7 +83,6 @@ pub fn remove_by_db_ids(
 
     let mut link_ids = bson::Array::new();
     for id in ids {
-        debug!("{}", id._id);
         link_ids.push(Bson::ObjectId(
             bson::oid::ObjectId::with_string(id._id.as_ref()).unwrap()
         ));
@@ -108,7 +107,10 @@ pub fn lookup_links(
 ) -> Result<Vec<heirarchy_model::LinkModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("agile_link");
 
-    let type_name = to_string(link_from_type_name).unwrap();
+    let type_name = to_string(link_from_type_name)
+        .unwrap()
+        .trim_matches('\"')
+        .to_owned();
     let filter = doc!{"linkFromTypeName" => type_name, "linkFromId" => link_from_id};
 
     let cursor = collection.find(Some(filter), None);

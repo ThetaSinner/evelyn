@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub enum LinkFromTypeNameExternalModel {
     Sprint,
@@ -24,29 +24,29 @@ pub enum LinkFromTypeNameExternalModel {
     Task,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub enum LinkToTypeNameExternalModel {
     Story,
     Task,
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub enum LinkFromTypeNameModel {
     Sprint,
     Story,
     Task,
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub enum LinkToTypeNameModel {
     Story,
     Task,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct MakeLinkRequestModel {
     pub token: String,
@@ -56,13 +56,13 @@ pub struct MakeLinkRequestModel {
     pub link_to_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct MakeLinkResponseModel {
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkModel {
     pub created_by_user_id: String,
@@ -73,27 +73,27 @@ pub struct LinkModel {
     pub link_to_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkDbIdModel {
     pub _id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupLinksRequestModel {
     pub link_from_type_name: LinkFromTypeNameExternalModel,
     pub link_from_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupLinksResponseModel {
     pub links: Vec<LinkExternalModel>,
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkExternalModel {
     pub link_from_type_name: LinkFromTypeNameModel,

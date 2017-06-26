@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateTaskRequestModel {
     pub token: String,
@@ -26,14 +26,14 @@ pub struct CreateTaskRequestModel {
     pub original_estimate: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateTaskResponseModel {
     pub error: Option<ErrorModel>,
     pub task_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TaskModel {
     pub task_id: String,

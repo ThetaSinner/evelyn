@@ -18,7 +18,7 @@ use model::ErrorModel;
 
 pub mod member;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateUserGroupRequestModel {
     pub token: String,
@@ -26,14 +26,14 @@ pub struct CreateUserGroupRequestModel {
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateUserGroupResponseModel {
     pub user_group_id: Option<String>,
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct UserGroupModel {
     pub user_group_id: String,
@@ -43,13 +43,13 @@ pub struct UserGroupModel {
     pub members: Vec<member::UserGroupMemberModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupUserGroupsRequestModel {
     pub token: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UserGroupsExternalModel {
     pub user_group_id: String,
@@ -57,14 +57,14 @@ pub struct UserGroupsExternalModel {
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupUserGroupsResponseModel {
     pub user_groups: Vec<UserGroupsExternalModel>,
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct UserGroupsModel {
     pub user_group_id: String,
@@ -72,21 +72,21 @@ pub struct UserGroupsModel {
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupUserGroupRequestModel {
     pub token: String,
     pub user_group_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupUserGroupResponseModel {
     pub user_group: Option<UserGroupExternalModel>,
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UserGroupExternalModel {
     pub name: String,

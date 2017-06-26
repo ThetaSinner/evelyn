@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateSprintRequestModel {
     pub token: String,
@@ -26,14 +26,14 @@ pub struct CreateSprintRequestModel {
     pub end_date: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateSprintResponseModel {
     pub error: Option<ErrorModel>,
     pub sprint_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SprintModel {
     pub sprint_id: String,

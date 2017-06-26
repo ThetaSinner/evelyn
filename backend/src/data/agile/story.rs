@@ -37,7 +37,7 @@ pub fn lookup_stories(
     client: &Client,
     project_id: &String,
 ) -> Result<Vec<story_model::StoryModel>, EvelynDatabaseError> {
-    let collection = client.db("evelyn").collection("simpletask");
+    let collection = client.db("evelyn").collection("agile_story");
 
     let query = doc!{"projectId" => project_id};
 

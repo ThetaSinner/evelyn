@@ -16,21 +16,21 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TodoListItemModel {
     pub text: String,
     pub is_done: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct TodoListItemExternalModel {
     pub text: String,
     pub is_done: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct AddItemTodoListRequestModel {
     pub token: String,
@@ -38,13 +38,13 @@ pub struct AddItemTodoListRequestModel {
     pub todo_list_item: TodoListItemExternalModel,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct AddItemTodoListResponseModel {
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AddItemTodoListModel {
     pub user_id: String,
@@ -52,7 +52,7 @@ pub struct AddItemTodoListModel {
     pub todo_list_item: TodoListItemModel,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdateItemTodoListRequestModel {
     pub token: String,
@@ -61,13 +61,13 @@ pub struct UpdateItemTodoListRequestModel {
     pub is_done: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdateItemTodoListResponseModel {
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateTodoListItemModel {
     pub user_id: String,

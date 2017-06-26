@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateSimpleTaskRequestModel {
     pub token: String,
@@ -25,14 +25,14 @@ pub struct CreateSimpleTaskRequestModel {
     pub due_date: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateSimpleTaskResponseModel {
     pub task_id: Option<String>,
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SimpleTaskModel {
     pub user_id: String,
@@ -43,7 +43,7 @@ pub struct SimpleTaskModel {
     pub completed: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct SimpleTaskExternalModel {
     pub task_id: String,
@@ -53,7 +53,7 @@ pub struct SimpleTaskExternalModel {
     pub completed: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskRequestModel {
     pub token: String,
@@ -61,14 +61,14 @@ pub struct LookupSimpleTaskRequestModel {
     pub show_completed: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,
     pub simple_tasks: Vec<SimpleTaskExternalModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SimpleTaskLookupModel {
     pub user_id: String,
@@ -76,7 +76,7 @@ pub struct SimpleTaskLookupModel {
     pub show_completed: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdateSimpleTaskRequestModel {
     pub token: String,
@@ -87,13 +87,13 @@ pub struct UpdateSimpleTaskRequestModel {
     pub new_completed: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct UpdateSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SimpleTaskUpdateModel {
     pub user_id: String,
@@ -104,14 +104,14 @@ pub struct SimpleTaskUpdateModel {
     pub completed: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RemoveSimpleTaskRequestModel {
     pub token: String,
     pub task_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct RemoveSimpleTaskResponseModel {
     pub error: Option<ErrorModel>,

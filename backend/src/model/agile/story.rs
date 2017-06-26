@@ -16,7 +16,7 @@
 
 use model::ErrorModel;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateStoryRequestModel {
     pub token: String,
@@ -25,14 +25,14 @@ pub struct CreateStoryRequestModel {
     pub description: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct CreateStoryResponseModel {
     pub error: Option<ErrorModel>,
     pub story_id: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct StoryModel {
     pub story_id: String,
@@ -43,21 +43,21 @@ pub struct StoryModel {
     pub description: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupRequestModel {
     pub token: String,
     pub project_id: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupResponseModel {
     pub error: Option<ErrorModel>,
     pub stories: Vec<StoryExternalModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct StoryExternalModel {
     pub story_id: String,
@@ -67,7 +67,7 @@ pub struct StoryExternalModel {
     pub tasks: Vec<TaskExternalModel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct TaskExternalModel {
     pub task_id: String,
