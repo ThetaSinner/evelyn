@@ -119,11 +119,19 @@ pub fn search_for_users(
 
     match cursor {
         Ok(c) => {
-            let results: Vec<SearchResult> = c.map(|x| match x {
-               Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+            let results: Vec<SearchResult> = c.filter_map(|x| match x {
+               Ok(x) => {
+                   match bson::from_bson(bson::Bson::Document(x)) {
+                        Ok(obj) => obj,
+                        Err(e) => {
+                            error!("BSON Serialize error in lookup users {}", e);
+                            None        
+                        }
+                    }
+               },
                Err(e) => {
-                   println!("Database error in search for users {}", e);
-                   panic!()
+                    error!("Database error in search for users {}", e);
+                    None
                },
            }).collect();
 

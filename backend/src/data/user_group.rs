@@ -71,17 +71,23 @@ pub fn lookup_user_groups(
 
     match cursor {
         Ok(cursor) => {
-            Ok(cursor
-                   .map(|x| {
+            Ok(cursor.filter_map(|x| {
                 match x {
-                    Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                    Ok(x) => {
+                        match bson::from_bson(bson::Bson::Document(x)) {
+                            Ok(obj) => obj,
+                            Err(e) => {
+                                error!("BSON Serialize error in lookup user groups {}", e);
+                                None        
+                            }
+                        }
+                    },
                     Err(e) => {
-                        println!("Database error in lookup user groups {}", e);
-                        panic!() // need a better way to handle this ideally.
+                        error!("Database error in lookup user groups {}", e);
+                        None
                     },
                 }
-            })
-                   .collect())
+            }).collect())
         },
         Err(e) => Err(EvelynDatabaseError::LookupUserGroups(e)),
     }
@@ -100,7 +106,10 @@ pub fn lookup_user_group(
     match collection.find_one(Some(filter), None) {
         Ok(result) => {
             if let Some(result) = result {
-                Ok(bson::from_bson(bson::Bson::Document(result)).unwrap())
+                match bson::from_bson(bson::Bson::Document(result)) {
+                    Ok(obj) => Ok(obj),
+                    Err(e) => Err(EvelynDatabaseError::BSONDecodeFailed(e))
+                }
             } else {
                 Err(EvelynDatabaseError::UserGroupNotFound(EvelynBaseError::NothingElse))
             }

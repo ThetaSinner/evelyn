@@ -52,13 +52,22 @@ pub fn lookup_simple_tasks(
 
     match cursor {
         Ok(c) => {
-            let docs: Vec<model::simple_task::SimpleTaskModel> = c.map(|x| match x {
-                                                                           Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
-                                                                           Err(e) => {
-                                                                               println!("Database error in lookup simple tasks {}", e);
-                                                                               panic!()
-                                                                           },
-                                                                       })
+            let docs: Vec<model::simple_task::SimpleTaskModel> = 
+                c.filter_map(|x| match x {
+                    Ok(x) => {
+                        match bson::from_bson(bson::Bson::Document(x)) {
+                            Ok(obj) => obj,
+                            Err(e) => {
+                                error!("BSON Serialize error in lookup simple task {}", e);
+                                None        
+                            }
+                        }
+                    },
+                    Err(e) => {
+                        error!("Database error in lookup simple task {}", e);
+                        None
+                    },
+                    })
                 .collect();
             Ok(docs)
         },
