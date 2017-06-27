@@ -56,4 +56,3 @@ pub fn lookup_stories(
         Err(e) => Err(EvelynDatabaseError::LookupAgileStories(e)),
     }
 }
-

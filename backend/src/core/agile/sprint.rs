@@ -18,10 +18,12 @@ use core::error_messages::EvelynCoreError;
 use data::agile::sprint as sprint_data;
 use model;
 use model::agile::sprint as sprint_model;
+use core::agile::project;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 use chrono::prelude::*;
+use std::str::FromStr;
 
 pub fn create(
     request_model: sprint_model::CreateSprintRequestModel,
@@ -33,10 +35,11 @@ pub fn create(
     let sprint_model = sprint_model::SprintModel {
         sprint_id: sprint_id,
         created_by_user_id: session_token_model.user_id,
-        date_created: format!("{}", Utc::now()),
+        date_created: Utc::now().timestamp(),
+        project_id: request_model.project_id,
         title: request_model.title,
-        start_date: request_model.start_date,
-        end_date: request_model.end_date,
+        start_date: DateTime::<Utc>::from_str(request_model.start_date.as_ref()).unwrap().timestamp(),
+        end_date: DateTime::<Utc>::from_str(request_model.end_date.as_ref()).unwrap().timestamp(),
     };
 
     let ds = processor_data.data_store.clone();
@@ -48,4 +51,36 @@ pub fn create(
         }),
         Some(e) => Err(EvelynCoreError::FailedToCreateAgileSprint(e)),
     }
+}
+
+pub fn lookup_active(
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<sprint_model::LookupActiveSprintsResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match project::lookup_projects(session_token_model, processor_data.clone()) {
+        Ok(result) => {
+            let project_ids = result.projects.into_iter().map(|x| {
+                x.project_id
+            }).collect();
+
+            match sprint_data::find_active(&ds, &project_ids) {
+                Ok(result) => Ok(sprint_model::LookupActiveSprintsResponseModel {
+                    sprints: result.into_iter().map(|x| {
+                        sprint_model::SprintExternalModel {
+                            sprint_id: x.sprint_id,
+                            project_id: x.project_id,
+                            title: x.title,
+                            start_date: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(x.start_date, 0), Utc).to_rfc3339(),
+                            end_date: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(x.end_date, 0), Utc).to_rfc3339(),
+                        }
+                    }).collect(),
+                    error: None,
+                }),
+                Err(e) => Err(EvelynCoreError::FailedToCreateAgileSprint(e)),
+            }
+        },
+        Err(e) => Err(e), // Just propogate the error from the other module.
+    }    
 }

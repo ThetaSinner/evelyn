@@ -15,10 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model::agile::sprint as sprint_model;
 use mongodb::{Client, ThreadedClient};
 use mongodb::db::ThreadedDatabase;
+use chrono::prelude::*;
+
+
 
 pub fn insert_sprint(
     client: &Client,
@@ -31,4 +35,44 @@ pub fn insert_sprint(
         sprint_model,
         EvelynDatabaseError::InsertAgileSprint
     )
+}
+
+pub fn find_active(
+    client: &Client,
+    project_ids: &Vec<String>,
+) -> Result<Vec<sprint_model::SprintModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_sprint");
+
+    let mut projects = bson::Array::new();
+    for project in project_ids {
+        projects.push(Bson::String(project.to_owned()));
+    }
+
+    let projects_in_query = doc!{"$in" => projects};
+
+    let mut query = Document::new();
+    query.insert("projectId", projects_in_query);
+
+    let current_time = bson::Bson::I64(Utc::now().timestamp());
+    let after_start_time = current_time.clone();
+    query.insert("startDate", doc!{"$lte" => after_start_time});
+    let before_end_time = current_time.clone();
+    query.insert("endDate", doc!{"$gte" => before_end_time});
+
+    debug!("query: {}", query);
+
+    let cursor = collection.find(Some(query), None);
+
+    match cursor {
+        Ok(c) => {
+            Ok(c.map(|x| match x {
+                Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                Err(e) => {
+                    println!("Database error in lookup agile sprints {}", e);
+                    panic!()
+                },
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupAgileStories(e)),
+    }
 }

@@ -38,8 +38,32 @@ pub struct CreateSprintResponseModel {
 pub struct SprintModel {
     pub sprint_id: String,
     pub created_by_user_id: String,
-    pub date_created: String,
+    pub date_created: i64,
+    pub project_id: String,
+    pub title: String,
+    pub start_date: i64,
+    pub end_date: i64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct SprintExternalModel {
+    pub sprint_id: String,
+    pub project_id: String,
     pub title: String,
     pub start_date: String,
     pub end_date: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupActiveSprintsRequestModel {
+    pub token: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupActiveSprintsResponseModel {
+    pub sprints: Vec<SprintExternalModel>,
+    pub error: Option<ErrorModel>,
 }

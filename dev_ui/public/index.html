@@ -254,11 +254,11 @@
                         request.Token = localStorage.token;
                     }
 
-                    for (var attr in request) {
-                        if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-                            request[attr] = moment(request[attr], moment_date_format).toISOString();
-                        }
-                    }
+                    // for (var attr in request) {
+                    //     if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
+                    //         request[attr] = moment(request[attr], moment_date_format).toISOString();
+                    //     }
+                    // }
 
                     return request;
                 };

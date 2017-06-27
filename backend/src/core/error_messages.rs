@@ -136,6 +136,7 @@ pub enum EvelynServiceError {
 
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
+    LookupActiveAgileSprints(EvelynCoreError),
 
     // Agile: Heirarchy
     MakeAgileHeirarchyLink(EvelynCoreError),
@@ -194,7 +195,7 @@ EvelynErrorDisplay!{
 
     // Agile: Task
     {CreateAgileTask, "1006101", "Failed to create agile task"},
-    {LookupAgileTask, "1006101", "Failed to lookup agile task"},
+    {LookupAgileTask, "1006102", "Failed to lookup agile task"},
 
     // Agile: Story
     {CreateAgileStory, "1006401", "Failed to create agile story"},
@@ -202,6 +203,7 @@ EvelynErrorDisplay!{
 
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
+    {LookupActiveAgileSprints, "1006202", "Failed to lookup active sprints"},
 
     // Agile: Heirarchy
     {MakeAgileHeirarchyLink, "1006301", "Failed to make agile heirarchy link"},

@@ -75,6 +75,7 @@ pub fn load_processors(router: &mut Router) {
     router.add_rule("/agile/story/lookup", agile::story::lookup_processor);
 
     router.add_rule("/agile/sprint/create", agile::sprint::create_processor);
+    router.add_rule("/agile/sprint/lookup/active", agile::sprint::lookup_active_processor);
     
     router.add_rule("/agile/heirarchy/link", agile::heirarchy::link_processor);
 
