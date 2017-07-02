@@ -38,11 +38,14 @@ pub struct CreateTaskResponseModel {
 pub struct TaskModel {
     pub task_id: String,
     pub created_by_user_id: String,
-    pub date_created: String,
+    pub date_created: i64,
+    pub modified_by_user_id: String,
+    pub date_modified: i64,
     pub project_id: String,
     pub title: String,
     pub description: String,
     pub original_estimate: String,
+    pub assignment: Option<AssignmentModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -67,4 +70,47 @@ pub struct TaskExternalModel {
     pub title: String,
     pub description: String,
     pub original_estimate: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct AssignmentExternalModel {
+    pub assigned_to_user_id: String,
+    pub assigned_by_user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AssignmentModel {
+    pub assigned_to_user_id: String,
+    pub assigned_by_user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdateTaskRequestModel {
+    pub token: String,
+    pub task_id: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub original_estimate: Option<String>,
+    pub assignment: Option<AssignmentExternalModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct UpdateTaskResponseModel {
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateTaskModel {
+    pub date_modified: i64,
+    pub modified_by_user_id: String,
+    pub task_id: String,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub original_estimate: Option<String>,
+    pub assignment: Option<AssignmentModel>,
 }

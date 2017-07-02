@@ -14,13 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pub mod user;
-pub mod user_group;
-pub mod token_service;
-pub mod simple_task;
-pub mod todo_list;
-pub mod error_messages;
-pub mod calendar;
-pub mod server_admin;
-pub mod agile;
-pub mod date_time_service;
+use chrono::prelude::*;
+
+pub fn get_timestamp() -> i64 {
+    Utc::now().timestamp()
+}

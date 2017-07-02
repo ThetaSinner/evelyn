@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model::agile::task as task_model;
 use mongodb::{Client, ThreadedClient};
@@ -52,5 +53,45 @@ pub fn find_task_by_id(
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupAgileTaskById(e)),
+    }
+}
+
+pub fn update(
+    client: &Client,
+    update_model: task_model::UpdateTaskModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_task");
+
+    let ref task_id = update_model.task_id;
+    let filter = doc!("taskId" => task_id);
+
+    let mut update_query = Document::new();
+
+    update_query.insert("dateModified", Bson::I64(update_model.date_modified));
+    update_query.insert("modifiedByUserId", Bson::String(update_model.modified_by_user_id));
+
+    if update_model.title.is_some() {
+        update_query.insert("title", Bson::String(update_model.title.unwrap()));
+    }
+    if update_model.description.is_some() {
+        update_query.insert("description", Bson::String(update_model.description.unwrap()));
+    }
+    if update_model.original_estimate.is_some() {
+        update_query.insert("originalEstimate", Bson::String(update_model.original_estimate.unwrap()));
+    }
+    if let Some(assignment) = update_model.assignment {
+        let mut assignment_update_model = Document::new();
+        assignment_update_model.insert("assignedToUserId", Bson::String(assignment.assigned_to_user_id));
+        assignment_update_model.insert("assignedByUserId", Bson::String(assignment.assigned_by_user_id));
+
+        update_query.insert("assignment", assignment_update_model);
+    }
+
+    let mut set_update_query = Document::new();
+    set_update_query.insert("$set", update_query);
+
+    match collection.update_one(filter, set_update_query, None) {
+        Ok(_) => None,
+        Err(e) => Some(EvelynDatabaseError::UpdateAgileTask(e)),
     }
 }

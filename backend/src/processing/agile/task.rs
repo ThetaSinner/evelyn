@@ -80,3 +80,32 @@ pub fn lookup_processor(
         },
     }
 }
+
+pub fn update_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(task_model::UpdateTaskRequestModel, router_input) {
+        Ok(request_model) => {
+            let session_token_model = validate_session!(processor_data, request_model);
+
+            match task::update(request_model, session_token_model, processor_data) {
+                None => {
+                    model_to_router_output!(task_model::UpdateTaskResponseModel {
+                        error: None,    
+                    })
+                },
+                Some(e) => {
+                    model_to_router_output!(task_model::UpdateTaskResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::UpdateAgileTask(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(task_model::UpdateTaskResponseModel {
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

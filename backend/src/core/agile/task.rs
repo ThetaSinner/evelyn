@@ -21,7 +21,7 @@ use model::agile::task as task_model;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
-use chrono::prelude::*;
+use core::date_time_service as dts;
 
 pub fn create(
     request_model: task_model::CreateTaskRequestModel,
@@ -32,8 +32,10 @@ pub fn create(
 
     let task_model = task_model::TaskModel {
         task_id: task_id,
-        created_by_user_id: session_token_model.user_id,
-        date_created: format!("{}", Utc::now()),
+        created_by_user_id: session_token_model.user_id.to_owned(),
+        date_created: dts::get_timestamp(),
+        modified_by_user_id: session_token_model.user_id.to_owned(),
+        date_modified: dts::get_timestamp(),
         project_id: request_model.project_id,
         title: request_model.title,
         description: match request_model.description {
@@ -44,6 +46,7 @@ pub fn create(
             Some(original_estimate) => original_estimate,
             None => "0m".to_owned(),
         },
+        assignment: None,
     };
 
     let ds = processor_data.data_store.clone();
@@ -82,5 +85,34 @@ pub fn lookup(
             }
         },
         Err(e) => Err(EvelynCoreError::FailedToLookupAgileTask(e)),
+    }
+}
+
+pub fn update(
+    request_model: task_model::UpdateTaskRequestModel,
+    session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let update_model = task_model::UpdateTaskModel {
+        date_modified: dts::get_timestamp(),
+        modified_by_user_id: session_token_model.user_id,
+        task_id: request_model.task_id,
+        title: request_model.title,
+        description: request_model.description,
+        original_estimate: request_model.original_estimate,
+        assignment: match request_model.assignment {
+            None => None,
+            Some(a) => Some(task_model::AssignmentModel {
+                assigned_to_user_id: a.assigned_to_user_id,
+                assigned_by_user_id: a.assigned_by_user_id,
+            }),
+        },
+    };
+
+    let ds = processor_data.data_store.clone();
+
+    match task_data::update(&ds, update_model) {
+        None => None,
+        Some(e) => Some(EvelynCoreError::FailedToUpdateAgileTask(e)),
     }
 }
