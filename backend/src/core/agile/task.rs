@@ -18,6 +18,7 @@ use core::error_messages::{EvelynCoreError, EvelynBaseError};
 use data::agile::task as task_data;
 use model;
 use model::agile::task as task_model;
+use data::user as user_data;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -69,6 +70,8 @@ pub fn lookup(
     match task_data::find_task_by_id(&ds, &request_model.task_id) {
         Ok(result) => {
             if let Some(result) = result {
+                let modified_by_user = user_data::find_user_by_id(&ds, &result.modified_by_user_id);
+
                 Ok(task_model::LookupTaskResponseModel {
                     task: Some(task_model::TaskExternalModel {
                         task_id: result.task_id,
@@ -76,6 +79,43 @@ pub fn lookup(
                         title: result.title,
                         description: result.description,
                         original_estimate: result.original_estimate,
+                        date_modified: dts::timestamp_to_string(result.date_modified),
+                        modified_by_user: match modified_by_user {
+                            Ok(Some(e)) => {
+                                Some(task_model::UserExternalModel {
+                                    user_name: e.user_name,
+                                    user_id: e.user_id,
+                                })
+                            },
+                            _ => {
+                                None
+                            },
+                        },
+                        assignment: match result.assignment {
+                            None => None,
+                            Some(a) => {
+                                let assigned_to_user = user_data::find_user_by_id(&ds, &a.assigned_to_user_id);
+                                let assigned_by_user = user_data::find_user_by_id(&ds, &a.assigned_by_user_id);
+
+                                match (assigned_to_user, assigned_by_user) {
+                                    (Ok(Some(a)), Ok(Some(b))) => {
+                                        Some(task_model::AssignmentExternalOutputModel {
+                                            assigned_to_user: task_model::UserExternalModel {
+                                                user_name: a.user_name,
+                                                user_id: a.user_id,
+                                            },
+                                            assigned_by_user: task_model::UserExternalModel {
+                                                user_name: b.user_name,
+                                                user_id: b.user_id,   
+                                            },
+                                        })
+                                    },
+                                    _ => {
+                                        None
+                                    },
+                                }
+                            }
+                        }
                     }),
                     error: None,
                 })

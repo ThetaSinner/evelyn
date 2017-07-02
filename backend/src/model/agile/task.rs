@@ -70,13 +70,30 @@ pub struct TaskExternalModel {
     pub title: String,
     pub description: String,
     pub original_estimate: String,
+    pub modified_by_user: Option<UserExternalModel>,
+    pub date_modified: String,
+    pub assignment: Option<AssignmentExternalOutputModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct AssignmentExternalModel {
+pub struct UserExternalModel {
+    pub user_name: String,
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct AssignmentExternalInputModel {
     pub assigned_to_user_id: String,
     pub assigned_by_user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct AssignmentExternalOutputModel {
+    pub assigned_to_user: UserExternalModel,
+    pub assigned_by_user: UserExternalModel,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -94,7 +111,7 @@ pub struct UpdateTaskRequestModel {
     pub title: Option<String>,
     pub description: Option<String>,
     pub original_estimate: Option<String>,
-    pub assignment: Option<AssignmentExternalModel>,
+    pub assignment: Option<AssignmentExternalInputModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

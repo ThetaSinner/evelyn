@@ -19,3 +19,7 @@ use chrono::prelude::*;
 pub fn get_timestamp() -> i64 {
     Utc::now().timestamp()
 }
+
+pub fn timestamp_to_string(timestamp: i64) -> String {
+    DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(timestamp, 0), Utc).to_rfc3339()
+}
