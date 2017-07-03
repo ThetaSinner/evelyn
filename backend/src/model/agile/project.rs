@@ -127,20 +127,20 @@ pub struct AddUserGroupContributorModel {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct LookupProjectsRequestModel {
+pub struct LookupContributingToRequestModel {
     pub token: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct LookupProjectsResponseModel {
-    pub projects: Vec<ProjectsExternalModel>,
+pub struct LookupContributingToResponseModel {
+    pub projects: Vec<ProjectPreviewExternalModel>,
     pub error: Option<ErrorModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct ProjectsModel {
+pub struct ProjectPreviewModel {
     pub project_id: String,
     pub name: String,
     pub short_name: String,
@@ -149,7 +149,7 @@ pub struct ProjectsModel {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-pub struct ProjectsExternalModel {
+pub struct ProjectPreviewExternalModel {
     pub project_id: String,
     pub name: String,
     pub short_name: String,

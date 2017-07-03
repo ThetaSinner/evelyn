@@ -122,11 +122,11 @@ pub fn add_user_group_contributor(
     }
 }
 
-pub fn lookup_projects(
+pub fn lookup_contributing_to(
     client: &Client,
     user_id: &String,
     user_groups: Vec<model::user_group::UserGroupsExternalModel>,
-) -> Result<Vec<project_model::ProjectsModel>, EvelynDatabaseError> {
+) -> Result<Vec<project_model::ProjectPreviewModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("agile_project");
 
     let filter = build_project_lookup_filter(user_id, user_groups);
@@ -159,7 +159,7 @@ pub fn lookup_projects(
                 }
             }).collect())
         },
-        Err(e) => Err(EvelynDatabaseError::LookupAgileProjects(e)),
+        Err(e) => Err(EvelynDatabaseError::LookupContributingToAgileProjects(e)),
     }
 }
 

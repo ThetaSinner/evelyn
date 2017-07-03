@@ -123,7 +123,7 @@ pub enum EvelynServiceError {
     CreateAgileProject(EvelynCoreError),
     AddUserContributorToAgileProject(EvelynCoreError),
     AddUserGroupContributorToAgileProject(EvelynCoreError),
-    LookupAgileProjects(EvelynCoreError),
+    LookupContributingToAgileProjects(EvelynCoreError),
     LookupAgileProject(EvelynCoreError),
 
     // Agile: Task
@@ -191,7 +191,7 @@ EvelynErrorDisplay!{
     {CreateAgileProject, "1006001", "Failed to create agile project"},
     {AddUserContributorToAgileProject, "1006002", "Failed to add user contributor to agile project"},
     {AddUserGroupContributorToAgileProject, "1006003", "Failed to add user group contributor to agile project"},
-    {LookupAgileProjects, "1006004", "Failed to lookup agile projects"},
+    {LookupContributingToAgileProjects, "1006004", "Failed to lookup contributing to agile projects"},
     {LookupAgileProject, "1006005", "Failed to lookup agile project"},
 
     // Agile: Task
@@ -251,7 +251,7 @@ pub enum EvelynCoreError {
     FailedToCreateAgileProject(EvelynDatabaseError),
     FailedToAddUserContributorToAgileProject(EvelynDatabaseError),
     FailedToAddUserGroupContributorToAgileProject(EvelynDatabaseError),
-    FailedToLookupAgileProjects(EvelynDatabaseError),
+    FailedToLookupContributingToAgileProjects(EvelynDatabaseError),
     FailedToLookupAgileProject(EvelynDatabaseError),
 
     // Agile: Task
@@ -315,7 +315,7 @@ EvelynErrorDisplay!{
     {FailedToCreateAgileProject, "Failed to create agile project: {}"},
     {FailedToAddUserContributorToAgileProject, "Failed to add user contributor to agile project: {}"},
     {FailedToAddUserGroupContributorToAgileProject, "Failed to add user group contributor to agile project: {}"},
-    {FailedToLookupAgileProjects, "Failed to lookup agile projects: {}"},
+    {FailedToLookupContributingToAgileProjects, "Failed to lookup contributing to agile projects: {}"},
     {FailedToLookupAgileProject, "Failed to lookup agile project: {}"},
 
     // Agile: Task
@@ -381,7 +381,7 @@ pub enum EvelynDatabaseError {
     InsertAgileProject(MongoDbError),
     AddUserContributorToAgileProject(MongoDbError),
     AddUserGroupContributorToAgileProject(MongoDbError),
-    LookupAgileProjects(MongoDbError),
+    LookupContributingToAgileProjects(MongoDbError),
     AgileProjectNotFound(EvelynBaseError),
     LookupAgileProject(MongoDbError),
 
@@ -448,7 +448,7 @@ EvelynErrorDisplay!{
     {InsertAgileProject, "Failed to insert agile project: {}"},
     {AddUserContributorToAgileProject, "Failed to add user contributor to agile project: {}"},
     {AddUserGroupContributorToAgileProject, "Failed to add user group contributor to agile project: {}"},
-    {LookupAgileProjects, "Failed to lookup agile projects: {}"},
+    {LookupContributingToAgileProjects, "Failed to lookup contributing to agile projects: {}"},
     {AgileProjectNotFound, "Agile project was not found: {}"},
     {LookupAgileProject, "Failed to lookup agile project: {}"},
 

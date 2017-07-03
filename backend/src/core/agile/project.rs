@@ -93,18 +93,18 @@ pub fn add_user_group_contributor(
     }
 }
 
-pub fn lookup_projects(
+pub fn lookup_contributing_to(
     session_token_model: model::SessionTokenModel,
     processor_data: Arc<ProcessorData>,
-) -> Result<project_model::LookupProjectsResponseModel, EvelynCoreError> {
+) -> Result<project_model::LookupContributingToResponseModel, EvelynCoreError> {
     let user_groups_response_model = user_group::lookup_user_groups(&session_token_model, processor_data.clone()).unwrap();
 
     let ds = processor_data.data_store.clone();
 
-    match project_data::lookup_projects(&ds, &session_token_model.user_id, user_groups_response_model.user_groups) {
-        Ok(results) => Ok(project_model::LookupProjectsResponseModel {
+    match project_data::lookup_contributing_to(&ds, &session_token_model.user_id, user_groups_response_model.user_groups) {
+        Ok(results) => Ok(project_model::LookupContributingToResponseModel {
             projects: results.into_iter().map(|x| {
-                project_model::ProjectsExternalModel {
+                project_model::ProjectPreviewExternalModel {
                     project_id: x.project_id,
                     name: x.name,
                     short_name: x.short_name,
@@ -113,7 +113,7 @@ pub fn lookup_projects(
             }).collect(),
             error: None,
         }),
-        Err(e) => Err(EvelynCoreError::FailedToLookupAgileProjects(e)),
+        Err(e) => Err(EvelynCoreError::FailedToLookupContributingToAgileProjects(e)),
     }
 }
 

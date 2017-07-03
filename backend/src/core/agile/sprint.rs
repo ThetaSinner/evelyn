@@ -59,7 +59,7 @@ pub fn lookup_active(
 ) -> Result<sprint_model::LookupActiveSprintsResponseModel, EvelynCoreError> {
     let ds = processor_data.data_store.clone();
 
-    match project::lookup_projects(session_token_model, processor_data.clone()) {
+    match project::lookup_contributing_to(session_token_model, processor_data.clone()) {
         Ok(result) => {
             let project_ids = result.projects.into_iter().map(|x| {
                 x.project_id
