@@ -66,15 +66,15 @@ pub fn lookup_processor(
                 },
                 Err(e) => {
                     model_to_router_output!(story_model::LookupResponseModel {
-                        stories: Vec::new(),
-                        error: service_error_to_model!(EvelynServiceError::LookupAgileStories(e)),
+                        story: None,
+                        error: service_error_to_model!(EvelynServiceError::LookupAgileStory(e)),
                     })
                 },
             }
         },
         Err(e) => {
             model_to_router_output!(story_model::LookupResponseModel {
-                stories: Vec::new(),
+                story: None,
                 error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
             })
         },

@@ -73,6 +73,6 @@ pub fn find_active(
                 },
             }).collect())
         },
-        Err(e) => Err(EvelynDatabaseError::LookupAgileStories(e)),
+        Err(e) => Err(EvelynDatabaseError::LookupActiveAgileSprints(e)),
     }
 }

@@ -133,7 +133,7 @@ pub enum EvelynServiceError {
 
     // Agile: Story
     CreateAgileStory(EvelynCoreError),
-    LookupAgileStories(EvelynCoreError),
+    LookupAgileStory(EvelynCoreError),
 
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
@@ -201,7 +201,7 @@ EvelynErrorDisplay!{
 
     // Agile: Story
     {CreateAgileStory, "1006401", "Failed to create agile story"},
-    {LookupAgileStories, "1006402", "Failed to lookup agile stories"},
+    {LookupAgileStory, "1006402", "Failed to lookup agile story"},
 
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
@@ -262,6 +262,8 @@ pub enum EvelynCoreError {
 
     // Agile: Story
     FailedToCreateAgileStory(EvelynDatabaseError),
+    FailedToLookupAgileStory(EvelynDatabaseError),
+    AgileStoryNotFound(EvelynBaseError),
 
     // Agile: Sprint
     FailedToCreateAgileSprint(EvelynDatabaseError),
@@ -326,6 +328,8 @@ EvelynErrorDisplay!{
 
     // Agile: Story
     {FailedToCreateAgileStory, "Failed to create agile story: {}"},
+    {FailedToLookupAgileStory, "Failed to lookup agile story: {}"},
+    {AgileStoryNotFound, "Agile story not found: {}"},
 
     // Agile: Sprint
     {FailedToCreateAgileSprint, "Failed to create agile sprint: {}"},
@@ -392,10 +396,11 @@ pub enum EvelynDatabaseError {
 
     // Agile: Story
     InsertAgileStory(MongoDbError),
-    LookupAgileStories(MongoDbError),
+    LookupAgileStory(MongoDbError),
 
     // Agile: Sprint
     InsertAgileSprint(MongoDbError),
+    LookupActiveAgileSprints(MongoDbError),
 
     // Agile: Heirarchy
     InsertAgileHeirarchyLink(MongoDbError),
@@ -459,10 +464,11 @@ EvelynErrorDisplay!{
 
     // Agile: Story
     {InsertAgileStory, "Failed to insert agile story: {}"},
-    {LookupAgileStories, "Failed to lookup agile stories: {}"},
+    {LookupAgileStory, "Failed to lookup agile story: {}"},
 
     // Agile: Sprint
     {InsertAgileSprint, "Failed to insert agile sprint: {}"},
+    {LookupActiveAgileSprints, "Failed to lookup active agile sprints: {}"},
 
     // Agile: Heirarchy
     {InsertAgileHeirarchyLink, "Failed to insert agile heirarchy link: {}"},

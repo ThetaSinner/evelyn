@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-use core::error_messages::EvelynCoreError;
+use core::error_messages::{EvelynCoreError, EvelynBaseError};
 use data::agile::story as story_data;
 use model;
 use model::agile::story as story_model;
@@ -25,6 +25,46 @@ use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 use chrono::prelude::*;
+
+fn lookup_linked_tasks(story_id: &String, processor_data: Arc<ProcessorData>) -> Vec<story_model::TaskExternalModel> {
+    let links = heirarchy::lookup_links(heirarchy_model::LookupLinksRequestModel {
+        link_from_type_name: heirarchy_model::LinkFromTypeNameExternalModel::Story,
+        link_from_id: story_id.to_owned(),
+    }, processor_data.clone());
+
+    let ds = processor_data.data_store.clone();
+
+    match links {
+        Ok(result) => {
+            result.links.into_iter().filter_map(|link| {
+                let task = task_data::find_task_by_id(&ds, &link.link_to_id);
+
+                match task {
+                    Ok(task) => {
+                        if let Some(task) = task {
+                            Some(story_model::TaskExternalModel {
+                                task_id: task.task_id,
+                                title: task.title,
+                            })
+                        }
+                        else {
+                            // TODO warn.
+                            None
+                        }
+                    },
+                    Err(e) => {
+                        warn!("Database error while lookup up linked task for story [{}], {}", story_id, e);
+                        None
+                    }
+                }
+            }).collect()
+        },
+        Err(e) => {
+            warn!("Error while looking up linked tasks for story [{}], {}", story_id, e);
+            Vec::new()
+        }
+    }
+}
 
 pub fn create(
     request_model: story_model::CreateStoryRequestModel,
@@ -62,57 +102,24 @@ pub fn lookup(
 ) -> Result<story_model::LookupResponseModel, EvelynCoreError> {
     let ds = processor_data.data_store.clone();
 
-    match story_data::lookup_stories(&ds, &request_model.project_id) {
-        Ok(result) => Ok(story_model::LookupResponseModel {
-            stories: result.into_iter().map(|x| {
-                let story_id = x.story_id;
-
-                let links = heirarchy::lookup_links(heirarchy_model::LookupLinksRequestModel {
-                    link_from_type_name: heirarchy_model::LinkFromTypeNameExternalModel::Story,
-                    link_from_id: story_id.to_owned(),
-                }, processor_data.clone());
-
-                let tasks = match links {
-                    Ok(result) => {
-                        result.links.into_iter().filter_map(|x| {
-                            let task = task_data::find_task_by_id(&ds, &x.link_to_id);
-
-                            match task {
-                                Ok(task) => {
-                                    if let Some(task) = task {
-                                        Some(story_model::TaskExternalModel {
-                                            task_id: task.task_id,
-                                            title: task.title,
-                                        })
-                                    }
-                                    else {
-                                        // TODO warn.
-                                        None
-                                    }
-                                },
-                                Err(e) => {
-                                    warn!("Database error while lookup up linked task for story [{}], {}", story_id, e);
-                                    None
-                                }
-                            }
-                        }).collect()
-                    },
-                    Err(e) => {
-                        warn!("Error while looking up linked tasks for story [{}], {}", story_id, e);
-                        Vec::new()
-                    }
-                };
-                
-                story_model::StoryExternalModel {
-                    story_id: story_id.to_owned(),
-                    project_id: x.project_id,
-                    title: x.title,
-                    description: x.description,
-                    tasks: tasks,
-                }
-            }).collect(),
-            error: None,
-        }),
-        Err(e) => Err(EvelynCoreError::FailedToCreateAgileStory(e)),
+    match story_data::lookup_story(&ds, &request_model.project_id, &request_model.story_id) {
+        Ok(result) => {
+            if let Some(result) = result {
+                Ok(story_model::LookupResponseModel {
+                    story: Some(story_model::StoryExternalModel {
+                        story_id: result.story_id.to_owned(),
+                        project_id: result.project_id,
+                        title: result.title,
+                        description: result.description,
+                        tasks: lookup_linked_tasks(&result.story_id, processor_data.clone()),
+                    }),
+                    error: None,
+                })
+            }
+            else {
+                Err(EvelynCoreError::AgileStoryNotFound(EvelynBaseError::NothingElse))
+            }
+        },
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileStory(e)),
     }
 }

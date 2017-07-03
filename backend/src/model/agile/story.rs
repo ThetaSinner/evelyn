@@ -48,13 +48,14 @@ pub struct StoryModel {
 pub struct LookupRequestModel {
     pub token: String,
     pub project_id: String,
+    pub story_id: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupResponseModel {
     pub error: Option<ErrorModel>,
-    pub stories: Vec<StoryExternalModel>,
+    pub story: Option<StoryExternalModel>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
