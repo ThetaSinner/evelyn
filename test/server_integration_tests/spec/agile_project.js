@@ -69,7 +69,7 @@ function addUserGroupContributor(token, projectId, userGroupId) {
 }
 
 function lookupProjectPreviews(token) {
-    return httpHelper.chaiHttpPost('/agile/project/lookupprojects', {
+    return httpHelper.chaiHttpPost('/agile/project/lookup/contributingto', {
         Token: token
     })
     .then(function(response) {
