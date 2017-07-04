@@ -50,6 +50,7 @@ pub enum LinkToTypeNameModel {
 #[serde(rename_all = "PascalCase")]
 pub struct MakeLinkRequestModel {
     pub token: String,
+    pub project_id: String,
     pub link_from_type_name: LinkFromTypeNameExternalModel,
     pub link_to_type_name: LinkToTypeNameExternalModel,
     pub link_from_id: String,
@@ -67,6 +68,7 @@ pub struct MakeLinkResponseModel {
 pub struct LinkModel {
     pub created_by_user_id: String,
     pub date_created: String,
+    pub project_id: String,
     pub link_from_type_name: LinkFromTypeNameModel,
     pub link_to_type_name: LinkToTypeNameModel,
     pub link_from_id: String,
@@ -82,6 +84,7 @@ pub struct LinkDbIdModel {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct LookupLinksRequestModel {
+    pub project_id: String,
     pub link_from_type_name: LinkFromTypeNameExternalModel,
     pub link_from_id: String,
 }

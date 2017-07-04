@@ -21,13 +21,15 @@ use model::agile::story as story_model;
 use core::agile::heirarchy;
 use model::agile::heirarchy as heirarchy_model;
 use data::agile::task as task_data;
+use data::agile::heirarchy as heirarchy_data;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
 use chrono::prelude::*;
 
-fn lookup_linked_tasks(story_id: &String, processor_data: Arc<ProcessorData>) -> Vec<story_model::TaskExternalModel> {
+fn lookup_linked_tasks(project_id: &String, story_id: &String, processor_data: Arc<ProcessorData>) -> Vec<story_model::TaskExternalModel> {
     let links = heirarchy::lookup_links(heirarchy_model::LookupLinksRequestModel {
+        project_id: project_id.to_owned(),
         link_from_type_name: heirarchy_model::LinkFromTypeNameExternalModel::Story,
         link_from_id: story_id.to_owned(),
     }, processor_data.clone());
@@ -111,7 +113,7 @@ pub fn lookup(
                         project_id: result.project_id,
                         title: result.title,
                         description: result.description,
-                        tasks: lookup_linked_tasks(&result.story_id, processor_data.clone()),
+                        tasks: lookup_linked_tasks(&request_model.project_id, &result.story_id, processor_data.clone()),
                     }),
                     error: None,
                 })
@@ -121,5 +123,41 @@ pub fn lookup(
             }
         },
         Err(e) => Err(EvelynCoreError::FailedToLookupAgileStory(e)),
+    }
+}
+
+pub fn lookup_backlog(
+    request_model: story_model::LookupBacklogRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<story_model::LookupBacklogResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match heirarchy_data::lookup_links_to_type(&ds, &request_model.project_id, &heirarchy_model::LinkToTypeNameModel::Story) {
+        Ok(result) => {
+            let exclude_story_ids = result.into_iter().map(|link| {
+                link.link_to_id
+            }).collect();
+
+            match story_data::lookup_backlog(&ds, &request_model.project_id, &exclude_story_ids) {
+                Ok(result) => {
+                    let stories = result.into_iter().map(|story| {
+                        story_model::StoryExternalModel {
+                            story_id: story.story_id.to_owned(),
+                            project_id: story.project_id,
+                            title: story.title,
+                            description: story.description,
+                            tasks: lookup_linked_tasks(&request_model.project_id, &story.story_id, processor_data.clone()),
+                        }
+                    }).collect();
+
+                    Ok(story_model::LookupBacklogResponseModel {
+                        stories: stories,
+                        error: None,
+                    })
+                },
+                Err(e) => Err(EvelynCoreError::FailedToLookupBacklogAgileStories(e)),
+            }
+        },
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileHeirarchyLinksToType(e)),
     }
 }

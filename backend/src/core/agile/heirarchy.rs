@@ -52,6 +52,7 @@ pub fn make_link(
             let link_model = heirarchy_model::LinkModel {
                 created_by_user_id: session_token_model.user_id,
                 date_created: format!("{}", Utc::now()),
+                project_id: request_model.project_id,
                 link_from_type_name: link_from,
                 link_to_type_name: link_to,
                 link_from_id: request_model.link_from_id,
@@ -60,7 +61,7 @@ pub fn make_link(
 
             let ds = processor_data.data_store.clone();
 
-            match heirarchy_data::lookup_link_to(&ds, &link_model.link_to_id) {
+            match heirarchy_data::lookup_link_to(&ds, &link_model.project_id, &link_model.link_to_id) {
                 Ok(links_to_id) => {
                     match heirarchy_data::insert_link(&ds, &link_model) {
                         None => {
@@ -95,7 +96,7 @@ pub fn lookup_links(
         heirarchy_model::LinkFromTypeNameExternalModel::Task => heirarchy_model::LinkFromTypeNameModel::Task,
     };
 
-    match heirarchy_data::lookup_links(&ds, &type_name, &request_model.link_from_id) {
+    match heirarchy_data::lookup_links(&ds, &request_model.project_id, &type_name, &request_model.link_from_id) {
         Ok(links) => {
            Ok(heirarchy_model::LookupLinksResponseModel {
                links: links.into_iter().map(|x| {

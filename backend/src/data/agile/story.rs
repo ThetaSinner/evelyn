@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use bson;
+use bson::{Bson, Document};
 use core::error_messages::{EvelynBaseError, EvelynDatabaseError};
 use model::agile::story as story_model;
 use mongodb::{Client, ThreadedClient};
@@ -52,5 +53,39 @@ pub fn lookup_story(
             }
         },
         Err(e) => Err(EvelynDatabaseError::LookupAgileStory(e)),
+    }
+}
+
+
+pub fn lookup_backlog(
+    client: &Client,
+    project_id: &String,
+    exclude_story_ids: &Vec<String>,
+) -> Result<Vec<story_model::StoryModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_story");
+
+    let mut bson_exclude_story_ids = bson::Array::new();
+    for id in exclude_story_ids {
+        bson_exclude_story_ids.push(Bson::String(id.to_owned()));
+    }
+
+    let mut not_in_exclude_story_ids_query = Document::new();
+    not_in_exclude_story_ids_query.insert("$nin", bson_exclude_story_ids);
+
+    let query = doc!{"projectId" => project_id, "storyId" => not_in_exclude_story_ids_query};
+
+    let cursor = collection.find(Some(query), None);
+
+    match cursor {
+        Ok(c) => {
+            Ok(c.map(|x| match x {
+                Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                Err(e) => {
+                    println!("Database error in lookup backlog agile stories {}", e);
+                    panic!()
+                },
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupBacklogAgileStories(e)),
     }
 }

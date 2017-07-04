@@ -74,3 +74,17 @@ pub struct TaskExternalModel {
     pub task_id: String,
     pub title: String,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogResponseModel {
+    pub stories: Vec<StoryExternalModel>,
+    pub error: Option<ErrorModel>,
+}

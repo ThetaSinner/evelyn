@@ -38,11 +38,12 @@ pub fn insert_link(
 
 pub fn lookup_link_to(
     client: &Client,
+    project_id: &String,
     link_to_id: &String,
 ) -> Result<Vec<heirarchy_model::LinkDbIdModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("agile_link");
 
-    let filter = doc!{"linkToId" => link_to_id};
+    let filter = doc!{"projectId" => project_id, "linkToId" => link_to_id};
 
     let mut find_options = FindOptions::new();
 
@@ -102,6 +103,7 @@ pub fn remove_by_db_ids(
 
 pub fn lookup_links(
     client: &Client,
+    project_id: &String,
     link_from_type_name: &heirarchy_model::LinkFromTypeNameModel,
     link_from_id: &String,
 ) -> Result<Vec<heirarchy_model::LinkModel>, EvelynDatabaseError> {
@@ -111,7 +113,7 @@ pub fn lookup_links(
         .unwrap()
         .trim_matches('\"')
         .to_owned();
-    let filter = doc!{"linkFromTypeName" => type_name, "linkFromId" => link_from_id};
+    let filter = doc!{"projectId" => project_id, "linkFromTypeName" => type_name, "linkFromId" => link_from_id};
 
     let cursor = collection.find(Some(filter), None);
 
@@ -130,5 +132,38 @@ pub fn lookup_links(
             }).collect())
         },
         Err(e) => Err(EvelynDatabaseError::LookupAgileHeirarchyLinks(e)),
+    }
+}
+
+pub fn lookup_links_to_type(
+    client: &Client,
+    project_id: &String,
+    link_to_type_name: &heirarchy_model::LinkToTypeNameModel,
+) -> Result<Vec<heirarchy_model::LinkModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_link");
+
+    let type_name = to_string(link_to_type_name)
+        .unwrap()
+        .trim_matches('\"')
+        .to_owned();
+    let filter = doc!{"projectId" => project_id, "linkToTypeName" => type_name};
+
+    let cursor = collection.find(Some(filter), None);
+
+    match cursor {
+        Ok(cursor) => {
+            Ok(cursor.filter_map(|x| {
+                match x {
+                    Ok(x) => {
+                        Some(bson::from_bson(bson::Bson::Document(x)).unwrap())
+                    },
+                    Err(e) => {
+                        error!("Database error in lookup agile heirarchy links {}", e);
+                        None
+                    },
+                }
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupAgileHeirarchyLinksToType(e)),
     }
 }
