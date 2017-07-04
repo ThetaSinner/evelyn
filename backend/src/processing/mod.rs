@@ -70,6 +70,7 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/agile/task/create", agile::task::create_processor);
     router.add_rule("/agile/task/lookup", agile::task::lookup_processor);
+    router.add_rule("/agile/task/lookup/backlog", agile::task::lookup_backlog_processor);
     router.add_rule("/agile/task/update", agile::task::update_processor);
 
     router.add_rule("/agile/story/create", agile::story::create_processor);

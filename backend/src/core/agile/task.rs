@@ -18,6 +18,8 @@ use core::error_messages::{EvelynCoreError, EvelynBaseError};
 use data::agile::task as task_data;
 use model;
 use model::agile::task as task_model;
+use data::agile::heirarchy as heirarchy_data;
+use model::agile::heirarchy as heirarchy_model;
 use data::user as user_data;
 use processing::ProcessorData;
 use std::sync::Arc;
@@ -125,6 +127,65 @@ pub fn lookup(
             }
         },
         Err(e) => Err(EvelynCoreError::FailedToLookupAgileTask(e)),
+    }
+}
+
+pub fn lookup_backlog(
+    request_model: task_model::LookupBacklogRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<task_model::LookupBacklogResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match heirarchy_data::lookup_links_to_type(&ds, &request_model.project_id, &heirarchy_model::LinkToTypeNameModel::Task) {
+        Ok(result) => {
+            let exclude_task_ids = result.into_iter().map(|link| {
+                link.link_to_id
+            }).collect();
+
+            match task_data::lookup_backlog(&ds, &request_model.project_id, &exclude_task_ids) {
+                Ok(result) => {
+                    let tasks = result.into_iter().map(|task| {
+                        task_model::TaskPreviewExternalModel {
+                            task_id: task.task_id,
+                            project_id: task.project_id,
+                            title: task.title,
+                            assignment: match task.assignment {
+                                None => None,
+                                Some(a) => {
+                                    let assigned_to_user = user_data::find_user_by_id(&ds, &a.assigned_to_user_id);
+                                    let assigned_by_user = user_data::find_user_by_id(&ds, &a.assigned_by_user_id);
+
+                                    match (assigned_to_user, assigned_by_user) {
+                                        (Ok(Some(a)), Ok(Some(b))) => {
+                                            Some(task_model::AssignmentExternalOutputModel {
+                                                assigned_to_user: task_model::UserExternalModel {
+                                                    user_name: a.user_name,
+                                                    user_id: a.user_id,
+                                                },
+                                                assigned_by_user: task_model::UserExternalModel {
+                                                    user_name: b.user_name,
+                                                    user_id: b.user_id,   
+                                                },
+                                            })
+                                        },
+                                        _ => {
+                                            None
+                                        },
+                                    }
+                                }
+                            },
+                        }
+                    }).collect();
+
+                    Ok(task_model::LookupBacklogResponseModel {
+                        tasks: tasks,
+                        error: None,
+                    })
+                },
+                Err(e) => Err(EvelynCoreError::FailedToLookupBacklogAgileTasks(e)),
+            }
+        },
+        Err(e) => Err(EvelynCoreError::FailedToLookupAgileHeirarchyLinksToType(e)),
     }
 }
 

@@ -56,6 +56,36 @@ pub fn find_task_by_id(
     }
 }
 
+pub fn lookup_backlog(
+    client: &Client,
+    project_id: &String,
+    exclude_task_ids: &Vec<String>
+) -> Result<Vec<task_model::TaskModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_task");
+
+    let mut bson_exclude_task_ids = bson::Array::new();
+    for id in exclude_task_ids {
+        bson_exclude_task_ids.push(Bson::String(id.to_owned()));
+    }
+
+    let not_in_exclude_task_ids = doc!{"$nin" => bson_exclude_task_ids};
+
+    let query = doc!{"projectId" => project_id, "taskId" => not_in_exclude_task_ids};
+
+    match collection.find(Some(query), None) {
+        Ok(cursor) => {
+            Ok(cursor.map(|x| match x {
+                Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                Err(e) => {
+                    println!("Database error in lookup backlog agile tasks {}", e);
+                    panic!()
+                },
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupBacklogAgileTasks(e)),
+    }
+}
+
 pub fn update(
     client: &Client,
     update_model: task_model::UpdateTaskModel,

@@ -77,6 +77,15 @@ pub struct TaskExternalModel {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
+pub struct TaskPreviewExternalModel {
+    pub task_id: String,
+    pub project_id: String,
+    pub title: String,
+    pub assignment: Option<AssignmentExternalOutputModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
 pub struct UserExternalModel {
     pub user_name: String,
     pub user_id: String,
@@ -130,4 +139,18 @@ pub struct UpdateTaskModel {
     pub description: Option<String>,
     pub original_estimate: Option<String>,
     pub assignment: Option<AssignmentModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogResponseModel {
+    pub tasks: Vec<TaskPreviewExternalModel>,
+    pub error: Option<ErrorModel>,
 }

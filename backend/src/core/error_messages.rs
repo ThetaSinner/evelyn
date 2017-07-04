@@ -129,6 +129,7 @@ pub enum EvelynServiceError {
     // Agile: Task
     CreateAgileTask(EvelynCoreError),
     LookupAgileTask(EvelynCoreError),
+    LookupBacklogAgileTask(EvelynCoreError),
     UpdateAgileTask(EvelynCoreError),
 
     // Agile: Story
@@ -198,6 +199,7 @@ EvelynErrorDisplay!{
     // Agile: Task
     {CreateAgileTask, "1006101", "Failed to create agile task"},
     {LookupAgileTask, "1006102", "Failed to lookup agile task"},
+    {LookupBacklogAgileTask, "1006104", "Failed to lookup backlog agile task"},
     {UpdateAgileTask, "1006103", "Failed to update agile task"},
 
     // Agile: Story
@@ -259,6 +261,7 @@ pub enum EvelynCoreError {
     // Agile: Task
     FailedToCreateAgileTask(EvelynDatabaseError),
     FailedToLookupAgileTask(EvelynDatabaseError),
+    FailedToLookupBacklogAgileTasks(EvelynDatabaseError),
     AgileTaskNotFound(EvelynBaseError),
     FailedToUpdateAgileTask(EvelynDatabaseError),
 
@@ -327,6 +330,7 @@ EvelynErrorDisplay!{
     // Agile: Task
     {FailedToCreateAgileTask, "Failed to create agile task: {}"},
     {FailedToLookupAgileTask, "Failed to lookup agile task: {}"},
+    {FailedToLookupBacklogAgileTasks, "Failed to lookup backlog agile tasks: {}"},
     {AgileTaskNotFound, "Agile task not found: {}"},
     {FailedToUpdateAgileTask, "Failed to update agile task: {}"},
 
@@ -398,6 +402,7 @@ pub enum EvelynDatabaseError {
     // Agile: Task 
     InsertAgileTask(MongoDbError),
     LookupAgileTaskById(MongoDbError),
+    LookupBacklogAgileTasks(MongoDbError),
     UpdateAgileTask(MongoDbError),
 
     // Agile: Story
@@ -468,6 +473,7 @@ EvelynErrorDisplay!{
     // Agile: Task
     {InsertAgileTask, "Failed to insert agile task: {}"},
     {LookupAgileTaskById, "Failed to lookup agile task by id: {}"},
+    {LookupBacklogAgileTasks, "Failed to lookup backlog agile tasks: {}"},
     {UpdateAgileTask, "Failed to update agile task: {}"},
 
     // Agile: Story
