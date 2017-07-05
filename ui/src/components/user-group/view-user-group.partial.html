@@ -1,13 +1,16 @@
 <h2 class="text-center">User Group</h2>
 
-<div class="cell">
+<div class="text-center">
     <div class="grid-x">
-        <h3>{{$ctrl.userGroup.Name}}</h3>
-        <div class="callout">
-            <h4>Members</h4>
-            <ul ng-repeat="member in $ctrl.userGroup.Members">
-                <li>{{member.UserName}}</li>
-            </ul>
+        <div class="callout cell float-center small-12 large-8">
+            <h3>{{$ctrl.userGroup.Name}}</h3>                
+            <hr>
+            <table class="hover">
+                <tr><th>Members</th></tr>
+                <tr ng-repeat="member in $ctrl.userGroup.Members">
+                    <td>{{member.UserName}}</td>
+                </td>
+            </table>
         </div>
     </div>
 </div>
