@@ -18,21 +18,17 @@ if (!global.Promise) {
     global.Promise = require('bluebird');
 }
 
+var expect = require('chai').expect;
 var _ = require('lodash');
 
-function wrapChaiHttpError(err) {
-    var message = "ChaiHttpErrorWrapper: ";
-    if (!_.isUndefined(err.message)) {
-        message += err.message + "\r\n";
-    }
-
-    if (_.isObject(err.actual)) {
-        message += JSON.stringify(err.actual) + "\r\n";
-    }
-
-    return new Error(message);
-}
-
 module.exports = {
-    wrapChaiHttpError: wrapChaiHttpError,
+    checkResponseForServerErrors: checkResponseForServerErrors
 };
+
+function checkResponseForServerErrors(response) {
+    if (_.isNull(response.Error)) {
+        return Promise.resolve(response);
+    }
+
+    expect(response.Error, 'Server message: [' + response.Error.ErrorMessage + ']').to.be.null;
+}

@@ -24,6 +24,10 @@ var _ = require('lodash');
 var httpHelper = require('../helpers/chai-http-request-helper.js');
 var userGroupHelper = require('./user_group.js');
 
+module.exports = {
+    createProject: createProject
+};
+
 function createProject(token, project_ref) {
     return httpHelper.chaiHttpPost('/agile/project/create', {
         Token: token,
