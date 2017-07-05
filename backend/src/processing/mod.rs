@@ -64,6 +64,7 @@ pub fn load_processors(router: &mut Router) {
 
     router.add_rule("/agile/project/create", agile::project::create_processor);
     router.add_rule("/agile/project/lookup/contributingto", agile::project::lookup_contributing_to_processor);
+    router.add_rule("/agile/project/lookup/backlog", agile::project::lookup_backlog_processor);
     router.add_rule("/agile/project/lookup", agile::project::lookup_processor);
     router.add_rule("/agile/project/contributor/user/add", agile::project::add_user_contributor_processor);
     router.add_rule("/agile/project/contributor/usergroup/add", agile::project::add_user_group_contributor_processor);

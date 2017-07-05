@@ -15,6 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use model::ErrorModel;
+use model::agile::sprint::SprintExternalModel;
+use model::agile::story::StoryExternalModel;
+use model::agile::task::TaskPreviewExternalModel;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
@@ -194,4 +197,26 @@ pub struct UserGroupContributorPreviewExternalModel {
     pub user_group_id: String,
     pub name: String,
     pub description: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct BacklogExternalModel {
+    pub sprints: Vec<SprintExternalModel>,
+    pub stories: Vec<StoryExternalModel>,
+    pub tasks: Vec<TaskPreviewExternalModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogResponseModel {
+    pub backlog: Option<BacklogExternalModel>,
+    pub error: Option<ErrorModel>,
 }

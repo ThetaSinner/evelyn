@@ -139,6 +139,35 @@ pub fn lookup_contributing_to_processor(
     }
 }
 
+pub fn lookup_backlog_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(project_model::LookupBacklogRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match project::lookup_backlog(request_model, processor_data) {
+                Ok(result) => {
+                    model_to_router_output!(result)
+                },
+                Err(e) => {
+                    model_to_router_output!(project_model::LookupBacklogResponseModel {
+                        backlog: None,
+                        error: service_error_to_model!(EvelynServiceError::LookupBacklogAgileProjects(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(project_model::LookupBacklogResponseModel {
+                backlog: None,
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}
+
 pub fn lookup_processor(
     router_input: RouterInput,
     processor_data: Arc<processing::ProcessorData>,

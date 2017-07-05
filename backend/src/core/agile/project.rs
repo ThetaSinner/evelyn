@@ -21,6 +21,12 @@ use model::agile::project as project_model;
 use core::user_group;
 use data::user_group as user_group_data;
 use data::user;
+use core::agile::sprint;
+use model::agile::sprint as sprint_model;
+use core::agile::story;
+use model::agile::story as story_model;
+use core::agile::task;
+use model::agile::task as task_model;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -115,6 +121,47 @@ pub fn lookup_contributing_to(
         }),
         Err(e) => Err(EvelynCoreError::FailedToLookupContributingToAgileProjects(e)),
     }
+}
+
+pub fn lookup_backlog(
+    request_model: project_model::LookupBacklogRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<project_model::LookupBacklogResponseModel, EvelynCoreError> {
+    Ok(project_model::LookupBacklogResponseModel {
+        backlog: Some(project_model::BacklogExternalModel {
+            sprints: match sprint::lookup_backlog(sprint_model::LookupBacklogRequestModel {
+                token: request_model.token.to_owned(),
+                project_id: request_model.project_id.to_owned(),
+            }, processor_data.clone()) {
+                Ok(result) => result.sprints,
+                Err(e) => {
+                    debug!("{}", e);
+                    Vec::new()
+                },
+            },
+            stories: match story::lookup_backlog(story_model::LookupBacklogRequestModel {
+                token: request_model.token.to_owned(),
+                project_id: request_model.project_id.to_owned(),
+            }, processor_data.clone()) {
+                Ok(result) => result.stories,
+                Err(e) => {
+                    debug!("{}", e);
+                    Vec::new()
+                },
+            },
+            tasks: match task::lookup_backlog(task_model::LookupBacklogRequestModel {
+                token: request_model.token.to_owned(),
+                project_id: request_model.project_id.to_owned(),
+            }, processor_data.clone()) {
+                Ok(result) => result.tasks,
+                Err(e) => {
+                    debug!("{}", e);
+                    Vec::new()
+                },
+            }
+        }),
+        error: None,
+    })
 }
 
 pub fn lookup(

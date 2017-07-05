@@ -124,6 +124,7 @@ pub enum EvelynServiceError {
     AddUserContributorToAgileProject(EvelynCoreError),
     AddUserGroupContributorToAgileProject(EvelynCoreError),
     LookupContributingToAgileProjects(EvelynCoreError),
+    LookupBacklogAgileProjects(EvelynCoreError),
     LookupAgileProject(EvelynCoreError),
 
     // Agile: Task
@@ -195,6 +196,7 @@ EvelynErrorDisplay!{
     {AddUserContributorToAgileProject, "1006002", "Failed to add user contributor to agile project"},
     {AddUserGroupContributorToAgileProject, "1006003", "Failed to add user group contributor to agile project"},
     {LookupContributingToAgileProjects, "1006004", "Failed to lookup contributing to agile projects"},
+    {LookupBacklogAgileProjects, "1006006", "Failed to lookup agile project backlog"},
     {LookupAgileProject, "1006005", "Failed to lookup agile project"},
 
     // Agile: Task
