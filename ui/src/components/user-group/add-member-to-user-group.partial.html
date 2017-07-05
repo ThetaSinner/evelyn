@@ -1,6 +1,6 @@
 <h2 class="text-center">Add Member</h2>
 
-<div class="rows">
+<div class="grid-x">
     <div class="float-center small-12 medium-6">
         <form>
             <label>Query
@@ -8,12 +8,12 @@
             </label>
         </form>
         <div class="small-up-3">
-            <div class="column" ng-repeat="searchResult in searchResults">
-                <div class="row callout">
-                    <div class="column small-10">
+            <div class="cell" ng-repeat="searchResult in searchResults">
+                <div class="grid-x callout">
+                    <div class="cell small-10">
                         <p>{{searchResult.UserName}}</p>
                     </div>
-                    <div class="column small-2">
+                    <div class="cell small-2">
                         <button ng-click="addMember(searchResult.UserId)"><i class="fa fa-2x fa-plus"></i></button>
                     </div>
                 </div>

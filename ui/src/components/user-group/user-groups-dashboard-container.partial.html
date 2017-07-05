@@ -5,15 +5,15 @@
 </div>
 
 <div class="small-up-3">
-    <div class="column" ng-repeat="userGroup in $ctrl.userGroups">
-        <div class="row callout" ng-click="viewGroup(userGroup.UserGroupId)">
-            <div class="column small-10">
+    <div class="cell" ng-repeat="userGroup in $ctrl.userGroups">
+        <div class="grid-x callout" ng-click="viewGroup(userGroup.UserGroupId)">
+            <div class="cell small-10">
                 <h5>{{userGroup.Name}}</h5>
                 <p>{{userGroup.Description}}</p>
             </div>
-            <div class="column small-2">
+            <div class="cell small-2">
                 <div class="float-right">
-                    <div class="row">
+                    <div class="grid-x">
                         <button ng-click="addMember(userGroup.UserGroupId)"><i class="fa fa-2x fa-plus"></i></button>
                     </div>
                 </div>

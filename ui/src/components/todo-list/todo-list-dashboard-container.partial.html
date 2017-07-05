@@ -5,8 +5,8 @@
 </div>
 
 <div class="small-up-3">
-    <div class="column" ng-repeat="todoList in $ctrl.todoLists">
-        <div class="row callout" ng-click="viewList(todoList.TodoListId)">
+    <div class="cell" ng-repeat="todoList in $ctrl.todoLists">
+        <div class="grid-x callout" ng-click="viewList(todoList.TodoListId)">
             <h5>{{todoList.Title}}</h5>
         </div>
     </div>
