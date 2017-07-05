@@ -20,6 +20,10 @@ if (!global.Promise) {
 
 var _ = require('lodash');
 
+module.exports = {
+    wrapChaiHttpError: wrapChaiHttpError,
+};
+
 function wrapChaiHttpError(err) {
     var message = "ChaiHttpErrorWrapper: ";
     if (!_.isUndefined(err.message)) {
@@ -32,7 +36,3 @@ function wrapChaiHttpError(err) {
 
     return new Error(message);
 }
-
-module.exports = {
-    wrapChaiHttpError: wrapChaiHttpError,
-};

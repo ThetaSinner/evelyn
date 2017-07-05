@@ -21,82 +21,10 @@ if (!global.Promise) {
 var expect = require('chai').expect;
 var _ = require('lodash');
 
-var httpHelper = require('../helpers/chai-http-request-helper.js');
-var userGroupHelper = require('./user_group.js');
-
-module.exports = {
-    createProject: createProject
-};
-
-function createProject(token, project_ref) {
-    return httpHelper.chaiHttpPost('/agile/project/create', {
-        Token: token,
-        Name: "name_" + project_ref,
-        ShortName: "short_name_" + project_ref,
-        Description: "description_" + project_ref
-    })
-    .then(function(response) {
-        expect(response.Error).to.be.null;
-        
-        return Promise.resolve(response);
-    });
-}
-
-function addUserContributor(token, projectId, userId) {
-    return httpHelper.chaiHttpPost('/agile/project/contributor/user/add', {
-        Token: token,
-        ProjectId: projectId,
-        UserContributor: {
-            UserId: userId
-        }
-    })
-    .then(function(response) {
-        expect(response.Error).to.be.null;
-        
-        return Promise.resolve(response);
-    });
-}
-
-function addUserGroupContributor(token, projectId, userGroupId) {
-    return httpHelper.chaiHttpPost('/agile/project/contributor/usergroup/add', {
-        Token: token,
-        ProjectId: projectId,
-        UserGroupContributor: {
-            UserGroupId: userGroupId
-        }
-    })
-    .then(function(response) {
-        expect(response.Error).to.be.null;
-        
-        return Promise.resolve(response);
-    });
-}
-
-function lookupProjectPreviews(token) {
-    return httpHelper.chaiHttpPost('/agile/project/lookup/contributingto', {
-        Token: token
-    })
-    .then(function(response) {
-        expect(response.Error).to.be.null;
-        
-        return Promise.resolve(response);
-    });
-}
-
-function lookupProject(token, projectId) {
-    return httpHelper.chaiHttpPost('/agile/project/lookup', {
-        Token: token,
-        ProjectId: projectId
-    })
-    .then(function(response) {
-        if (response.Error === null) {
-            return Promise.resolve(response);
-        }
-        else {
-            return Promise.reject(response);
-        }
-    });
-}
+var httpHelper = require('../helpers/chai_http_request_helper.js');
+var commonRequestsHelper = require('../helpers/common_requests_helper.js');
+var agileProjectHelper = require('../helpers/spec_helpers/agile_project_helper.js');
+var userGroupHelper = require('../helpers/spec_helpers/user_group_helper.js');
 
 describe('Agile: Project', function() {
     var tokenProjectOwner = null;
@@ -104,21 +32,21 @@ describe('Agile: Project', function() {
     var tokenGroupUser = null;
 
     before(function () {
-        return httpHelper.chaiHttpPostPurgeDatabase()
+        return commonRequestsHelper.chaiHttpPostPurgeDatabase()
         .then(function () {
-            return httpHelper.createUserAndLogon('projectOwner');
+            return commonRequestsHelper.createUserAndLogon('projectOwner');
         })
         .then(function (_token) {
             tokenProjectOwner = _token;
         })
         .then(function () {
-            return httpHelper.createUserAndLogon('user');
+            return commonRequestsHelper.createUserAndLogon('user');
         })
         .then(function (_token) {
             tokenUser = _token;
         })
         .then(function () {
-            return httpHelper.createUserAndLogon('groupUser');
+            return commonRequestsHelper.createUserAndLogon('groupUser');
         })
         .then(function (_token) {
             tokenGroupUser = _token;
@@ -126,35 +54,35 @@ describe('Agile: Project', function() {
     });
 
     beforeEach(function() {
-        return httpHelper.chaiHttpPostPurgeDatabaseArea('agile_project');
+        return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('agile_project');
     });
 
     it('Creates a project', function() {
-        return createProject(tokenProjectOwner, 'starter_ref');
+        return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref');
     });
 
     it('Adds a user contributor to a project', function() {
         var projectId = null;
 
-        return createProject(tokenProjectOwner, 'starter_ref')
+        return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
         .then(function(response) {
             projectId = response.ProjectId;
 
-            return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+            return commonRequestsHelper.searchForUsers(tokenProjectOwner, 'user');
         })
         .then(function(response) {
             expect(response.SearchResults).to.be.an.array;
             expect(response.SearchResults).to.have.lengthOf(1);
             var userId = response.SearchResults[0].UserId;
 
-            return addUserContributor(tokenProjectOwner, projectId, userId);
+            return agileProjectHelper.addUserContributor(tokenProjectOwner, projectId, userId);
         });
     });
 
     it('Adds a user group contributor to a project', function() {
         var projectId = null;
 
-        return createProject(tokenProjectOwner, 'starter_ref')
+        return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
         .then(function(response) {
             projectId = response.ProjectId;
 
@@ -163,18 +91,18 @@ describe('Agile: Project', function() {
         .then(function(response) {
             var userGroupId = response.UserGroupId;
             
-            return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
+            return agileProjectHelper.addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
         });
     });
 
     describe('Lookup project previews', function() {
         it('Looks up a project preview', function() {
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
-                return createProject(tokenProjectOwner, 'sinker_ref');
+                return agileProjectHelper.createProject(tokenProjectOwner, 'sinker_ref');
             })
             .then(function(response) {
-                return lookupProjectPreviews(tokenProjectOwner);
+                return agileProjectHelper.lookupProjectPreviews(tokenProjectOwner);
             })
             .then(function(response) {
                 expect(response.Projects).to.be.an.array;
@@ -197,24 +125,24 @@ describe('Agile: Project', function() {
         it('Allows user contributor to see preview', function() {
             var projectId = null;
 
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
-                return createProject(tokenProjectOwner, 'sinker_ref');
+                return agileProjectHelper.createProject(tokenProjectOwner, 'sinker_ref');
             })
             .then(function(response) {
                 projectId = response.ProjectId;
 
-                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+                return commonRequestsHelper.searchForUsers(tokenProjectOwner, 'user');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
                 expect(response.SearchResults).to.have.lengthOf(1);
                 var userId = response.SearchResults[0].UserId;
 
-                return addUserContributor(tokenProjectOwner, projectId, userId);
+                return agileProjectHelper.addUserContributor(tokenProjectOwner, projectId, userId);
             })
             .then(function() {
-                return lookupProjectPreviews(tokenUser);
+                return agileProjectHelper.lookupProjectPreviews(tokenUser);
             })
             .then(function(response) {
                 expect(response.Projects).to.be.an.array;
@@ -232,9 +160,9 @@ describe('Agile: Project', function() {
             var projectId = null;
             var userGroupId = null;
 
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
-                return createProject(tokenProjectOwner, 'sinker_ref');
+                return agileProjectHelper.createProject(tokenProjectOwner, 'sinker_ref');
             })
             .then(function(response) {
                 projectId = response.ProjectId;
@@ -244,7 +172,7 @@ describe('Agile: Project', function() {
             .then(function(response) {
                 userGroupId = response.UserGroupId;
 
-                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+                return commonRequestsHelper.searchForUsers(tokenProjectOwner, 'user');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
@@ -254,10 +182,10 @@ describe('Agile: Project', function() {
                 return userGroupHelper.addMember(tokenProjectOwner, userGroupId, userId);
             })
             .then(function() {
-                return addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
+                return agileProjectHelper.addUserGroupContributor(tokenProjectOwner, projectId, userGroupId);
             })
             .then(function() {
-                return lookupProjectPreviews(tokenUser);
+                return agileProjectHelper.lookupProjectPreviews(tokenUser);
             })
             .then(function(response) {
                 expect(response.Projects).to.be.an.array;
@@ -274,9 +202,9 @@ describe('Agile: Project', function() {
 
     describe('Lookup project', function() {
         it('Looks up a project', function() {
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
-                return lookupProject(tokenProjectOwner, response.ProjectId);
+                return agileProjectHelper.lookupProject(tokenProjectOwner, response.ProjectId);
             })
             .then(function(response) {
                 expect(response.Project).to.be.ok;
@@ -298,26 +226,26 @@ describe('Agile: Project', function() {
             var projectId2 = null;
             var userId = null;
 
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
                 projectId1 = response.ProjectId;
 
-                return createProject(tokenProjectOwner, 'sinker_ref');
+                return agileProjectHelper.createProject(tokenProjectOwner, 'sinker_ref');
             })
             .then(function(response) {
                 projectId2 = response.ProjectId;
 
-                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+                return commonRequestsHelper.searchForUsers(tokenProjectOwner, 'user');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
                 expect(response.SearchResults).to.have.lengthOf(1);
                 userId = response.SearchResults[0].UserId;
 
-                return addUserContributor(tokenProjectOwner, projectId1, userId);
+                return agileProjectHelper.addUserContributor(tokenProjectOwner, projectId1, userId);
             })
             .then(function() {
-                return lookupProject(tokenUser, projectId2);
+                return agileProjectHelper.lookupProject(tokenUser, projectId2, true);
             })
             .catch(function(response) {
                 // Failed to lookup agile project
@@ -326,7 +254,7 @@ describe('Agile: Project', function() {
                 return Promise.resolve();
             })
             .then(function() {
-                return lookupProject(tokenUser, projectId1);
+                return agileProjectHelper.lookupProject(tokenUser, projectId1);
             })
             .then(function(response) {
                 expect(response.Project).to.be.ok;
@@ -350,11 +278,11 @@ describe('Agile: Project', function() {
             var userGroupId = null;
             var userId = null;
 
-            return createProject(tokenProjectOwner, 'starter_ref')
+            return agileProjectHelper.createProject(tokenProjectOwner, 'starter_ref')
             .then(function(response) {
                 projectId1 = response.ProjectId;
 
-                return createProject(tokenProjectOwner, 'sinker_ref');
+                return agileProjectHelper.createProject(tokenProjectOwner, 'sinker_ref');
             })
             .then(function(response) {
                 projectId2 = response.ProjectId;
@@ -364,7 +292,7 @@ describe('Agile: Project', function() {
             .then(function(response) {
                 userGroupId = response.UserGroupId;
 
-                return httpHelper.searchForUsers(tokenProjectOwner, 'user');
+                return commonRequestsHelper.searchForUsers(tokenProjectOwner, 'user');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
@@ -374,10 +302,10 @@ describe('Agile: Project', function() {
                 return userGroupHelper.addMember(tokenProjectOwner, userGroupId, userId);
             })
             .then(function() {
-                return addUserGroupContributor(tokenProjectOwner, projectId2, userGroupId);
+                return agileProjectHelper.addUserGroupContributor(tokenProjectOwner, projectId2, userGroupId);
             })
             .then(function() {
-                return lookupProject(tokenUser, projectId1);
+                return agileProjectHelper.lookupProject(tokenUser, projectId1, true);
             })
             .catch(function(response) {
                 // Failed to lookup agile project
@@ -386,7 +314,7 @@ describe('Agile: Project', function() {
                 return Promise.resolve();
             })
             .then(function() {
-                return lookupProject(tokenUser, projectId2);
+                return agileProjectHelper.lookupProject(tokenUser, projectId2);
             })
             .then(function(response) {
                 expect(response.Project).to.be.ok;

@@ -21,31 +21,22 @@ if (!global.Promise) {
 var expect = require('chai').expect;
 var _ = require('lodash');
 
-var httpHelper = require('../helpers/chai-http-request-helper.js');
-var serverErrorHelper = require('../helpers/server-error-helper.js');
+var httpHelper = require('../helpers/chai_http_request_helper.js');
+var commonRequestsHelper = require('../helpers/common_requests_helper.js');
+var serverErrorHelper = require('../helpers/server_error_helper.js');
 
-var userGroupHelper = require('./user_group.js');
-var agileProjectHelper = require('./agile_project.js');
-
-function createTask(token, projectId, taskRef, otherProperties) {
-    return httpHelper.chaiHttpPost('/agile/task/create', {
-        Token: token,
-        ProjectId: projectId,
-        Title: "title_" + taskRef,
-        Description: "description_" + taskRef,
-        OriginalEstimate: _.get(otherProperties, 'originalEstimate', '1h'),
-    })
-    .then(serverErrorHelper.checkResponseForServerErrors);
-}
+var userGroupHelper = require('../helpers/spec_helpers/user_group_helper.js');
+var agileProjectHelper = require('../helpers/spec_helpers/agile_project_helper.js');
+var agileTaskHelper = require('../helpers/spec_helpers/agile_task_helper.js');
 
 describe('Agile: Task', function() {
     var token = null;
     var projectId = null;
 
     before(function () {
-        return httpHelper.chaiHttpPostPurgeDatabase()
+        return commonRequestsHelper.chaiHttpPostPurgeDatabase()
         .then(function () {
-            return httpHelper.createUserAndLogon('user');
+            return commonRequestsHelper.createUserAndLogon('user');
         })
         .then(function (_token) {
             token = _token;
@@ -59,10 +50,10 @@ describe('Agile: Task', function() {
     });
 
     beforeEach(function() {
-        return httpHelper.chaiHttpPostPurgeDatabaseArea('agile_task');
+        return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('agile_task');
     });
 
     it('Creates a task', function() {
-        return createTask(token, projectId, 'starter_ref');
+        return agileTaskHelper.createTask(token, projectId, 'starter_ref');
     });
 });

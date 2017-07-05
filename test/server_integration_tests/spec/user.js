@@ -1,19 +1,36 @@
+// Evelyn: Your personal assistant, project manager and calendar
+// Copyright (C) 2017 Gregory Jensen
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 if (!global.Promise) {
     global.Promise = require('bluebird');
 }
 
 var expect = require('chai').expect;
 
-var httpHelper = require('../helpers/chai-http-request-helper.js');
+var httpHelper = require('../helpers/chai_http_request_helper');
+var commonRequestsHelper = require('../helpers/common_requests_helper.js');
 
 describe('User', function() {
     before(function () {
-        return httpHelper.chaiHttpPostPurgeDatabase();
+        return commonRequestsHelper.chaiHttpPostPurgeDatabase();
     });
 
     describe('Create user', function() {
         beforeEach(function () {
-            return httpHelper.chaiHttpPostPurgeDatabaseArea('user');
+            return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('user');
         });
 
         it('Creates a new user', function() {
@@ -23,7 +40,7 @@ describe('User', function() {
                 Password: "asdf"
             };
 
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/user/create',
                 payload
             )
@@ -39,14 +56,14 @@ describe('User', function() {
                 Password: "asdf"
             };
 
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/user/create',
                 payload
             )
             .then(function (response) {
                 expect(response.Error).to.be.null;
 
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/user/create',
                     payload
                 );
@@ -66,18 +83,18 @@ describe('User', function() {
         };
 
         beforeEach(function () {
-            return httpHelper.chaiHttpPostPurgeDatabaseArea('user');
+            return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('user');
         });
 
         it('Rejects logon with incorrect email', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/user/create',
                 createUserPayload
             )
             .then(function (response) {
                 expect(response.Error).to.be.null;
 
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/user/logon',
                     {
                         EmailAddress: "iamnotcorrect@evelyn.com",
@@ -92,14 +109,14 @@ describe('User', function() {
         });
 
         it('Rejects logon with incorrect password', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/user/create',
                 createUserPayload
             )
             .then(function (response) {
                 expect(response.Error).to.be.null;
 
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/user/logon',
                     {
                         EmailAddress: "iamcorrect@evelyn.com",
@@ -114,14 +131,14 @@ describe('User', function() {
         });
 
         it('Accepts correct logon and gives back a session token', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/user/create',
                 createUserPayload
             )
             .then(function (response) {
                 expect(response.Error).to.be.null;
 
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/user/logon',
                     {
                         EmailAddress: "iamcorrect@evelyn.com",
@@ -138,13 +155,13 @@ describe('User', function() {
 
     describe('Search for users', function() {
         beforeEach(function () {
-            return httpHelper.chaiHttpPostPurgeDatabaseArea('user');
+            return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('user');
         });
 
         it('Searches for a user', function() {
-            return httpHelper.createUserAndLogon('user1')
+            return commonRequestsHelper.createUserAndLogon('user1')
             .then(function(token) {
-                return httpHelper.searchForUsers(token, 'er');
+                return commonRequestsHelper.searchForUsers(token, 'er');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
@@ -160,13 +177,13 @@ describe('User', function() {
         it('Searches for a matching user when there are multiple users', function() {
             var token = null;
 
-            return httpHelper.createUserAndLogon('user1')
+            return commonRequestsHelper.createUserAndLogon('user1')
             .then(function(_token) {
                 token = _token;
-                return httpHelper.createUserAndLogon('jimmy');
+                return commonRequestsHelper.createUserAndLogon('jimmy');
             })
             .then(function() {
-                return httpHelper.searchForUsers(token, 'er');
+                return commonRequestsHelper.searchForUsers(token, 'er');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
@@ -178,7 +195,7 @@ describe('User', function() {
                 expect(result.UserId).to.be.ok;
             })
             .then(function() {
-                return httpHelper.searchForUsers(token, 'mm');
+                return commonRequestsHelper.searchForUsers(token, 'mm');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;
@@ -194,16 +211,16 @@ describe('User', function() {
         it('Searches and finds multiple users', function() {
             var token = null;
 
-            return httpHelper.createUserAndLogon('user1')
+            return commonRequestsHelper.createUserAndLogon('user1')
             .then(function(_token) {
                 token = _token;
-                return httpHelper.createUserAndLogon('user2');
+                return commonRequestsHelper.createUserAndLogon('user2');
             })
             .then(function() {
-                return httpHelper.createUserAndLogon('jimmy');
+                return commonRequestsHelper.createUserAndLogon('jimmy');
             })
             .then(function() {
-                return httpHelper.searchForUsers(token, 'er');
+                return commonRequestsHelper.searchForUsers(token, 'er');
             })
             .then(function(response) {
                 expect(response.SearchResults).to.be.an.array;

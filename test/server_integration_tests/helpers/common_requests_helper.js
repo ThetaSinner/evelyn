@@ -18,49 +18,21 @@ if (!global.Promise) {
     global.Promise = require('bluebird');
 }
 
-var chai = require('chai');
-var chaiHttp = require('chai-http');
+var expect = require('chai').expect;
 var _ = require('lodash');
-var MongoClient = require('mongodb').MongoClient;
 
-var httpErrorHelper = require('./chai-http-error-helper.js');
+var httpHelper = require('./chai_http_request_helper.js');
 
-chai.use(chaiHttp);
-var expect = chai.expect;
-
-function hang(ms, forward) {
-    return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-            resolve(forward);
-        }, ms);
-    });
-}
-
-function chaiHttpPost(action, payload) {
-    // For some reason .send() seems to sometimes send an empty payload
-    // if you give it an object, which is documented to be allowed...
-    if (_.isObject(payload)) {
-        payload = JSON.stringify(payload);
-    }
-
-    return new Promise(function (resolve, reject) {
-        return chai.request('localhost:8080')
-        .post(action)
-        .send(payload)
-        .then(function (res) {
-            expect(res).to.have.status(200);
-            expect(res).to.be.json;
-            resolve(res.body);
-        })
-        .catch(function (err) {
-            reject(httpErrorHelper.wrapChaiHttpError(err));
-        });
-    });
-}
+module.exports = {
+    chaiHttpPostPurgeDatabase: chaiHttpPostPurgeDatabase,
+    chaiHttpPostPurgeDatabaseArea: chaiHttpPostPurgeDatabaseArea,
+    createUserAndLogon: createUserAndLogon,
+    searchForUsers: searchForUsers
+};
 
 function chaiHttpPostPurgeDatabase() {
     return new Promise(function (resolve, reject) {
-        chaiHttpPost(
+        httpHelper.post(
             '/purge',
             {
                 Token: 'a temporary token',
@@ -83,7 +55,7 @@ function chaiHttpPostPurgeDatabase() {
 
 function chaiHttpPostPurgeDatabaseArea(target) {
     return new Promise(function (resolve, reject) {
-        chaiHttpPost(
+        httpHelper.post(
             '/purge',
             {
                 Token: 'a temporary token',
@@ -109,7 +81,7 @@ function createUserAndLogon(user_ref) {
         user_ref = 'rupert';
     }
 
-    return chaiHttpPost(
+    return httpHelper.post(
         '/user/create',
         {
             UserName: user_ref,
@@ -120,7 +92,7 @@ function createUserAndLogon(user_ref) {
     .then(function (response) {
         expect(response.Error).to.be.null;
 
-        return chaiHttpPost(
+        return httpHelper.post(
             '/user/logon',
             {
                 EmailAddress: user_ref + '@evelyn.com',
@@ -139,7 +111,7 @@ function searchForUsers(token, user_ref) {
         user_ref = 'rupert';
     }
 
-    return chaiHttpPost(
+    return httpHelper.post(
         '/user/search',
         {
             Token: token,
@@ -151,11 +123,3 @@ function searchForUsers(token, user_ref) {
         return Promise.resolve(response);
     });
 }
-
-module.exports = {
-    chaiHttpPost: chaiHttpPost,
-    chaiHttpPostPurgeDatabase: chaiHttpPostPurgeDatabase,
-    chaiHttpPostPurgeDatabaseArea: chaiHttpPostPurgeDatabaseArea,
-    createUserAndLogon: createUserAndLogon,
-    searchForUsers: searchForUsers
-};

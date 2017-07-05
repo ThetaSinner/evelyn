@@ -1,51 +1,43 @@
+// Evelyn: Your personal assistant, project manager and calendar
+// Copyright (C) 2017 Gregory Jensen
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 if (!global.Promise) {
     global.Promise = require('bluebird');
 }
 
 var chai = require('chai');
-var expect = chai.expect;
-var moment = require('moment');
 var chaiSubset = require('chai-subset');
+var moment = require('moment');
 
-var httpHelper = require('../helpers/chai-http-request-helper.js');
+var httpHelper = require('../helpers/chai_http_request_helper.js');
+var commonRequestsHelper = require('../helpers/common_requests_helper.js');
+
+var simpleTaskHelper = require('../helpers/spec_helpers/simple_task_helper.js');
 
 chai.use(chaiSubset);
-
-function createTasks(starter_task, number_to_create) {
-    return httpHelper.chaiHttpPost(
-        '/simpletask/create',
-        starter_task
-    ).then(function (response) {
-        expect(response.Error).to.be.null;
-
-        if (number_to_create <= 1) {
-            return Promise.resolve(response);
-        }
-        else {
-            return createTasks(starter_task, number_to_create - 1);
-        }
-    });
-}
-
-function lookupTasks(token) {
-    return httpHelper.chaiHttpPost(
-        '/simpletask/lookup',
-        {
-            Token: token,
-            Limit: 0,
-            ShowCompleted: false
-        }
-    );
-}
+var expect = chai.expect;
 
 describe('Simple Task', function() {
     var date = new Date ().toISOString();
     var token = null;
 
     before(function () {
-        return httpHelper.chaiHttpPostPurgeDatabase()
+        return commonRequestsHelper.chaiHttpPostPurgeDatabase()
         .then(function () {
-            return httpHelper.createUserAndLogon();
+            return commonRequestsHelper.createUserAndLogon();
         })
         .then(function (_token) {
             token = _token;
@@ -53,7 +45,7 @@ describe('Simple Task', function() {
     });
 
     it('Creates a task', function() {
-        return httpHelper.chaiHttpPost(
+        return httpHelper.post(
             '/simpletask/create',
             {
                 Token: token,
@@ -79,14 +71,14 @@ describe('Simple Task', function() {
             };
 
             // Lookup fetches multiple tasks, create multiple tasks to test
-            return httpHelper.chaiHttpPostPurgeDatabase()
+            return commonRequestsHelper.chaiHttpPostPurgeDatabase()
             .then(function (response) {
-                return createTasks(simpletask, 12)
+                return simpleTaskHelper.createTasks(simpletask, 12)
             })
             .then(function (response) {
                 expect(response.Error).to.be.null;
 
-                return lookupTasks(token);
+                return simpleTaskHelper.lookupTasks(token);
             })
             .then(function (response) {
                 expect(response.Error).to.be.null;
@@ -95,7 +87,7 @@ describe('Simple Task', function() {
                 expect(response.SimpleTasks).to.have.lengthOf(12);
                 expect(response.SimpleTasks[0]).to.have.property('TaskId').that.is.a('string');
 
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/simpletask/update',
                     {
                         Token: token,
@@ -113,7 +105,7 @@ describe('Simple Task', function() {
         });
 
         it('Fetches unlimited unfinished tasks', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/lookup',
                 {
                     Token: token,
@@ -130,7 +122,7 @@ describe('Simple Task', function() {
         });
 
         it('Fetches 10 unfinished tasks', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/lookup',
                 {
                     Token: token,
@@ -147,7 +139,7 @@ describe('Simple Task', function() {
         });
 
         it('Fetches unlimited tasks, including completed', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/lookup',
                 {
                     Token: token,
@@ -163,7 +155,7 @@ describe('Simple Task', function() {
         });
 
         it('Fetches 10 tasks, including completed', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/lookup',
                 {
                     Token: token,
@@ -189,7 +181,7 @@ describe('Simple Task', function() {
             simpletask.dueDate = date;
             simpletask.completed = false;
 
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/create',
                 {
                     Token : token,
@@ -207,7 +199,7 @@ describe('Simple Task', function() {
 
         it('Changes title', function() {
             var newTitle = "This is a new title";
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/update',
                 {
                     Token: token,
@@ -220,7 +212,7 @@ describe('Simple Task', function() {
             ).then(
                 function (response) {
                     expect(response.Error).to.be.null;
-                    return httpHelper.chaiHttpPost(
+                    return httpHelper.post(
                         '/simpletask/lookup',
                         {
                             Token : token,
@@ -239,7 +231,7 @@ describe('Simple Task', function() {
 
         it('Changes description', function() {
             var newDescription = "New Description";
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/update',
                 {
                     Token: token,
@@ -252,7 +244,7 @@ describe('Simple Task', function() {
             ).then(
                 function (response) {
                     expect(response.Error).to.be.null;
-                    return httpHelper.chaiHttpPost(
+                    return httpHelper.post(
                         '/simpletask/lookup',
                         {
                             Token : token,
@@ -272,7 +264,7 @@ describe('Simple Task', function() {
         it('Changes duedate', function() {
             var newDate = moment().add(3, 'days').toISOString();
 
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/update',
                 {
                     Token: token,
@@ -284,7 +276,7 @@ describe('Simple Task', function() {
                 }
             ).then(function (response) {
                 expect(response.Error).to.be.null;
-                return httpHelper.chaiHttpPost(
+                return httpHelper.post(
                     '/simpletask/lookup',
                     {
                         Token : token,
@@ -302,7 +294,7 @@ describe('Simple Task', function() {
         });
 
         it('Mark as complete', function() {
-            return httpHelper.chaiHttpPost(
+            return httpHelper.post(
                 '/simpletask/update',
                 {
                     Token: token,
@@ -315,7 +307,7 @@ describe('Simple Task', function() {
             ).then(
                 function (response) {
                     expect(response.Error).to.be.null;
-                    return httpHelper.chaiHttpPost(
+                    return httpHelper.post(
                         '/simpletask/lookup',
                         {
                             Token : token,
@@ -335,20 +327,20 @@ describe('Simple Task', function() {
 
     describe('Remove', function() {
         before(function() {
-            return httpHelper.chaiHttpPostPurgeDatabaseArea('simpletask');
+            return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('simpletask');
         });
 
         it('removes a task', function() {
             var taskIdToRemove = null;
 
-            return createTasks({
+            return simpleTaskHelper.createTasks({
                 Token : token,
                 Title : "Test Task",
                 Description : "Descriptive",
                 DueDate : date
             }, 2)
             .then(function() {
-                return lookupTasks(token);
+                return simpleTaskHelper.lookupTasks(token);
             })
             .then(function(response) {
                 expect(response.SimpleTasks).to.be.an.array;
@@ -357,7 +349,7 @@ describe('Simple Task', function() {
                 taskIdToRemove = response.SimpleTasks[0].taskId;
                 expect(response.SimpleTasks[1].TaskId).to.not.equal(taskIdToRemove);
 
-                return httpHelper.chaiHttpPost('/simpletask/remove', {
+                return httpHelper.post('/simpletask/remove', {
                     Token: token,
                     TaskId: response.SimpleTasks[0].TaskId
                 });
@@ -365,7 +357,7 @@ describe('Simple Task', function() {
             .then(function(response) {
                 expect(response.Error).to.be.null;
 
-                return lookupTasks(token);
+                return simpleTaskHelper.lookupTasks(token);
             })
             .then(function(response) {
                 expect(response.SimpleTasks).to.be.an.array;

@@ -14,21 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-if (!global.Promise) {
-    global.Promise = require('bluebird');
-}
-
-var expect = require('chai').expect;
+var httpHelper = require('../chai_http_request_helper');
+var serverErrorHelper = require('../server_error_helper.js')
 var _ = require('lodash');
 
 module.exports = {
-    checkResponseForServerErrors: checkResponseForServerErrors
+    createTask: createTask
 };
 
-function checkResponseForServerErrors(response) {
-    if (_.isNull(response.Error)) {
-        return Promise.resolve(response);
-    }
-
-    expect(response.Error, 'Server message: [' + response.Error.ErrorMessage + ']').to.be.null;
+function createTask(token, projectId, taskRef, otherProperties) {
+    return httpHelper.post('/agile/task/create', {
+        Token: token,
+        ProjectId: projectId,
+        Title: "title_" + taskRef,
+        Description: "description_" + taskRef,
+        OriginalEstimate: _.get(otherProperties, 'originalEstimate', '1h'),
+    })
+    .then(serverErrorHelper.newResponseHandler());
 }
