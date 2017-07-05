@@ -140,6 +140,7 @@ pub enum EvelynServiceError {
     // Agile: Sprint
     CreateAgileSprint(EvelynCoreError),
     LookupActiveAgileSprints(EvelynCoreError),
+    LookupBacklogAgileSprints(EvelynCoreError),
 
     // Agile: Heirarchy
     MakeAgileHeirarchyLink(EvelynCoreError),
@@ -210,6 +211,7 @@ EvelynErrorDisplay!{
     // Agile: Sprint
     {CreateAgileSprint, "1006201", "Failed to create agile sprint"},
     {LookupActiveAgileSprints, "1006202", "Failed to lookup active sprints"},
+    {LookupBacklogAgileSprints, "1006203", "Failed to lookup active sprints"},
 
     // Agile: Heirarchy
     {MakeAgileHeirarchyLink, "1006301", "Failed to make agile heirarchy link"},
@@ -273,6 +275,8 @@ pub enum EvelynCoreError {
 
     // Agile: Sprint
     FailedToCreateAgileSprint(EvelynDatabaseError),
+    FailedToLookupActiveAgileSprints(EvelynDatabaseError),
+    FailedToLookupBacklogAgileSprints(EvelynDatabaseError),
 
     // Agile: Heirarchy
     AgileHeirarcyInvalidLink(EvelynBaseError),
@@ -342,6 +346,8 @@ EvelynErrorDisplay!{
 
     // Agile: Sprint
     {FailedToCreateAgileSprint, "Failed to create agile sprint: {}"},
+    {FailedToLookupActiveAgileSprints, "Failed to lookup active agile sprints: {}"},
+    {FailedToLookupBacklogAgileSprints, "Failed to lookup backlog agile sprints: {}"},
 
     // Agile: Heirarchy
     {AgileHeirarcyInvalidLink, "Invalid link: {}"},
@@ -413,6 +419,7 @@ pub enum EvelynDatabaseError {
     // Agile: Sprint
     InsertAgileSprint(MongoDbError),
     LookupActiveAgileSprints(MongoDbError),
+    LookupBacklogAgileSprints(MongoDbError),
 
     // Agile: Heirarchy
     InsertAgileHeirarchyLink(MongoDbError),
@@ -484,6 +491,7 @@ EvelynErrorDisplay!{
     // Agile: Sprint
     {InsertAgileSprint, "Failed to insert agile sprint: {}"},
     {LookupActiveAgileSprints, "Failed to lookup active agile sprints: {}"},
+    {LookupBacklogAgileSprints, "Failed to lookup backlog agile sprints: {}"},
 
     // Agile: Heirarchy
     {InsertAgileHeirarchyLink, "Failed to insert agile heirarchy link: {}"},

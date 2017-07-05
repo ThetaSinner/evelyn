@@ -67,3 +67,17 @@ pub struct LookupActiveSprintsResponseModel {
     pub sprints: Vec<SprintExternalModel>,
     pub error: Option<ErrorModel>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogRequestModel {
+    pub token: String,
+    pub project_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct LookupBacklogResponseModel {
+    pub sprints: Vec<SprintExternalModel>,
+    pub error: Option<ErrorModel>,
+}

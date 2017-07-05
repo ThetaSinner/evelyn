@@ -15,9 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 use chrono::prelude::*;
+use std::str::FromStr;
 
 pub fn get_timestamp() -> i64 {
     Utc::now().timestamp()
+}
+
+pub fn string_to_timestamp(timestamp: String) -> i64 {
+    DateTime::<Utc>::from_str(timestamp.as_ref()).unwrap().timestamp()
 }
 
 pub fn timestamp_to_string(timestamp: i64) -> String {

@@ -59,8 +59,6 @@ pub fn find_active(
     let before_end_time = current_time.clone();
     query.insert("endDate", doc!{"$gte" => before_end_time});
 
-    debug!("query: {}", query);
-
     let cursor = collection.find(Some(query), None);
 
     match cursor {
@@ -68,11 +66,37 @@ pub fn find_active(
             Ok(c.map(|x| match x {
                 Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
                 Err(e) => {
-                    println!("Database error in lookup agile sprints {}", e);
+                    println!("Database error in lookup active agile sprints {}", e);
                     panic!()
                 },
             }).collect())
         },
         Err(e) => Err(EvelynDatabaseError::LookupActiveAgileSprints(e)),
+    }
+}
+
+
+pub fn lookup_backlog(
+    client: &Client,
+    project_id: &String,
+) -> Result<Vec<sprint_model::SprintModel>, EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("agile_sprint");
+
+    let mut query = doc!{"projectId" => project_id};
+
+    let current_time = bson::Bson::I64(Utc::now().timestamp());
+    query.insert("startDate", doc!{"$gt" => current_time});
+
+    match collection.find(Some(query), None) {
+        Ok(cursor) => {
+            Ok(cursor.map(|x| match x {
+                Ok(x) => bson::from_bson(bson::Bson::Document(x)).unwrap(),
+                Err(e) => {
+                    println!("Database error in lookup backlog agile sprints {}", e);
+                    panic!()
+                },
+            }).collect())
+        },
+        Err(e) => Err(EvelynDatabaseError::LookupBacklogAgileSprints(e)),
     }
 }

@@ -80,3 +80,32 @@ pub fn lookup_active_processor(
         },
     }
 }
+
+pub fn lookup_backlog_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(sprint_model::LookupBacklogRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match sprint::lookup_backlog(request_model, processor_data) {
+                Ok(response) => {
+                    model_to_router_output!(response)
+                },
+                Err(e) => {
+                    model_to_router_output!(sprint_model::LookupBacklogResponseModel {
+                        sprints: Vec::new(),
+                        error: service_error_to_model!(EvelynServiceError::LookupBacklogAgileSprints(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(sprint_model::LookupBacklogResponseModel {
+                sprints: Vec::new(),
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

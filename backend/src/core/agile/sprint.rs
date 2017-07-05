@@ -22,8 +22,7 @@ use core::agile::project;
 use processing::ProcessorData;
 use std::sync::Arc;
 use uuid::Uuid;
-use chrono::prelude::*;
-use std::str::FromStr;
+use core::date_time_service as dts;
 
 pub fn create(
     request_model: sprint_model::CreateSprintRequestModel,
@@ -35,11 +34,11 @@ pub fn create(
     let sprint_model = sprint_model::SprintModel {
         sprint_id: sprint_id,
         created_by_user_id: session_token_model.user_id,
-        date_created: Utc::now().timestamp(),
+        date_created: dts::get_timestamp(),
         project_id: request_model.project_id,
         title: request_model.title,
-        start_date: DateTime::<Utc>::from_str(request_model.start_date.as_ref()).unwrap().timestamp(),
-        end_date: DateTime::<Utc>::from_str(request_model.end_date.as_ref()).unwrap().timestamp(),
+        start_date: dts::string_to_timestamp(request_model.start_date),
+        end_date: dts::string_to_timestamp(request_model.end_date),
     };
 
     let ds = processor_data.data_store.clone();
@@ -72,15 +71,38 @@ pub fn lookup_active(
                             sprint_id: x.sprint_id,
                             project_id: x.project_id,
                             title: x.title,
-                            start_date: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(x.start_date, 0), Utc).to_rfc3339(),
-                            end_date: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(x.end_date, 0), Utc).to_rfc3339(),
+                            start_date: dts::timestamp_to_string(x.start_date),
+                            end_date: dts::timestamp_to_string(x.end_date),
                         }
                     }).collect(),
                     error: None,
                 }),
-                Err(e) => Err(EvelynCoreError::FailedToCreateAgileSprint(e)),
+                Err(e) => Err(EvelynCoreError::FailedToLookupActiveAgileSprints(e)),
             }
         },
         Err(e) => Err(e), // Just propogate the error from the other module.
     }    
+}
+
+pub fn lookup_backlog(
+    request_model: sprint_model::LookupBacklogRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<sprint_model::LookupBacklogResponseModel, EvelynCoreError> {
+    let ds = processor_data.data_store.clone();
+
+    match sprint_data::lookup_backlog(&ds, &request_model.project_id) {
+        Ok(result) => Ok(sprint_model::LookupBacklogResponseModel {
+            sprints: result.into_iter().map(|sprint| {
+                sprint_model::SprintExternalModel {
+                    sprint_id: sprint.sprint_id,
+                    project_id: sprint.project_id,
+                    title: sprint.title,
+                    start_date: dts::timestamp_to_string(sprint.start_date),
+                    end_date: dts::timestamp_to_string(sprint.end_date),
+                }
+            }).collect(),
+            error: None,
+        }),
+        Err(e) => Err(EvelynCoreError::FailedToLookupBacklogAgileSprints(e)),
+    } 
 }
