@@ -77,7 +77,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, response.TaskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('title_starter_ref');
@@ -129,13 +129,13 @@ describe('Agile: Task', function() {
                 expect(response.Tasks).to.be.an.array;
                 expect(response.Tasks).to.have.lengthOf(2);
 
-                let task1 = response.Tasks[0];
+                var task1 = response.Tasks[0];
                 expect(task1.TaskId).to.equal(taskId1);
                 expect(task1.ProjectId).to.equal(projectId);
                 expect(task1.Title).to.equal('title_starter_ref_1');
                 expect(task1.Assignment).to.be.null;
 
-                let task3 = response.Tasks[1];
+                var task3 = response.Tasks[1];
                 expect(task3.TaskId).to.equal(taskId3);
                 expect(task3.ProjectId).to.equal(projectId);
                 expect(task3.Title).to.equal('title_starter_ref_3');
@@ -156,7 +156,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('title_starter_ref');
@@ -179,7 +179,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('new title');
@@ -204,7 +204,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('title_starter_ref');
@@ -227,7 +227,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('new title');
@@ -254,7 +254,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(altToken, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('title_starter_ref');
@@ -282,7 +282,7 @@ describe('Agile: Task', function() {
                 return agileTaskHelper.lookupTask(token, projectId, taskId);
             })
             .then(function (response) {
-                let task = response.Task;
+                var task = response.Task;
                 expect(task.TaskId).to.equal(taskId);
                 expect(task.ProjectId).to.equal(projectId);
                 expect(task.Title).to.equal('title_starter_ref');
