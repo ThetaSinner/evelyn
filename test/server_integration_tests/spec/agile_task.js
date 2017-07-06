@@ -56,4 +56,30 @@ describe('Agile: Task', function() {
     it('Creates a task', function() {
         return agileTaskHelper.createTask(token, projectId, 'starter_ref');
     });
+
+    describe('Lookup task', function() {
+        it('Looks up a task', function() {
+            var taskId = null;
+
+            return agileTaskHelper.createTask(token, projectId, 'starter_ref')
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId = response.TaskId;
+                return agileTaskHelper.lookupTask(token, projectId, response.TaskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('title_starter_ref');
+                expect(task.Description).to.equal('description_starter_ref');
+                expect(task.OriginalEstimate).to.equal('1h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            });
+        });
+    });
 });

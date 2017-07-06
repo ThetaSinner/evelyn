@@ -45,8 +45,9 @@ function checkResponseForServerErrors(params, response) {
 
     if (!params.silent) {
         console.log('Server message: [', response.Error.ErrorMessage, ']');
+        // TODO print detail here once server supports it.
     }
-    return Promise.reject(response);
+    return Promise.reject(new Error(response.Error.ErrorCode + ": " + response.Error.ErrorMessage));
 }
 
 

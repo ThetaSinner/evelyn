@@ -19,7 +19,8 @@ var serverErrorHelper = require('../server_error_helper.js')
 var _ = require('lodash');
 
 module.exports = {
-    createTask: createTask
+    createTask: createTask,
+    lookupTask: lookupTask
 };
 
 function createTask(token, projectId, taskRef, otherProperties) {
@@ -29,6 +30,15 @@ function createTask(token, projectId, taskRef, otherProperties) {
         Title: "title_" + taskRef,
         Description: "description_" + taskRef,
         OriginalEstimate: _.get(otherProperties, 'originalEstimate', '1h'),
+    })
+    .then(serverErrorHelper.newResponseHandler());
+}
+
+function lookupTask(token, projectId, taskId) {
+    return httpHelper.post('/agile/task/lookup', {
+        Token: token,
+        ProjectId: projectId,
+        TaskId: taskId
     })
     .then(serverErrorHelper.newResponseHandler());
 }

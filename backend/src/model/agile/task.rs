@@ -52,6 +52,7 @@ pub struct TaskModel {
 #[serde(rename_all = "PascalCase")]
 pub struct LookupTaskRequestModel {
     pub token: String,
+    pub project_id: String,
     pub task_id: String,
 }
 

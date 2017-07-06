@@ -39,7 +39,7 @@ fn lookup_linked_tasks(project_id: &String, story_id: &String, processor_data: A
     match links {
         Ok(result) => {
             result.links.into_iter().filter_map(|link| {
-                let task = task_data::find_task_by_id(&ds, &link.link_to_id);
+                let task = task_data::find_task_by_id(&ds, &project_id.to_owned(), &link.link_to_id);
 
                 match task {
                     Ok(task) => {

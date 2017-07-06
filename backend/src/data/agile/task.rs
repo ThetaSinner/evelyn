@@ -36,11 +36,12 @@ pub fn insert_task(
 
 pub fn find_task_by_id(
     client: &Client,
+    project_id: &String,
     task_id: &String,
 ) -> Result<Option<task_model::TaskModel>, EvelynDatabaseError> {
     let collection = client.db("evelyn").collection("agile_task");
 
-    let query = doc!{"taskId" => task_id};
+    let query = doc!{"projectId" => project_id, "taskId" => task_id};
     let result = collection.find_one(Some(query), None);
 
     match result {

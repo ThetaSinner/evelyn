@@ -69,7 +69,7 @@ pub fn lookup(
 ) -> Result<task_model::LookupTaskResponseModel, EvelynCoreError> {
     let ds = processor_data.data_store.clone();
 
-    match task_data::find_task_by_id(&ds, &request_model.task_id) {
+    match task_data::find_task_by_id(&ds, &request_model.project_id, &request_model.task_id) {
         Ok(result) => {
             if let Some(result) = result {
                 let modified_by_user = user_data::find_user_by_id(&ds, &result.modified_by_user_id);
