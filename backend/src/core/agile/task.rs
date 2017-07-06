@@ -101,7 +101,7 @@ pub fn lookup(
 
                                 match (assigned_to_user, assigned_by_user) {
                                     (Ok(Some(a)), Ok(Some(b))) => {
-                                        Some(task_model::AssignmentExternalOutputModel {
+                                        Some(task_model::AssignmentExternalModel {
                                             assigned_to_user: task_model::UserExternalModel {
                                                 user_name: a.user_name,
                                                 user_id: a.user_id,
@@ -157,7 +157,7 @@ pub fn lookup_backlog(
 
                                     match (assigned_to_user, assigned_by_user) {
                                         (Ok(Some(a)), Ok(Some(b))) => {
-                                            Some(task_model::AssignmentExternalOutputModel {
+                                            Some(task_model::AssignmentExternalModel {
                                                 assigned_to_user: task_model::UserExternalModel {
                                                     user_name: a.user_name,
                                                     user_id: a.user_id,
@@ -196,16 +196,16 @@ pub fn update(
 ) -> Option<EvelynCoreError> {
     let update_model = task_model::UpdateTaskModel {
         date_modified: dts::get_timestamp(),
-        modified_by_user_id: session_token_model.user_id,
+        modified_by_user_id: session_token_model.user_id.to_owned(),
         task_id: request_model.task_id,
         title: request_model.title,
         description: request_model.description,
         original_estimate: request_model.original_estimate,
-        assignment: match request_model.assignment {
+        assignment: match request_model.assign_to_user_id {
             None => None,
             Some(a) => Some(task_model::AssignmentModel {
-                assigned_to_user_id: a.assigned_to_user_id,
-                assigned_by_user_id: a.assigned_by_user_id,
+                assigned_to_user_id: a,
+                assigned_by_user_id: session_token_model.user_id.to_owned(),
             }),
         },
     };

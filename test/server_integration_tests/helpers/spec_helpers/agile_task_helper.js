@@ -21,7 +21,8 @@ var _ = require('lodash');
 module.exports = {
     createTask: createTask,
     lookupTask: lookupTask,
-    lookupBacklog: lookupBacklog
+    lookupBacklog: lookupBacklog,
+    updateTask: updateTask
 };
 
 function createTask(token, projectId, taskRef, otherProperties) {
@@ -49,5 +50,29 @@ function lookupBacklog(token, projectId) {
         Token: token,
         ProjectId: projectId
     })
+    .then(serverErrorHelper.newResponseHandler());
+}
+
+function updateTask(token, projectId, taskId, updateProperties) {
+    var payload = {
+        Token: token,
+        ProjectId: projectId,
+        TaskId: taskId
+    };
+
+    if (_.has(updateProperties, 'title')) {
+        payload.Title = updateProperties.title;
+    }
+    if (_.has(updateProperties, 'description')) {
+        payload.Description = updateProperties.description;
+    }
+    if (_.has(updateProperties, 'originalEstimate')) {
+        payload.OriginalEstimate = updateProperties.originalEstimate;
+    }
+    if (_.has(updateProperties, 'assignToUserId')) {
+        payload.AssignToUserId = updateProperties.assignToUserId;
+    }
+
+    return httpHelper.post('/agile/task/update', payload)
     .then(serverErrorHelper.newResponseHandler());
 }

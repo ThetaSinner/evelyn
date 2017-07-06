@@ -33,6 +33,7 @@ var agileTaskHelper = require('../helpers/spec_helpers/agile_task_helper.js');
 
 describe('Agile: Task', function() {
     var token = null;
+    var altToken = null;
     var projectId = null;
 
     before(function () {
@@ -42,6 +43,12 @@ describe('Agile: Task', function() {
         })
         .then(function (_token) {
             token = _token;
+        })
+        .then(function () {
+            return commonRequestsHelper.createUserAndLogon('alt user');
+        })
+        .then(function (_token) {
+            altToken = _token;
         })
         .then(function() {
             return agileProjectHelper.createProject(token, 'task_project');
@@ -133,6 +140,164 @@ describe('Agile: Task', function() {
                 expect(task3.ProjectId).to.equal(projectId);
                 expect(task3.Title).to.equal('title_starter_ref_3');
                 expect(task3.Assignment).to.be.null;
+            });
+        });
+    });
+
+    describe('Update', function () {
+        it('Updates a task', function () {
+            var taskId = null;
+
+            return agileTaskHelper.createTask(token, projectId, 'starter_ref', {originalEstimate: '2h'})
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId = response.TaskId;
+
+                return agileTaskHelper.lookupTask(token, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('title_starter_ref');
+                expect(task.Description).to.equal('description_starter_ref');
+                expect(task.OriginalEstimate).to.equal('2h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            })
+            .then(function () {
+                return agileTaskHelper.updateTask(token, projectId, taskId, {
+                    title: 'new title',
+                    description: 'new description',
+                    originalEstimate: '4h'
+                });
+            })
+            .then(function () {
+                return agileTaskHelper.lookupTask(token, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('new title');
+                expect(task.Description).to.equal('new description');
+                expect(task.OriginalEstimate).to.equal('4h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            });
+        });
+
+        it('Automatically updates the last modified by user', function () {
+            var taskId = null;
+
+            return agileTaskHelper.createTask(token, projectId, 'starter_ref', {originalEstimate: '2h'})
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId = response.TaskId;
+
+                return agileTaskHelper.lookupTask(token, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('title_starter_ref');
+                expect(task.Description).to.equal('description_starter_ref');
+                expect(task.OriginalEstimate).to.equal('2h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            })
+            .then(function () {
+                return agileTaskHelper.updateTask(altToken, projectId, taskId, {
+                    title: 'new title',
+                    description: 'new description',
+                    originalEstimate: '4h'
+                });
+            })
+            .then(function () {
+                return agileTaskHelper.lookupTask(token, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('new title');
+                expect(task.Description).to.equal('new description');
+                expect(task.OriginalEstimate).to.equal('4h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('alt user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            });
+        });
+
+        it('Update asigned to', function () {
+            var taskId = null;
+            var assignedByUserId = null;
+            var assignToUserId = null;
+
+            return agileTaskHelper.createTask(altToken, projectId, 'starter_ref', {originalEstimate: '2h'})
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId = response.TaskId;
+
+                return agileTaskHelper.lookupTask(altToken, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('title_starter_ref');
+                expect(task.Description).to.equal('description_starter_ref');
+                expect(task.OriginalEstimate).to.equal('2h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('alt user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.null;
+            })
+            .then(function () {
+                return commonRequestsHelper.searchForUsers(token, 'alt');
+            })
+            .then(function (response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                assignToUserId = response.SearchResults[0].UserId;
+                
+                return agileTaskHelper.updateTask(token, projectId, taskId, {
+                    assignToUserId: assignToUserId
+                });
+            })
+            .then(function () {
+                return agileTaskHelper.lookupTask(token, projectId, taskId);
+            })
+            .then(function (response) {
+                let task = response.Task;
+                expect(task.TaskId).to.equal(taskId);
+                expect(task.ProjectId).to.equal(projectId);
+                expect(task.Title).to.equal('title_starter_ref');
+                expect(task.Description).to.equal('description_starter_ref');
+                expect(task.OriginalEstimate).to.equal('2h');
+                expect(task.ModifiedByUser).to.be.ok;
+                expect(task.ModifiedByUser.UserName).to.equal('user');
+                expect(task.ModifiedByUser.UserId).to.be.a.string;
+                expect(task.DateModified).to.be.ok; // TODO assert date?
+                expect(task.Assignment).to.be.ok;
+                expect(task.Assignment.AssignedToUser).to.be.ok;
+                expect(task.Assignment.AssignedToUser.UserName).to.equal('alt user');
+                expect(task.Assignment.AssignedToUser.UserId).to.equal(assignToUserId);
+                expect(task.Assignment.AssignedByUser).to.be.ok;
+                expect(task.Assignment.AssignedByUser.UserName).to.equal('user');
             });
         });
     });
