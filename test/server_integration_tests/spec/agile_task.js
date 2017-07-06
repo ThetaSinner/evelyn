@@ -27,6 +27,8 @@ var serverErrorHelper = require('../helpers/server_error_helper.js');
 
 var userGroupHelper = require('../helpers/spec_helpers/user_group_helper.js');
 var agileProjectHelper = require('../helpers/spec_helpers/agile_project_helper.js');
+var agileSprintHelper = require('../helpers/spec_helpers/agile_sprint_helper.js');
+var agileHeirarchyHelper = require('../helpers/spec_helpers/agile_heirarchy_helper.js');
 var agileTaskHelper = require('../helpers/spec_helpers/agile_task_helper.js');
 
 describe('Agile: Task', function() {
@@ -79,6 +81,58 @@ describe('Agile: Task', function() {
                 expect(task.ModifiedByUser.UserId).to.be.a.string;
                 expect(task.DateModified).to.be.ok; // TODO assert date?
                 expect(task.Assignment).to.be.null;
+            });
+        });
+
+        it('Looks up backlog tasks', function() {
+            var taskId1 = null;
+            var taskId2 = null;
+            var taskId3 = null;
+            var sprintId = null;
+
+            return agileTaskHelper.createTask(token, projectId, 'starter_ref_1')
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId1 = response.TaskId;
+                
+                return agileTaskHelper.createTask(token, projectId, 'starter_ref_2');
+            })
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId2 = response.TaskId;
+                
+                return agileTaskHelper.createTask(token, projectId, 'starter_ref_3');
+            })
+            .then(function (response) {
+                expect(response.TaskId).to.be.ok;
+                taskId3 = response.TaskId;
+                
+                return agileSprintHelper.createSprint(token, projectId, 'my sprint');
+            })
+            .then(function (response) {
+                expect(response.SprintId).to.be.ok;
+                sprintId = response.SprintId;
+
+                return agileHeirarchyHelper.createLink(token, projectId, 'Sprint', sprintId, 'Task', taskId2);
+            })
+            .then(function () {
+                return agileTaskHelper.lookupBacklog(token, projectId);
+            })
+            .then(function (response) {
+                expect(response.Tasks).to.be.an.array;
+                expect(response.Tasks).to.have.lengthOf(2);
+
+                let task1 = response.Tasks[0];
+                expect(task1.TaskId).to.equal(taskId1);
+                expect(task1.ProjectId).to.equal(projectId);
+                expect(task1.Title).to.equal('title_starter_ref_1');
+                expect(task1.Assignment).to.be.null;
+
+                let task3 = response.Tasks[1];
+                expect(task3.TaskId).to.equal(taskId3);
+                expect(task3.ProjectId).to.equal(projectId);
+                expect(task3.Title).to.equal('title_starter_ref_3');
+                expect(task3.Assignment).to.be.null;
             });
         });
     });

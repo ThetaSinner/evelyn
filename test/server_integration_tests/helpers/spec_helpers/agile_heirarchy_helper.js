@@ -19,35 +19,17 @@ var serverErrorHelper = require('../server_error_helper.js')
 var _ = require('lodash');
 
 module.exports = {
-    createTask: createTask,
-    lookupTask: lookupTask,
-    lookupBacklog: lookupBacklog
+    createLink: createLink,
 };
 
-function createTask(token, projectId, taskRef, otherProperties) {
-    return httpHelper.post('/agile/task/create', {
+function createLink(token, projectId, from_type, from_id, to_type, to_id) {
+    return httpHelper.post('/agile/heirarchy/link', {
         Token: token,
         ProjectId: projectId,
-        Title: "title_" + taskRef,
-        Description: "description_" + taskRef,
-        OriginalEstimate: _.get(otherProperties, 'originalEstimate', '1h'),
-    })
-    .then(serverErrorHelper.newResponseHandler());
-}
-
-function lookupTask(token, projectId, taskId) {
-    return httpHelper.post('/agile/task/lookup', {
-        Token: token,
-        ProjectId: projectId,
-        TaskId: taskId
-    })
-    .then(serverErrorHelper.newResponseHandler());
-}
-
-function lookupBacklog(token, projectId) {
-    return httpHelper.post('/agile/task/lookup/backlog', {
-        Token: token,
-        ProjectId: projectId
+        LinkFromTypeName: from_type,
+        LinkFromId: from_id,
+        LinkToTypeName: to_type,
+        LinkToId: to_id
     })
     .then(serverErrorHelper.newResponseHandler());
 }

@@ -17,37 +17,19 @@
 var httpHelper = require('../chai_http_request_helper');
 var serverErrorHelper = require('../server_error_helper.js')
 var _ = require('lodash');
+var moment = require('moment');
 
 module.exports = {
-    createTask: createTask,
-    lookupTask: lookupTask,
-    lookupBacklog: lookupBacklog
+    createSprint: createSprint,
 };
 
-function createTask(token, projectId, taskRef, otherProperties) {
-    return httpHelper.post('/agile/task/create', {
+function createSprint(token, projectId, title, otherProperties) {
+    return httpHelper.post('/agile/sprint/create', {
         Token: token,
         ProjectId: projectId,
-        Title: "title_" + taskRef,
-        Description: "description_" + taskRef,
-        OriginalEstimate: _.get(otherProperties, 'originalEstimate', '1h'),
-    })
-    .then(serverErrorHelper.newResponseHandler());
-}
-
-function lookupTask(token, projectId, taskId) {
-    return httpHelper.post('/agile/task/lookup', {
-        Token: token,
-        ProjectId: projectId,
-        TaskId: taskId
-    })
-    .then(serverErrorHelper.newResponseHandler());
-}
-
-function lookupBacklog(token, projectId) {
-    return httpHelper.post('/agile/task/lookup/backlog', {
-        Token: token,
-        ProjectId: projectId
+        Title: title,
+        StartDate: _.get(otherProperties, 'startDate', moment().utc().subtract(1, 'days')),
+        EndDate: _.get(otherProperties, 'endDate', moment().utc().add(1, 'days'))
     })
     .then(serverErrorHelper.newResponseHandler());
 }
