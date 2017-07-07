@@ -5,7 +5,7 @@ cd ../../backend
 cargo build
 
 # Start the server.
-./target/debug/evelyn > /dev/null &
+./target/debug/evelyn -conf=../test/server_integration_tests/evelyn_test_conf.json &
 server_pid=$!
 
 cd ../test/server_integration_tests

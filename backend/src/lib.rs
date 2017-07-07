@@ -46,6 +46,8 @@ use server::routing::Router;
 
 pub fn hello_evelyn() {
     println!("Starting...");
+    println!("Server executable location: {}", std::env::current_exe().unwrap().display());
+    println!("Running in directory: {}", std::env::current_dir().unwrap().display());
 
     // Initialise the logging back end.
     log4rs::init_file("./configs/log4rs.yml", Default::default()).unwrap();
