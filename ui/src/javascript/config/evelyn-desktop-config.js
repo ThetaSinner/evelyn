@@ -109,15 +109,27 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                 resolve: {
                     todoList: function ($stateParams, serverBridgeService, settingsService) {
                         return new Promise(function (resolve, reject) {
-                            // TODO fetch via cache.
+                            var todoListID = $stateParams.todoListId;
+
+                            if (todoListID !== null) // Param not null, update cache
+                                localStorage.setItem("todoListItem", todoListID);
+                            else if (localStorage.getItem('todoListItem')) // Param null, exists in cache
+                                todoListID = localStorage.getItem("todoListItem");
+                            else; // Param NULL, no cache
+
                             // TODO handle todoListId null. Display a 'no todo list selected'.
                             serverBridgeService.send_to_server('/todolist/lookup', {
-                                TodoListId: $stateParams.todoListId,
+                                TodoListId: todoListID,
                             }, function (response) {
-                                // TODO handle response error.
-                                var todoList = response.TodoList;
-                                todoList.TodoListId = $stateParams.todoListId;
-                                resolve(todoList);
+                                if (response.Error === null) {
+                                    var todoList = response.TodoList;
+                                    todoList.TodoListId = todoListID;
+                                    resolve(todoList);
+                                }
+                                else {
+                                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
+                                    resolve(null);
+                                }
                             });
                         });
                     },
