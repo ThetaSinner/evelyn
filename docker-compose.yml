@@ -39,6 +39,6 @@ services:
         restart: always
         volumes:
         - ./ui:/source
-        - /source/node_modules
+        - /source/node_modules/node-sass
 volumes:
     mongo_vol:
