@@ -5,7 +5,7 @@ evelynDesktopApp.component('simpleTaskComponent', {
         simpleTasks: '<',
     },
 
-    controller: function($scope, $state, serverBridgeService) {
+    controller: function($scope, $state, alertify, serverBridgeService) {
         var ctrl = this;
 
         $scope.edit = function(taskId) {
@@ -21,10 +21,11 @@ evelynDesktopApp.component('simpleTaskComponent', {
                 NewCompleted: true,
             }, function (response) {
                 if (response.Error === null) {
+                    alertify.success("Sucessfully updated simple task");
                     $state.reload();
                 }
                 else {
-                    // TODO handle error.
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
                     console.log(response);
                 }
             });
@@ -35,10 +36,11 @@ evelynDesktopApp.component('simpleTaskComponent', {
                 TaskId: taskId,
             }, function (response) {
                 if (response.Error === null) {
+                    alertify.success("Sucessfully deleted simple task");
                     $state.reload();
                 }
                 else {
-                    // TODO handle error.
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
                     console.log(response);
                 }
             });

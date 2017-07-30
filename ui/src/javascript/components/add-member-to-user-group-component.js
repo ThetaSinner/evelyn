@@ -1,7 +1,7 @@
 evelynDesktopApp.component('addMemberToUserGroupComponent', {
     template: '@@include(cleanHtml("src/components/user-group/add-member-to-user-group.partial.html"))',
 
-    controller: function($scope, $state, $stateParams, serverBridgeService) {
+    controller: function($scope, $state, alertify, $stateParams, serverBridgeService) {
         $scope.query = "";
 
         $scope.search = function() {
@@ -24,9 +24,11 @@ evelynDesktopApp.component('addMemberToUserGroupComponent', {
                 },
             }, function (response) {
                 if (response.Error === null) {
+                    alertify.success("Sucessfully added member to user group");
                     $state.go('dashboard.usergroups');
                 }
                 else {
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
                     console.log(response);
                 }
             });

@@ -15,12 +15,6 @@
                         <li class="tabs-title is-active"><a ui-sref="signup" aria-selected="true">Sign Up</a></li>
                     </ul>
                     <hr>
-
-                    <div class="callout alert-callout-border alert text-center" ng-hide="error == null">
-                        <strong>Error</strong>
-                        <p ng-model="error">{{error}}</p>
-                    </div>
-
                     <form ng-submit="submit()">
                         <label class="tile-label">User Name
                             <input ng-model="userName" name="UserName" type="text" placeholder="User Name">

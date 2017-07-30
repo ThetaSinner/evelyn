@@ -1,7 +1,7 @@
 evelynDesktopApp.component('updateSimpleTaskComponent', {
     template: '@@include(cleanHtml("src/components/simpletask/update-simple-task.partial.html"))',
 
-    controller: function($scope, $state, $stateParams, settingsService, serverBridgeService) {
+    controller: function($scope, $state, alertify, $stateParams, settingsService, serverBridgeService) {
         $(".date-input").fdatepicker({
             format: settingsService.get_date_format(),
             disableDblClickSelection: true,
@@ -21,7 +21,7 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
             $scope.description = $stateParams.simpleTask.Description;
             $scope.dueDate = $stateParams.simpleTask.DueDate;
         }
-
+        
         $scope.update = function() {
             serverBridgeService.send_to_server('/simpletask/update', {
                 TaskId: $stateParams.simpleTask.TaskId,
@@ -30,10 +30,11 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
                 NewDueDate: $scope.dueDate,
             }, function (response) {
                 if (response.Error === null) {
+                    alertify.success("Sucessfully updated simple task");
                     $state.go("dashboard.simpletask");
                 }
                 else {
-                    // TODO handle error.
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
                     console.log(response);
                 }
             });

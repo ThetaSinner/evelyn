@@ -5,7 +5,7 @@ evelynDesktopApp.component('viewTodoListComponent', {
         todoList: '<',
     },
 
-    controller: function($scope, $state, serverBridgeService) {
+    controller: function($scope, $state, alertify, serverBridgeService) {
         $scope.addItem = function() {
             var todoListId = $scope.$ctrl.todoList.TodoListId;
 
@@ -18,9 +18,11 @@ evelynDesktopApp.component('viewTodoListComponent', {
                 },
             }, function(response) {
                 if (response.Error === null) {
+                    alertify.success("Successfully added item to todolist");
                     $state.reload('dashboard.viewtodolist');
                 }
                 else {
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
                     console.log(response.Error);
                 }
             });
@@ -35,7 +37,13 @@ evelynDesktopApp.component('viewTodoListComponent', {
                 ItemIndex: index,
                 IsDone: isDone,
             }, function (response) {
-                // TODO check for error.
+                if (response.Error === null) {
+                    alertify.success("Todo list Item updated");
+                }
+                else {
+                    alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
+                    console.log(response.Error);
+                }
             });
         }
     }

@@ -5,7 +5,7 @@ evelynDesktopApp.component('userGroupsComponent', {
         userGroups: '<',
     },
 
-    controller: function($scope, $state) {
+    controller: function($scope, alertify, $state) {
         $scope.create = function() {
             $state.go('dashboard.createusergroup');
         };

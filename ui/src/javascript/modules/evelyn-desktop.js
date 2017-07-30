@@ -1,1 +1,1 @@
-var evelynDesktopApp = angular.module('evelynDesktopApp', ['ui.router']);
+var evelynDesktopApp = angular.module('evelynDesktopApp', ['ui.router', 'ngAlertify']);

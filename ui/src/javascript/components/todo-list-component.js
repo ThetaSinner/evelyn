@@ -5,7 +5,7 @@ evelynDesktopApp.component('todoListComponent', {
         todoLists: '<',
     },
 
-    controller: function($scope, $state, serverBridgeService) {
+    controller: function($scope, $state, alertify, serverBridgeService) {
         var ctrl = this;
 
         $scope.viewList = function(todoListId) {

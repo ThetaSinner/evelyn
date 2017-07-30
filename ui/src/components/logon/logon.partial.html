@@ -15,12 +15,6 @@
                         <li class="tabs-title"><a ui-sref="signup">Sign Up</a></li>
                     </ul>
                     <hr>
-
-                    <div class="callout alert-callout-border alert text-center" ng-hide="error == null">
-                        <strong>Error</strong>
-                        <p ng-model="error">{{error}}</p>
-                    </div>
-
                     <form ng-submit="submit()">
                         <label class="tile-label">E-Mail Address
                             <input ng-model="emailAddress" name="EmailAddress" type="text" placeholder="E-Mail Address">

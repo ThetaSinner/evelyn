@@ -5,7 +5,7 @@ evelynDesktopApp.component('viewUserGroupComponent', {
         userGroup: '<',
     },
 
-    controller: function($scope, $state) {
+    controller: function($scope, alertify, $state) {
 
     }
 });

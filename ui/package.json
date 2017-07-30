@@ -9,6 +9,7 @@
   "author": "ThetaSinner",
   "license": "GPL-3.0",
   "devDependencies": {
+    "alertify.js": "^1.0.12",
     "express": "^4.15.3",
     "foundation-datepicker": "^1.5.6",
     "foundation-sites": "^6.3.1",
