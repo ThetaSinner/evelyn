@@ -97,7 +97,7 @@ function lookupGroups(token) {
         )
         .then(function (response) {
             expect(response.Error).to.be.null;
-            expect(response.UserGroup).to.not.be.null;
+            expect(response.UserGroup).to.be.an.array;            
             resolve(response);
         })
         .catch(function (e) {
@@ -117,7 +117,7 @@ function lookupGroup(token, groupId) {
         )
         .then(function (response) {
             expect(response.Error).to.be.null;
-            expect(response.UserGroup).to.be.an.array;
+            expect(response.UserGroup).to.not.be.null;
             resolve(response);
         })
         .catch(function (e) {
