@@ -257,7 +257,6 @@ describe('User groups', function() {
                 return userGroupHelper.addMember(token1, group2Id, user2Id)
             })
             .then(function (response) {
-                expect(response.Error).to.be.null;
 
                 return userGroupHelper.lookupGroups(token2);
             })
