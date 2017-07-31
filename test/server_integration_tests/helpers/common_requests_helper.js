@@ -120,6 +120,8 @@ function searchForUsers(token, user_ref) {
     )
     .then(function (response) {
         expect(response.Error).to.be.null;
+        expect(response.SearchResults).to.not.be.null;
+        expect(response.SearchResults).to.be.an.array;
         return Promise.resolve(response);
     });
 }
