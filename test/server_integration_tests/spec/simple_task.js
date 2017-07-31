@@ -330,7 +330,7 @@ describe('Simple Task', function() {
             return commonRequestsHelper.chaiHttpPostPurgeDatabaseArea('simpletask');
         });
 
-        it('removes a task', function() {
+        it('Removes a task', function() {
             var taskIdToRemove = null;
 
             return simpleTaskHelper.createTasks({
