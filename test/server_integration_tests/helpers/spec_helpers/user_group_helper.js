@@ -35,6 +35,7 @@ function createUserGroup(token, name, description) {
     })
     .then(serverErrorHelper.newResponseHandler())
     .then(function (response) {
+        expect(response.Error).to.be.null;
         expect(response.UserGroupId).to.not.be.null;
         return Promise.resolve(response);
     });

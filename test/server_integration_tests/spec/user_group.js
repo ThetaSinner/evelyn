@@ -240,12 +240,10 @@ describe('User groups', function() {
 
             return userGroupHelper.createUserGroup(token1, 'my dev team', 'the description of the team')
             .then(function (response) {
-                expect(response.Error).to.be.null;
 
                 return userGroupHelper.createUserGroup(token1, 'other dev team', 'description');
             })
             .then(function (response) {
-                expect(response.Error).to.be.null;
                 expect(response.UserGroupId).to.be.ok;
                 group2Id = response.UserGroupId;
 
