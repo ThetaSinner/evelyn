@@ -58,7 +58,7 @@ evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settings
                 var isoDate = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
 
                 if (_.isNull(isoDate)) {
-                    console.log("Failed to convert date in request processor");
+                    alertify.error("Date cannot be empty");
                 }
                 else {
                     request[attr] = isoDate;
