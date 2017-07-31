@@ -23,6 +23,7 @@ var _ = require('lodash');
 module.exports = {
     createUserGroup: createUserGroup,
     addMember: addMember,
+    removeMember: removeMember,
     lookupGroups: lookupGroups,
     lookupGroup: lookupGroup
 };
@@ -61,6 +62,29 @@ function addMember(token, user_group_id, user_id) {
             reject(e);
         });
     });
+}
+
+
+function removeMember(token, user_group_id, user_id) {
+    return new Promise(function (resolve, reject) {
+        httpHelper.post(
+            '/usergroup/member/remove',
+            {
+                Token: token,
+                UserGroupId: user_group_id,
+                Member: {
+                    UserId: user_id
+                }
+            }
+        )
+        .then(function (response) {
+            expect(response.Error).to.be.null;
+            resolve(response);
+        })
+        .catch(function (e) {
+            reject(e);
+        });
+    }); 
 }
 
 function lookupGroups(token) {

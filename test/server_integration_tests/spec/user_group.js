@@ -61,6 +61,37 @@ describe('User groups', function() {
         });
     });
 
+    it('Remove a member', function() {
+        var groupId = null;
+         var userId = null;
+
+        return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team")
+        .then(function (response) {
+            groupId = response.UserGroupId;
+            return commonRequestsHelper.searchForUsers(token1, 'user2');
+        })
+        .then(function (response) {
+            userId = response.SearchResults[0].UserId;
+            return userGroupHelper.addMember(token1, groupId, userId);
+        })
+        .then(function (response) {
+            return userGroupHelper.lookupGroup(token1, groupId);
+        })
+        .then(function (response) {
+            expect(response.UserGroup.Members).to.be.an.array;
+            expect(response.UserGroup.Members).to.have.lengthOf(1);
+            return userGroupHelper.removeMember(token1, groupId, userId);
+        })
+        .then(function (response) {
+            return userGroupHelper.lookupGroup(token1, groupId);
+        })
+        .then(function (response) {
+            expect(response.UserGroup.Members).to.be.an.array;
+            expect(response.UserGroup.Members).to.have.lengthOf(0);
+        })
+        ;
+    });
+
     it('Adding same member twice only adds once', function() {
         var groupId = null;
         var userId = null;
