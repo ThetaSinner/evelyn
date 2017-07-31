@@ -125,3 +125,23 @@ pub fn add_member(
         Some(e) => Some(EvelynCoreError::FailedToAddMemberToUserGroup(e)),
     }
 }
+
+
+pub fn remove_member(
+    model: model::user_group::member::RemoveMemberRequestModel,
+    processor_data: Arc<ProcessorData>,
+) -> Option<EvelynCoreError> {
+    let data_store = processor_data.data_store.clone();
+
+    let remove_member_model = model::user_group::member::RemoveMemberModel {
+        user_group_id: model.user_group_id,
+        user_group_member_model: model::user_group::member::UserGroupMemberModel {
+            user_id: model.member.user_id
+        }
+    };
+
+    match data::user_group::remove_member(&data_store, remove_member_model) {
+        None => None,
+        Some(e) => Some(EvelynCoreError::FailedToRemoveMemberFromUserGroup(e)),
+    }
+}

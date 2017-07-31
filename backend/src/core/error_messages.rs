@@ -105,6 +105,7 @@ pub enum EvelynServiceError {
     LookupUserGroups(EvelynCoreError),
     LookupUserGroup(EvelynCoreError),
     AddMemberToUserGroup(EvelynCoreError),
+    RemoveMemberFromUserGroup(EvelynCoreError),
 
     // Simple Task
     FailedToCreateSimpleTask(EvelynCoreError),
@@ -177,6 +178,7 @@ EvelynErrorDisplay!{
     {LookupUserGroups, "100602", "Failed to lookup user groups"},
     {LookupUserGroup, "100603", "Failed to lookup user group"},
     {AddMemberToUserGroup, "100604", "Failed to add member to user group"},
+    {RemoveMemberFromUserGroup, "100604", "Failed to remove member from user group"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
@@ -241,6 +243,7 @@ pub enum EvelynCoreError {
     FailedToLookupUserGroups(EvelynDatabaseError),
     FailedToLookupUserGroup(EvelynDatabaseError),
     FailedToAddMemberToUserGroup(EvelynDatabaseError),
+    FailedToRemoveMemberFromUserGroup(EvelynDatabaseError),
 
     // Simple Task`
     FailedToCreateSimpleTask(EvelynDatabaseError),
@@ -312,6 +315,7 @@ EvelynErrorDisplay!{
     {FailedToLookupUserGroups, "Failed to lookup user groups: {}"},
     {FailedToLookupUserGroup, "Failed to lookup user group: {}"},
     {FailedToAddMemberToUserGroup, "Failed to add member to user group: {}"},
+    {FailedToRemoveMemberFromUserGroup, "Failed to remove member from user group: {}"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "Failed to create task: {}"},
@@ -384,6 +388,7 @@ pub enum EvelynDatabaseError {
     UserGroupNotFound(EvelynBaseError),
     LookupUserGroup(MongoDbError),
     AddMemberToUserGroup(MongoDbError),
+    RemoveMemberFromUserGroup(MongoDbError),
 
     // Simple Task
     InsertSimpleTask(MongoDbError),
@@ -456,6 +461,7 @@ EvelynErrorDisplay!{
     {UserGroupNotFound, "User group not found: {}"},
     {LookupUserGroup, "Failed to lookup user group: {}"},
     {AddMemberToUserGroup, "Failed to add member to user group: {}"},
+    {RemoveMemberFromUserGroup, "Failed to remove member from user group: {}"},
 
     // Simple Task
     {InsertSimpleTask, "Failed to create new simple task: {}"},

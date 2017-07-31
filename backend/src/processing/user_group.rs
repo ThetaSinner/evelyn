@@ -132,3 +132,31 @@ pub fn add_member_processor(
         },
     }
 }
+
+
+pub fn remove_member_processor(
+    router_input: RouterInput,
+    processor_data: Arc<processing::ProcessorData>,
+) -> RouterOutput {
+    match decode_router_input_to_model!(user_group_model::member::RemoveMemberRequestModel, router_input) {
+        Ok(request_model) => {
+            validate_session!(processor_data, request_model);
+
+            match user_group::remove_member(request_model, processor_data) {
+                None => model_to_router_output!(model::user_group::member::RemoveMemberResponseModel {
+                    error: None,
+                }),
+                Some(e) => {
+                    model_to_router_output!(model::user_group::member::RemoveMemberResponseModel {
+                        error: service_error_to_model!(EvelynServiceError::RemoveMemberFromUserGroup(e)),
+                    })
+                },
+            }
+        },
+        Err(e) => {
+            model_to_router_output!(model::user_group::member::AddMemberResponseModel {
+                error: service_error_to_model!(EvelynServiceError::CouldNotDecodeTheRequestPayload(e)),
+            })
+        },
+    }
+}

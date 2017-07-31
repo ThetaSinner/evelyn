@@ -143,3 +143,29 @@ pub fn add_member(
         Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
     }
 }
+
+pub fn remove_member(
+    client: &Client,
+    remove_member_model: user_group_model::member::RemoveMemberModel,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("usergroup");
+
+    let ref user_group_id = remove_member_model.user_group_id;
+    let filter = doc!("userGroupId" => user_group_id);
+
+    let mut update_query = Document::new();
+    let bson_member_model = bson::to_bson(&remove_member_model.user_group_member_model).unwrap();
+    if let bson::Bson::Document(document) = bson_member_model {
+        update_query.insert("members", document);
+
+        let mut push_update_query = Document::new();
+        push_update_query.insert("$pull", update_query);
+
+        match collection.update_one(filter, push_update_query, None) {
+            Ok(_) => None,
+            Err(e) => Some(EvelynDatabaseError::RemoveMemberFromUserGroup(e)),
+        }
+    } else {
+        Some(EvelynDatabaseError::SerialisationFailed(EvelynBaseError::NothingElse))
+    }
+}

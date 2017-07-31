@@ -45,6 +45,33 @@ pub struct UserGroupAddMemberExternalModel {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
+pub struct RemoveMemberRequestModel {
+    pub token: String,
+    pub user_group_id: String,
+    pub member: UserGroupRemoveMemberExternalModel,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct RemoveMemberResponseModel {
+    pub error: Option<ErrorModel>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveMemberModel {
+    pub user_group_id: String,
+    pub user_group_member_model: UserGroupMemberModel,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct UserGroupRemoveMemberExternalModel {
+    pub user_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
 pub struct UserGroupMemberExternalModel {
     pub user_name: String,
     pub user_id: String,
