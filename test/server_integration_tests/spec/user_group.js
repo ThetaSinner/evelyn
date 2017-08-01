@@ -26,7 +26,7 @@ var commonRequestsHelper = require('../helpers/common_requests_helper.js');
 
 var userGroupHelper = require('../helpers/spec_helpers/user_group_helper.js');
 
-describe('User groups', function() {
+describe('User Groups', function() {
     var token1 = null;
     var token2 = null;
 
@@ -54,83 +54,104 @@ describe('User groups', function() {
         return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team");
     });
 
-    it('Add a member', function() {
+    it('Remove a group', function() {
+        var groupID = null;
         return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team")
         .then(function (response) {
-            return userGroupHelper.addMember(token1, response.UserGroupId, "some user id");
+            groupID = response.UserGroupId;
+            return userGroupHelper.lookupGroups(token1);
+        })
+        .then(function (response) {
+            expect(response.UserGroups).to.have.lengthOf(1);
+            return userGroupHelper.removeUserGroup(token1, groupID);
+        })
+        .then(function (response) {
+            return userGroupHelper.lookupGroups(token1);
+        })
+        .then(function (response) {
+            expect(response.UserGroups).to.have.lengthOf(0);
         });
     });
 
-    it('Remove a member', function() {
-        var groupId = null;
-         var userId = null;
+    describe('Members', function() {
+        it('Add a member', function() {
+            return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team")
+            .then(function (response) {
+                return userGroupHelper.addMember(token1, response.UserGroupId, "some user id");
+            });
+        });
 
-        return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team")
-        .then(function (response) {
-            groupId = response.UserGroupId;
-            return commonRequestsHelper.searchForUsers(token1, 'user2');
-        })
-        .then(function (response) {
-            userId = response.SearchResults[0].UserId;
-            return userGroupHelper.addMember(token1, groupId, userId);
-        })
-        .then(function (response) {
-            return userGroupHelper.lookupGroup(token1, groupId);
-        })
-        .then(function (response) {
-            expect(response.UserGroup.Members).to.be.an.array;
-            expect(response.UserGroup.Members).to.have.lengthOf(1);
-            return userGroupHelper.removeMember(token1, groupId, userId);
-        })
-        .then(function (response) {
-            return userGroupHelper.lookupGroup(token1, groupId);
-        })
-        .then(function (response) {
-            expect(response.UserGroup.Members).to.be.an.array;
-            expect(response.UserGroup.Members).to.have.lengthOf(0);
-        })
-        ;
-    });
+        it('Remove a member', function() {
+            var groupId = null;
+            var userId = null;
 
-    it('Adding same member twice only adds once', function() {
-        var groupId = null;
-        var userId = null;
+            return userGroupHelper.createUserGroup(token1, "my dev team", "the description of the team")
+            .then(function (response) {
+                groupId = response.UserGroupId;
+                return commonRequestsHelper.searchForUsers(token1, 'user2');
+            })
+            .then(function (response) {
+                userId = response.SearchResults[0].UserId;
+                return userGroupHelper.addMember(token1, groupId, userId);
+            })
+            .then(function (response) {
+                return userGroupHelper.lookupGroup(token1, groupId);
+            })
+            .then(function (response) {
+                expect(response.UserGroup.Members).to.be.an.array;
+                expect(response.UserGroup.Members).to.have.lengthOf(1);
+                return userGroupHelper.removeMember(token1, groupId, userId);
+            })
+            .then(function (response) {
+                return userGroupHelper.lookupGroup(token1, groupId);
+            })
+            .then(function (response) {
+                expect(response.UserGroup.Members).to.be.an.array;
+                expect(response.UserGroup.Members).to.have.lengthOf(0);
+            })
+            ;
+        });
 
-        return userGroupHelper.createUserGroup(token1, 'my dev team', 'the description of the team')
-        .then(function (response) {
-            groupId = response.UserGroupId;
-            return commonRequestsHelper.searchForUsers(token1, 'user1');
-        })
-        .then(function (response) {
-            expect(response.SearchResults).to.be.an.array;
-            expect(response.SearchResults).to.have.lengthOf(1);
-            userId = response.SearchResults[0].UserId;
+        it('Adding same member twice only adds once', function() {
+            var groupId = null;
+            var userId = null;
 
-            return userGroupHelper.addMember(token1, groupId, userId);
-        })
-        .then(function (response) {
-            return userGroupHelper.addMember(token1, groupId, userId);
-        })
-        .then(function (response) {
-            return userGroupHelper.lookupGroup(token1, groupId);
-        })
-        .then(function (response) {
-            expect(response.UserGroup).to.be.ok;
+            return userGroupHelper.createUserGroup(token1, 'my dev team', 'the description of the team')
+            .then(function (response) {
+                groupId = response.UserGroupId;
+                return commonRequestsHelper.searchForUsers(token1, 'user1');
+            })
+            .then(function (response) {
+                expect(response.SearchResults).to.be.an.array;
+                expect(response.SearchResults).to.have.lengthOf(1);
+                userId = response.SearchResults[0].UserId;
 
-            var userGroup = response.UserGroup;
-            expect(userGroup.Name).to.equal('my dev team');
-            expect(userGroup.Description).to.equal('the description of the team');
+                return userGroupHelper.addMember(token1, groupId, userId);
+            })
+            .then(function (response) {
+                return userGroupHelper.addMember(token1, groupId, userId);
+            })
+            .then(function (response) {
+                return userGroupHelper.lookupGroup(token1, groupId);
+            })
+            .then(function (response) {
+                expect(response.UserGroup).to.be.ok;
 
-            expect(userGroup.Members).to.be.ok;
+                var userGroup = response.UserGroup;
+                expect(userGroup.Name).to.equal('my dev team');
+                expect(userGroup.Description).to.equal('the description of the team');
 
-            var members = userGroup.Members;
-            expect(members).to.be.an.array;
-            expect(members).to.have.lengthOf(1);
+                expect(userGroup.Members).to.be.ok;
 
-            var member1 = members[0];
-            expect(member1).to.be.ok;
-            expect(member1.UserId).to.equal(userId);
-            expect(member1.UserName).to.equal('user1');
+                var members = userGroup.Members;
+                expect(members).to.be.an.array;
+                expect(members).to.have.lengthOf(1);
+
+                var member1 = members[0];
+                expect(member1).to.be.ok;
+                expect(member1.UserId).to.equal(userId);
+                expect(member1.UserName).to.equal('user1');
+            });
         });
     });
 

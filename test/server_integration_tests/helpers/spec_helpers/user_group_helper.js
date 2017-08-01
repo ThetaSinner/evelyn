@@ -22,6 +22,7 @@ var _ = require('lodash');
 
 module.exports = {
     createUserGroup: createUserGroup,
+    removeUserGroup: removeUserGroup,
     addMember: addMember,
     removeMember: removeMember,
     lookupGroups: lookupGroups,
@@ -38,6 +39,18 @@ function createUserGroup(token, name, description) {
     .then(function (response) {
         expect(response.Error).to.be.null;
         expect(response.UserGroupId).to.not.be.null;
+        return Promise.resolve(response);
+    });
+}
+
+function removeUserGroup(token, userGroupId) {
+    return httpHelper.post('/usergroup/remove', {
+        Token: token,
+        UserGroupId: userGroupId,
+    })
+    .then(serverErrorHelper.newResponseHandler())
+    .then(function (response) {
+        expect(response.Error).to.be.null;
         return Promise.resolve(response);
     });
 }
