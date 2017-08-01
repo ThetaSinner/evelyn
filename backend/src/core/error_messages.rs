@@ -102,6 +102,7 @@ pub enum EvelynServiceError {
 
     // User group
     CreateUserGroup(EvelynCoreError),
+    RemoveUserGroup(EvelynCoreError),
     LookupUserGroups(EvelynCoreError),
     LookupUserGroup(EvelynCoreError),
     AddMemberToUserGroup(EvelynCoreError),
@@ -175,10 +176,11 @@ EvelynErrorDisplay!{
 
     // User group
     {CreateUserGroup, "100601", "Failed to create user group"},
-    {LookupUserGroups, "100602", "Failed to lookup user groups"},
-    {LookupUserGroup, "100603", "Failed to lookup user group"},
-    {AddMemberToUserGroup, "100604", "Failed to add member to user group"},
-    {RemoveMemberFromUserGroup, "100604", "Failed to remove member from user group"},
+    {RemoveUserGroup, "100602", "Failed to remove user group"},
+    {LookupUserGroups, "100603", "Failed to lookup user groups"},
+    {LookupUserGroup, "100604", "Failed to lookup user group"},
+    {AddMemberToUserGroup, "100605", "Failed to add member to user group"},
+    {RemoveMemberFromUserGroup, "100606", "Failed to remove member from user group"},
 
     // Simple Task
     {FailedToCreateSimpleTask, "100301", "Failed to create simple task"},
@@ -240,6 +242,7 @@ pub enum EvelynCoreError {
 
     // User group
     FailedToCreateUserGroup(EvelynDatabaseError),
+    FailedToRemoveUserGroup(EvelynDatabaseError),
     FailedToLookupUserGroups(EvelynDatabaseError),
     FailedToLookupUserGroup(EvelynDatabaseError),
     FailedToAddMemberToUserGroup(EvelynDatabaseError),
@@ -312,6 +315,7 @@ EvelynErrorDisplay!{
 
     // User Group
     {FailedToCreateUserGroup, "Failed to create user group: {}"},
+    {FailedToRemoveUserGroup, "Failed to remove user group: {}"},
     {FailedToLookupUserGroups, "Failed to lookup user groups: {}"},
     {FailedToLookupUserGroup, "Failed to lookup user group: {}"},
     {FailedToAddMemberToUserGroup, "Failed to add member to user group: {}"},
@@ -384,6 +388,7 @@ pub enum EvelynDatabaseError {
 
     // User group
     InsertUserGroup(MongoDbError),
+    RemoveUserGroup(MongoDbError),
     LookupUserGroups(MongoDbError),
     UserGroupNotFound(EvelynBaseError),
     LookupUserGroup(MongoDbError),
@@ -457,6 +462,7 @@ EvelynErrorDisplay!{
 
     // User group
     {InsertUserGroup, "Failed to create user group: {}"},
+    {RemoveUserGroup, "Failed to remove user group: {}"},
     {LookupUserGroups, "Failed to lookup user groups: {}"},
     {UserGroupNotFound, "User group not found: {}"},
     {LookupUserGroup, "Failed to lookup user group: {}"},

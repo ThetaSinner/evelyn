@@ -47,6 +47,7 @@ pub fn load_processors(router: &mut Router) {
     router.add_rule("/user/search", user::search_processor);
 
     router.add_rule("/usergroup/create", user_group::create_user_group_processor);
+    router.add_rule("/usergroup/remove", user_group::remove_user_group_processor);
     router.add_rule("/usergroup/lookupgroups", user_group::lookup_user_groups_processor);
     router.add_rule("/usergroup/lookup", user_group::lookup_user_group_processor);
     router.add_rule("/usergroup/member/add", user_group::add_member_processor);

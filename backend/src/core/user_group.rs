@@ -23,7 +23,7 @@ use uuid::Uuid;
 
 pub fn create_user_group(
     model: model::user_group::CreateUserGroupRequestModel,
-    session_token_model: model::SessionTokenModel,
+    session_token_model: model::SessionTokenModel, 
     processor_data: Arc<ProcessorData>,
 ) -> Result<model::user_group::CreateUserGroupResponseModel, EvelynCoreError> {
     let user_group_id = Uuid::new_v4();
@@ -44,6 +44,27 @@ pub fn create_user_group(
     } else {
         Ok(model::user_group::CreateUserGroupResponseModel {
                user_group_id: Some(format!("{}", user_group_id)),
+               error: None,
+           })
+    }
+}
+
+
+pub fn remove_user_group(
+    model: model::user_group::RemoveUserGroupRequestModel,
+    _session_token_model: model::SessionTokenModel,
+    processor_data: Arc<ProcessorData>,
+) -> Result<model::user_group::RemoveUserGroupResponseModel, EvelynCoreError> {
+
+
+    let user_group_id = model.user_group_id;
+    let data_store = processor_data.data_store.clone();
+
+    let error = data::user_group::remove_user_group(&data_store, user_group_id);
+    if let Some(e) = error {
+        Err(EvelynCoreError::FailedToCreateUserGroup(e))
+    } else {
+        Ok(model::user_group::RemoveUserGroupResponseModel {
                error: None,
            })
     }

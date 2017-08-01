@@ -50,6 +50,20 @@ pub fn insert_user_group(
                   EvelynDatabaseError::InsertUserGroup)
 }
 
+pub fn remove_user_group(
+    client: &Client,
+    user_group_id: String,
+) -> Option<EvelynDatabaseError> {
+    let collection = client.db("evelyn").collection("usergroup");
+
+    let filter = doc!{"userGroupId" => user_group_id};
+
+    match collection.delete_one(filter, None) { 
+        Ok(_) => None,
+        Err(e) => Some(EvelynDatabaseError::RemoveUserGroup(e)),
+    }
+}
+
 pub fn lookup_user_groups(
     user_id: &String,
     client: &Client,

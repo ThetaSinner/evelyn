@@ -34,6 +34,20 @@ pub struct CreateUserGroupResponseModel {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct RemoveUserGroupRequestModel {
+    pub token: String,
+    pub user_group_id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct RemoveUserGroupResponseModel {
+    pub error: Option<ErrorModel>,
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct UserGroupModel {
     pub user_group_id: String,
