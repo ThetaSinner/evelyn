@@ -62,7 +62,7 @@ pub fn remove_user_group(
 
     let error = data::user_group::remove_user_group(&data_store, user_group_id);
     if let Some(e) = error {
-        Err(EvelynCoreError::FailedToCreateUserGroup(e))
+        Err(EvelynCoreError::FailedToRemoveUserGroup(e))
     } else {
         Ok(model::user_group::RemoveUserGroupResponseModel {
                error: None,
