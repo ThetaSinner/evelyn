@@ -33,80 +33,88 @@ if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && r
 }
 */
 
-evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settingsService', "alertify", function serverBridgeService(sessionDataService, alertify, settingsService) {
-    function EvelynServerBridge() {
-        this.baseUrl = "http://localhost:8080";
-    }
-
-    EvelynServerBridge.prototype.make_url_from_action = function(action) {
-        return this.baseUrl + action;
-    };
-
-    EvelynServerBridge.prototype.process_response = function(response) {
-        if (response.hasOwnProperty("Token") && response.Token !== null) {
-            sessionDataService.setToken(response.Token);
-        }
-    };
-
-    EvelynServerBridge.prototype.process_request = function(request) {
-        if (sessionDataService.getToken()) {
-            request.Token = sessionDataService.getToken();
-        }
-
-        for (var attr in request) {
-            if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
-                var isoDate = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
-
-                if (_.isNull(isoDate)) {
-                    alertify.error("Date cannot be empty");
-                }
-                else {
-                    request[attr] = isoDate;
-                }
+evelynDesktopApp.factory(
+    'serverBridgeService', 
+    [
+        'sessionDataService', 
+        'settingsService', 
+        'alertify', 
+        function serverBridgeService(sessionDataService, alertify, settingsService) {
+            function EvelynServerBridge() {
+                this.baseUrl = "http://localhost:8080";
             }
+
+            EvelynServerBridge.prototype.make_url_from_action = function(action) {
+                return this.baseUrl + action;
+            };
+
+            EvelynServerBridge.prototype.process_response = function(response) {
+                if (response.hasOwnProperty("Token") && response.Token !== null) {
+                    sessionDataService.setToken(response.Token);
+                }
+            };
+
+            EvelynServerBridge.prototype.process_request = function(request) {
+                if (sessionDataService.getToken()) {
+                    request.Token = sessionDataService.getToken();
+                }
+
+                for (var attr in request) {
+                    if (attr.indexOf('date') !== -1 || attr.indexOf('Date') !== -1) {
+                        var isoDate = moment(request[attr], settingsService.get_moment_date_format()).toISOString();
+
+                        if (_.isNull(isoDate)) {
+                            alertify.error("Date cannot be empty");
+                        }
+                        else {
+                            request[attr] = isoDate;
+                        }
+                    }
+                }
+
+                return request;
+            };
+
+            EvelynServerBridge.prototype.send_to_server = function(action, payload, callback) {
+                var url = this.make_url_from_action(action);
+                var processed_payload = this.process_request(payload);
+                var _this = this;
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    data: JSON.stringify(processed_payload),
+                    dataType: "json",
+                    // The first request may be slow because a data connection must be opened on the server
+                    // but after that, such a long timeout is a problem...
+                    timeout: 3000,
+                    success: function(response) {
+                        console.log("Response from evelyn", response);
+
+                        _this.process_response(response);
+                        callback(response);
+                    },
+                    error: function(jqxhr, text_status, error) {
+                        if (text_status === "timeout") {
+                            callback({
+                                Error: {
+                                    ErrorCode: 0,
+                                    ErrorMessage: "Evelyn service not available.",
+                                }
+                            });
+                        }
+                        else {
+                            callback({
+                                Error: {
+                                    ErrorCode: 0,
+                                    ErrorMessage: "Unhandled error occured in Evelyn bridge [" + text_status + "]",
+                                }
+                            });
+                        }
+                    },
+                });
+            };
+
+            return new EvelynServerBridge();
         }
-
-        return request;
-    };
-
-    EvelynServerBridge.prototype.send_to_server = function(action, payload, callback) {
-        var url = this.make_url_from_action(action);
-        var processed_payload = this.process_request(payload);
-        var _this = this;
-        $.ajax({
-            method: "POST",
-            url: url,
-            data: JSON.stringify(processed_payload),
-            dataType: "json",
-            // The first request may be slow because a data connection must be opened on the server
-            // but after that, such a long timeout is a problem...
-            timeout: 3000,
-            success: function(response) {
-                console.log("Response from evelyn", response);
-
-                _this.process_response(response);
-                callback(response);
-            },
-            error: function(jqxhr, text_status, error) {
-                if (text_status === "timeout") {
-                    callback({
-                        Error: {
-                            ErrorCode: 0,
-                            ErrorMessage: "Evelyn service not available.",
-                        }
-                    });
-                }
-                else {
-                    callback({
-                        Error: {
-                            ErrorCode: 0,
-                            ErrorMessage: "Unhandled error occured in Evelyn bridge [" + text_status + "]",
-                        }
-                    });
-                }
-            },
-        });
-    };
-
-    return new EvelynServerBridge();
-}]);
+    ]
+);
