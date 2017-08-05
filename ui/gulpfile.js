@@ -41,7 +41,6 @@ function ResourceLocator(output_path_prefix, is_use_dev_resources) {
             'vendored/js/moment-2.18.1.js',
             '../node_modules/foundation-sites/dist/js/foundation.min.js',
             '../node_modules/foundation-datepicker/js/foundation-datepicker.min.js',
-            '../node_modules/alertify.js/dist/js/Alertify.js',
             '../node_modules/alertify.js/dist/js/ngAlertify.js', 
             'vendored/js/handlebars-v4.0.10.min.js',
         ],

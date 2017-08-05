@@ -33,7 +33,7 @@ if (response.hasOwnProperty("SimpleTasks") && response.SimpleTasks !== null && r
 }
 */
 
-evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settingsService', function serverBridgeService(sessionDataService, settingsService) {
+evelynDesktopApp.factory('serverBridgeService', ['sessionDataService', 'settingsService', "alertify", function serverBridgeService(sessionDataService, alertify, settingsService) {
     function EvelynServerBridge() {
         this.baseUrl = "http://localhost:8080";
     }
