@@ -35,7 +35,6 @@ evelynDesktopApp.component('updateSimpleTaskComponent', {
                 }
                 else {
                     alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
-                    console.log(response);
                 }
             });
         };

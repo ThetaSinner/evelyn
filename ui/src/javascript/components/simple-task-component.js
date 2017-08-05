@@ -26,7 +26,6 @@ evelynDesktopApp.component('simpleTaskComponent', {
                 }
                 else {
                     alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
-                    console.log(response);
                 }
             });
         };
@@ -41,7 +40,6 @@ evelynDesktopApp.component('simpleTaskComponent', {
                 }
                 else {
                     alertify.error("" + response.Error.ErrorCode + " : " + response.Error.ErrorMessage);
-                    console.log(response);
                 }
             });
         };
