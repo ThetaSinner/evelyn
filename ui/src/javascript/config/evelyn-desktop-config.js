@@ -115,7 +115,6 @@ evelynDesktopApp.config(function ($stateProvider, $urlRouterProvider) {
                                 localStorage.setItem("todoListItem", todoListID);
                             else if (localStorage.getItem('todoListItem')) // Param null, exists in cache
                                 todoListID = localStorage.getItem("todoListItem");
-                            else; // Param NULL, no cache
 
                             // TODO handle todoListId null. Display a 'no todo list selected'.
                             serverBridgeService.send_to_server('/todolist/lookup', {
