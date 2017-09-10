@@ -1,25 +1,23 @@
 language: rust
+cache:
+  directories:
+  - "$HOME/.cargo"
+  - "$TRAVIS_BUILD_DIR/backend/target"
+  - "$TRAVIS_BUILD_DIR/test/server_integration_tests/node_modules"
+before_install:
+- curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+- sudo apt-get install -y nodejs
+before_script:
+- sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+- echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.4
+  multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+- sudo apt-get update
+- sudo apt-get install -y mongodb-org
+- sleep 15
+- mongo --version
+script:
+- cd $TRAVIS_BUILD_DIR/backend && ./scripts/run_tests.sh
+- cd $TRAVIS_BUILD_DIR/test/server_integration_tests/ && ./run_tests.sh
 notifications:
   slack:
-    rooms:
-      - ephyrasoftware:0w1iQEPaCO9Z1RN3flaEV7qK#build-info
-cache:
-    directories:
-      - $HOME/.cargo
-      - $TRAVIS_BUILD_DIR/backend/target
-      - $TRAVIS_BUILD_DIR/test/server_integration_tests/node_modules
-before_install:
-  # Install Node.js
-  - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-  - sudo apt-get install -y nodejs
-before_script:
-  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
-  # Note update this for the ubuntu version (current 12.04)
-  - echo "deb [ arch=amd64 ] http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
-  - sudo apt-get update
-  - sudo apt-get install -y mongodb-org
-  - sleep 15 #mongo may not be responded directly. See http://docs.travis-ci.com/user/database-setup/#MongoDB
-  - mongo --version
-script:
-  - cd $TRAVIS_BUILD_DIR/backend && ./scripts/run_tests.sh
-  - cd $TRAVIS_BUILD_DIR/test/server_integration_tests/ && ./run_tests.sh
+    secure: ttxdsoXCEzLgNbKlAY543mbNcNLPeoDVlyKpMGEJ4cXYBpXJ+BjFV+zVqEuKPbGUkkD3nXszBkHF0CVwZBoxyuQ2AWMk38338qmYqWVeQaDfUQ8q4smFzYRgONV4lQliSNs9tAd4WMb9/jHRwGwqqia/k+F5TOM+l4ow3PNmryrztMhSYQw2W2IEqUwjZFKXV234/DQFt3cxAUUqOpw8RGemrZQ0Mc+L8sCNMiiCzcyW8bSh/uqGShLGFqu3cWQ2JECqRHduf6c2gXbJqHsgPaA1ptpTYf7VgiPWoKwNN1on1EQH4bY6+QzbwXZnyNBjN+2hRxgQP4DWyMEyDvbDmdBKtoSGYnJxqqyT6s2TpSxjXOew7f47/veZEI7jTmVlkK3COx4jlNerl7hP+Wj50KtCcvl63TASdVuQHZednu5pIVVSfB9lPK9pTJLOBeZhYtOaCq7pqyPJS8vkvYLLd1pqf/tFEP/3WDMtjX13YrQNrDaXOd1jlTvL3DrI/rczeLOuNMRuzAXyg4rNLKg4ouDSeMfLFBNlwB8/kRWgTDk2cqxq2DOAkEhzR44+udiqYfK45nmjIMCAAbg4HlLSGKqJl4Ti6Lm9s5divJHhmqkpcmbuqjBYNF7MCJKYA+h+NzmNg8UwmKcZV9xCP5DKBgi+H5OqddFAOjjo0wcZKeg=
