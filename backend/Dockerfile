@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 ENV USER root
-ENV RUST_VERSION=1.17.0
+ENV RUST_VERSION=1.21.0
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
